@@ -1039,12 +1039,13 @@ function customMnemonicSave(targetId) {
 function loadProgressFromLocalStorage() {
   const savedData = localStorage.getItem("JaniPaniProgress");
   if (!savedData) {
+    showNewQuestion();
     return;
   }
   const jsonData = JSON.parse(savedData);
   _overwriteDB(jsonData)
 
-  if (isLesson && jsonData) lessonButtonClick();
+  if (isLesson) lessonButtonClick();
   showNewQuestion();
 }
   
@@ -1069,7 +1070,7 @@ async function handleFileUpload(event) {
     jsonData = JSON.parse(e.target.result);
     _overwriteDB(jsonData);
 
-    if (isLesson && jsonData) lessonButtonClick();
+    if (isLesson) lessonButtonClick();
     showNewQuestion();
   };
   reader.readAsText(file);
