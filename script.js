@@ -1044,7 +1044,7 @@ function loadProgressFromLocalStorage() {
   const jsonData = JSON.parse(savedData);
   _overwriteDB(jsonData)
 
-  if (isLesson) lessonButtonClick();
+  if (isLesson && jsonData) lessonButtonClick();
   showNewQuestion();
 }
   
@@ -1069,7 +1069,7 @@ async function handleFileUpload(event) {
     jsonData = JSON.parse(e.target.result);
     _overwriteDB(jsonData);
 
-    if (isLesson) lessonButtonClick();
+    if (isLesson && jsonData) lessonButtonClick();
     showNewQuestion();
   };
   reader.readAsText(file);
