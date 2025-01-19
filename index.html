@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JaniPani</title>
+    <link rel="icon" type="image/x-icon" href="extras/favicon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    
+    <!-- Game Section: lessons/reviews pages -->
+    <div id="game-section" class="section hidden">
+
+      <div id="left-rect" class="feedback-rectangles"></div>
+      <div id="right-rect" class="feedback-rectangles"></div>
+
+      <div class="button-row">
+        <button id="LessonButton">Go to Review</button>
+        <div class="data-buttons">
+          <input type="file" id="fileInput" accept=".json" style="display: none;">
+          <button id="uploadBtn">Load</button>
+          <button id="downloadBtn">Save</button>
+        </div>
+      </div>
+
+
+      <!-- hieroglyph review question -->
+      <div id="question-area" class="hidden">
+        <span id="symbol-display" class="hidden"></span>
+        <p id="question-text"></p>
+        <input type="text" id="answer-input" placeholder="" autofocus>
+        <div id="submit-info-review-container">
+          <button id="submit-answer">Next</button>
+          <button id="show-info-page">Info</button>
+        </div>  
+        <p id="feedback"></p>
+      </div>
+      
+
+      <!-- user progress info -->
+      <div id="level-info" class="hidden">
+        <div id="level-info-text">
+          <span id="progress-level">Level</span>
+          <span id="kanji-level">Kanji</span>
+          <span id="vocab-level">Vocab</span>
+        </div>
+        <div id="level-info-numbers">
+          <span id="progress-level-num">None</span>
+          <span id="kanji-level-num">None</span>
+          <span id="vocab-level-num">None</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info/Search Section -->
+    <div id="info-section" class="section hidden">
+      <button id="search-button">Search</button>
+      <button class="back-to-game">Back to Game</button>
+      <input type="text" id="search-query" placeholder="" autofocus>
+      <ul id="search-results">
+        <!-- Filled by JavaScript -->
+      </ul>
+
+      <div id="hieroglyph-detail" class="hidden">
+        <div id="symbol-details-container">
+          <div id="info-container">
+            <div id="details">
+              <div id="meaning">
+                <span id="detail-meaning"></span>  
+                <span id="extra-meanings" class="faded"></span> 
+              </div>
+              <ul id="symbol-composition">
+                <!-- Filled by JavaScript -->
+              </ul>
+              <button id="vocab-sound-button"></button>
+              <div id="onkun">
+                <div id="onon">
+                  <span id="detail-onyomi-title">On'yomi</span>
+                  <span id="detail-onyomi"></span>
+                </div>
+                <div id="kunkun">
+                  <span id="detail-kunyomi-title">Kun'yomi</span>
+                  <span id="detail-kunyomi"></span>
+                </div>
+              </div>
+              <hr id="line-radical" width="80%">
+              <span id="detail-level"></span>
+            </div>
+            <div id="mnemonic-container">
+              <div class="mnemonic-item">
+                <button class="show-mnemonic">Mnemonics Meaning</button>
+                <div class="mnemonic-content">
+                  <span id="detail-mnemonic-meaning"></span>
+                </div>
+              </div>
+              <div class="mnemonic-item">
+                <button class="show-mnemonic">Mnemonics Reading</button>
+                <div class="mnemonic-content">
+                  <span id="detail-mnemonic-reading"></span>
+                </div>
+              </div>
+            </div>
+            <ul id="detail-sentences"></ul>
+          </div>
+          <div id="symbol-ref">
+            <span id="detail-symbol" class="hidden"></span>
+            <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- next_review_in section -->
+    <div id="no-lesson-section" class="section hidden">
+      <div id="no-lesson-container">
+        <span id="next-in"></span>  
+        <button class="back-to-game">Back to Game</button>
+        <button id="extend-lessons">Double the Lessons</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
