@@ -433,6 +433,36 @@ button:hover {
 .mnemonic-content.show {
   display: block;
 }
+#detail-mnemonic-meaning {
+  width: 100%;
+  resize: none;
+  overflow-wrap: break-word;
+  background-color: var(--color-purple);
+  color: var(--color-white);
+  border: none;
+  outline: none;
+  font-size: 18px;
+  font-family: Arial, sans-serif, Meiryo;
+}
+#detail-mnemonic-reading {
+  width: 100%;
+  resize: none;
+  overflow-wrap: break-word;
+  background-color: var(--color-purple);
+  color: var(--color-white);
+  border: none;
+  outline: none;
+  font-size: 18px;
+  font-family: Arial, sans-serif, Meiryo;
+}
+.flash-effect {
+  animation: flash-color 0.6s ease-in-out forwards;
+}
+@keyframes flash-color {
+  0% {color: var(--color-white);}
+  50% {color: var(--color-correct);}
+  100% {color: var(--color-white);}
+}
 
 /* ============================
   INFO-DETAILS-SENTENCES

@@ -205,6 +205,8 @@ class Mnemonics {
   constructor(meaning, reading) {
     this.meaning = meaning;
     this.reading = reading;
+    this.custom_meaning = meaning;
+    this.custom_reading = reading;
   }
   
   static fromJSON(json) {
@@ -285,6 +287,7 @@ let DB = null;                // Will hold HieroglyphDB
 let LinkIdx = null;            // dict with wanikani link: Db idx
 let filteredHieroglyphs = []; // Hieroglyphs that match ProgressLevel etc
 let currentQuestion = null;   // The current Hieroglyph being asked about
+let currentInfo     = null;   // The current Hieroglyph in Info section
 let questionType = null;      // either 'meaning', 'reading'
 let currentSoundPath = null;  // The sound path to the current vocabulary
 let ProgressLevel = 1;        // The current user's progress level
@@ -333,7 +336,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // ALL DATA & HANDLERS INITIALIZATION
 //-----------------------------------------------------------
 window.addEventListener("DOMContentLoaded", async () => {
-  
+
   // LOAD ALL HIEROGLYPHS
   const loading = document.createElement("loading")
   loading.textContent = "Loading database (11.5 Mb)...";
@@ -355,6 +358,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById('downloadBtn').addEventListener('click', handleFileDownload);
   document.getElementById('uploadBtn').addEventListener('click', () => {document.getElementById('fileInput').click();});
   document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+  // document.getElementById('downloadBtn').addEventListener('click', saveProgressToLocalStorage);
+  // document.getElementById('uploadBtn').addEventListener('click', loadProgressFromLocalStorage);
   
   // INFO SECTION BUTTONS
   document.getElementById("search-button").addEventListener("click", searchHieroglyphs);
@@ -365,14 +370,15 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (content !== button.nextElementSibling) {content.classList.remove("show");}
       });
     button.nextElementSibling.classList.toggle("show");
+    resizeMnemonics(document.getElementById('detail-mnemonic-meaning'));
+    resizeMnemonics(document.getElementById('detail-mnemonic-reading'));
     });
   });
   // KEYBOARD HANDLER
   document.addEventListener('keydown', handleUserInteractionKeyDown);
   
-  // show the first Lesson hieroglyph
   showSection("game-section");
-  showNewQuestion();
+  loadProgressFromLocalStorage();
 });
 
 // show a specific section and hide the others
@@ -410,6 +416,10 @@ function handleUserInteractionKeyDown(event) {
   
   if (event.key === 'Enter') {
     event.preventDefault();
+    if (event.target.id === "detail-mnemonic-meaning" || event.target.id === "detail-mnemonic-reading") {
+      customMnemonicSave(event.target.id);
+    }
+
     if (is_question) {submitClick();}
     else if (is_info) {searchHieroglyphs();}
   } else if (event.key === 'Escape') {
@@ -418,6 +428,7 @@ function handleUserInteractionKeyDown(event) {
     else if (is_info && document.getElementById("search-results").innerHTML) {
       document.getElementById("search-query").value = "";
       document.getElementById("search-results").innerHTML = "";
+      document.querySelectorAll(".mnemonic-content").forEach(content => {content.classList.remove("show");});
       searchHieroglyphs();
     }
     else if (!is_question) {showSection("game-section");}
@@ -434,68 +445,6 @@ async function _loadHieroglyphDB() {
   for (let i = 0; i < DB.hieroglyphs.length; i++) {
     LinkIdx[DB.hieroglyphs[i].resource_paths.wanikani_link] = i;
   }
-}
-  
-//-----------------------------------------------------------
-// "LOAD" and "SAVE" BUTTONS
-//-----------------------------------------------------------
-async function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) {
-    alert('No file selected!');
-    return;
-  }
-
-  const reader = new FileReader();
-  let jsonData = {};
-  reader.onload = function(e) {
-    jsonData = JSON.parse(e.target.result);
-    // update all DB.hieroglyphs
-    ProgressLevel = 1;
-    for (let h of DB.hieroglyphs) {
-      const wanikani_link = h.resource_paths.wanikani_link;
-      if (jsonData[wanikani_link]) {
-        h.progres_level     = jsonData[wanikani_link]['progres_level'];
-        h.progres_timestamp = jsonData[wanikani_link]['progres_timestamp'];
-        if (h.level > ProgressLevel) {ProgressLevel = h.level;};
-      } else {
-        h.progres_level     = [-1, -1];
-        h.progres_timestamp = [-1, -1];
-      }
-    };
-    showNewQuestion();
-  };
-  reader.readAsText(file);
-}
-
-function handleFileDownload() {
-  const user_hieroglyphs = DB.hieroglyphs.filter(h => (
-    (h.level <= ProgressLevel) && (h.progres_level[0] != -1 || h.progres_level[1] != -1)
-  ));
-
-  const jsonData = {};
-  for (const h of user_hieroglyphs) {
-    jsonData[h.resource_paths.wanikani_link] = {
-      'progres_level':h.progres_level,
-      'progres_timestamp':h.progres_timestamp
-    };
-  };
-
-  const dataStr = JSON.stringify(jsonData, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'JaniPaniProgress.json';
-  document.body.appendChild(a);
-  a.click();
-
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 0);
 }
 
 //-----------------------------------------------------------
@@ -812,6 +761,8 @@ function _update_progress(is_correct, is_half_correct) {
     learnedHieroglyphs.push(currentQuestion);
   }
 
+  saveProgressToLocalStorage();
+
   // check if progress level can be updated
   // all of radical should be >= NextLevelRadical
   // NextLevelKanjiShare of kanji should be >= NextLevelKanji
@@ -927,8 +878,10 @@ function searchHieroglyphs() {
     if (h.resource_paths.kanji_links.some(  r => DB.hieroglyphs[LinkIdx[r]].meanings.some(m => m.toLowerCase().includes(query)))) {h._priority = 7; return true;}
 
     // try mnemonics:
-    if (h.mnemonics.meaning.toLowerCase().includes(query)) {h._priority = 8; return true;}
-    if (h.mnemonics.reading.toLowerCase().includes(query)) {h._priority = 8; return true;}
+    if (h.mnemonics.custom_meaning.toLowerCase().includes(query)) {h._priority = 8; return true;}
+    if (h.mnemonics.custom_reading.toLowerCase().includes(query)) {h._priority = 8; return true;}
+    if (h.mnemonics.meaning.toLowerCase().includes(query)) {h._priority = 9; return true;}
+    if (h.mnemonics.reading.toLowerCase().includes(query)) {h._priority = 9; return true;}
     
 
     return false;
@@ -971,6 +924,7 @@ function searchHieroglyphs() {
 
 // fill all info for a hieroglyph
 function fillHieroglyphDetail(h) {
+  currentInfo = h;
   document.getElementById("hieroglyph-detail").classList.remove("hidden");
   document.getElementById("vocab-sound-button").classList.add("hidden");
   document.getElementById("line-radical").classList.add("hidden");
@@ -1021,8 +975,8 @@ function fillHieroglyphDetail(h) {
     document.getElementById("vocab-sound-button").textContent = h.readings.vocab.join(", ");
   }
   document.querySelectorAll(".mnemonic-content").forEach(content => content.classList.remove("show"));
-  document.getElementById("detail-mnemonic-meaning").textContent = h.mnemonics.meaning;
-  document.getElementById("detail-mnemonic-reading").textContent = h.mnemonics.reading;
+  document.getElementById("detail-mnemonic-meaning").value = h.mnemonics.custom_meaning;
+  document.getElementById("detail-mnemonic-reading").value = h.mnemonics.custom_reading;
   
   // Sentences
   const detailSentences = document.getElementById("detail-sentences");
@@ -1050,4 +1004,153 @@ function fillHieroglyphDetail(h) {
   _showHieroglyph("detail-symbol", h);
   
   document.getElementById("detail-wanikani-link").href = h.resource_paths.wanikani_link || "#";
+}
+
+function resizeMnemonics(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+function customMnemonicSave(targetId) {
+  const customMnemonic = document.getElementById(targetId).value;
+  if (targetId === "detail-mnemonic-meaning") {
+    currentInfo.mnemonics.custom_meaning = customMnemonic;
+  } else if (targetId === "detail-mnemonic-reading") {
+    currentInfo.mnemonics.custom_reading = customMnemonic;
+  }
+
+  // flash effect
+  const textarea = document.getElementById(event.target.id);
+  textarea.classList.add('flash-effect');
+  setTimeout(() => {
+    textarea.classList.remove('flash-effect');
+  }, 500);
+
+  saveProgressToLocalStorage();
+}
+
+// ---------------------------------------
+// Load from localStorage
+// ---------------------------------------
+function loadProgressFromLocalStorage() {
+  const savedData = localStorage.getItem("JaniPaniProgress");
+  if (!savedData) {
+    return;
+  }
+  const jsonData = JSON.parse(savedData);
+  
+  // Re-initialize progress level
+  ProgressLevel = 1;
+
+  // Apply the loaded data to each hieroglyph in DB
+  for (let h of DB.hieroglyphs) {
+    const wanikani_link = h.resource_paths.wanikani_link;
+    if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
+      h.progres_level = jsonData[wanikani_link].progres_level;
+      h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
+      if (h.level > ProgressLevel) ProgressLevel = h.level;
+    } else {
+      // If not progress
+      h.progres_level = [-1, -1];
+      h.progres_timestamp = [-1, -1];
+    }
+
+    // If custom mnemonic
+    if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
+      h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
+      h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
+    }
+  }
+  lessonButtonClick();
+  showNewQuestion();
+}
+  
+// ---------------------------------------
+// Save to localStorage
+// ---------------------------------------
+function saveProgressToLocalStorage() {
+  const jsonData = {};
+  for (const h of DB.hieroglyphs) {
+    const is_progress = (h.level <= ProgressLevel) && (h.progres_level[0] !== -1 || h.progres_level[1] !== -1);
+    const is_custom_meaning = h.mnemonics.meaning !== h.mnemonics.custom_meaning;
+    const is_custom_reading = h.mnemonics.reading !== h.mnemonics.custom_reading;
+
+    if (is_progress || is_custom_meaning || is_custom_reading) {
+      jsonData[h.resource_paths.wanikani_link] = {
+        'progres_level': "",
+        'progres_timestamp': "",
+        'custom_meaning': "",
+        'custom_reading': "",
+      };
+      if (is_progress) {
+        jsonData[h.resource_paths.wanikani_link]['progres_level']     = h.progres_level;
+        jsonData[h.resource_paths.wanikani_link]['progres_timestamp'] = h.progres_timestamp;
+      }
+      if (is_custom_meaning) jsonData[h.resource_paths.wanikani_link]['custom_meaning'] = h.mnemonics.custom_meaning;
+      if (is_custom_reading) jsonData[h.resource_paths.wanikani_link]['custom_reading'] = h.mnemonics.custom_reading;
+    }
+    
+  }
+  localStorage.setItem("JaniPaniProgress", JSON.stringify(jsonData));
+}
+
+//-----------------------------------------------------------
+// "LOAD" and "SAVE" BUTTONS
+//-----------------------------------------------------------
+async function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    alert('No file selected!');
+    return;
+  }
+
+  const reader = new FileReader();
+  let jsonData = {};
+  reader.onload = function(e) {
+    jsonData = JSON.parse(e.target.result);
+    ProgressLevel = 1;
+    for (let h of DB.hieroglyphs) {
+      const wanikani_link = h.resource_paths.wanikani_link;
+      if (jsonData[wanikani_link]) {
+        h.progres_level     = jsonData[wanikani_link]['progres_level'];
+        h.progres_timestamp = jsonData[wanikani_link]['progres_timestamp'];
+        if (h.level > ProgressLevel) {ProgressLevel = h.level;};
+      } else {
+        h.progres_level     = [-1, -1];
+        h.progres_timestamp = [-1, -1];
+      }
+    };
+    showNewQuestion();
+  };
+  reader.readAsText(file);
+}
+
+function handleFileDownload() {
+  const user_hieroglyphs = DB.hieroglyphs.filter(h => (
+    (h.level <= ProgressLevel) && (h.progres_level[0] != -1 || h.progres_level[1] != -1)
+  ));
+
+  const jsonData = {};
+  for (const h of user_hieroglyphs) {
+    jsonData[h.resource_paths.wanikani_link] = {
+      'progres_level':    h.progres_level,
+      'progres_timestamp':h.progres_timestamp
+    };
+  };
+
+  const dataStr = JSON.stringify(jsonData, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'JaniPaniProgress.json';
+  document.body.appendChild(a);
+  a.click();
+
+  // Clean up
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
 }

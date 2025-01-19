@@ -75,20 +75,6 @@ def save_progress(progress_dict, save_to=None):
           progres_level = [levels_progress[level]] * 2,
           progres_timestamp = [-1, -1]
         )
-    if hieroglyph_type=='kanji':
-      import random
-      for h in [i for i in db if i.level==5 and i.hieroglyph_type.value == hieroglyph_type]:
-          res_data[h.resource_paths.wanikani_link] = dict(
-            progres_level = [1,1] if random.random() < 0.6 else [5,5],
-            progres_timestamp = [-1, -1]
-          )
-    if hieroglyph_type=='vocab':
-      import random
-      for h in [i for i in db if i.level==5 and i.hieroglyph_type.value == hieroglyph_type]:
-          res_data[h.resource_paths.wanikani_link] = dict(
-            progres_level = [1,1] if random.random() < 0.7 else [5,5],
-            progres_timestamp = [-1, -1]
-          )
   with open(save_to or 'JaniPaniProgress.json', 'w+') as f:
     json.dump(res_data, f)
 
