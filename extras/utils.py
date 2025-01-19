@@ -23,7 +23,9 @@ def load_hieroglyphDB_from_json(filename: str) -> HieroglyphDB:
     return ResourcePaths(
       pic=d["pic"],
       sound=d["sound"],
-      wanikani_link=d["wanikani_link"]
+      wanikani_link=d["wanikani_link"],
+      radical_links=d["radical_links"],
+      kanji_links=d["kanji_links"]
     )
 
   def dict_to_hieroglyph(d: dict) -> Hieroglyph:
