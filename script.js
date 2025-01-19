@@ -1061,7 +1061,7 @@ function loadProgressFromLocalStorage() {
       h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
     }
   }
-  lessonButtonClick();
+  if (isLesson) lessonButtonClick();
   showNewQuestion();
 }
   
@@ -1111,32 +1111,48 @@ async function handleFileUpload(event) {
     ProgressLevel = 1;
     for (let h of DB.hieroglyphs) {
       const wanikani_link = h.resource_paths.wanikani_link;
-      if (jsonData[wanikani_link]) {
-        h.progres_level     = jsonData[wanikani_link]['progres_level'];
-        h.progres_timestamp = jsonData[wanikani_link]['progres_timestamp'];
-        if (h.level > ProgressLevel) {ProgressLevel = h.level;};
+      if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
+        h.progres_level = jsonData[wanikani_link].progres_level;
+        h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
+        if (h.level > ProgressLevel) ProgressLevel = h.level;
       } else {
-        h.progres_level     = [-1, -1];
+        h.progres_level = [-1, -1];
         h.progres_timestamp = [-1, -1];
       }
-    };
-    showNewQuestion();
+      // If custom mnemonic
+      if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
+        h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
+        h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
+      }
+    }
+  if (isLesson) lessonButtonClick();
+  showNewQuestion();
   };
   reader.readAsText(file);
 }
 
 function handleFileDownload() {
-  const user_hieroglyphs = DB.hieroglyphs.filter(h => (
-    (h.level <= ProgressLevel) && (h.progres_level[0] != -1 || h.progres_level[1] != -1)
-  ));
-
   const jsonData = {};
-  for (const h of user_hieroglyphs) {
-    jsonData[h.resource_paths.wanikani_link] = {
-      'progres_level':    h.progres_level,
-      'progres_timestamp':h.progres_timestamp
-    };
-  };
+  for (const h of DB.hieroglyphs) {
+    const is_progress = (h.level <= ProgressLevel) && (h.progres_level[0] !== -1 || h.progres_level[1] !== -1);
+    const is_custom_meaning = h.mnemonics.meaning !== h.mnemonics.custom_meaning;
+    const is_custom_reading = h.mnemonics.reading !== h.mnemonics.custom_reading;
+
+    if (is_progress || is_custom_meaning || is_custom_reading) {
+      jsonData[h.resource_paths.wanikani_link] = {
+        'progres_level': "",
+        'progres_timestamp': "",
+        'custom_meaning': "",
+        'custom_reading': "",
+      };
+      if (is_progress) {
+        jsonData[h.resource_paths.wanikani_link]['progres_level']     = h.progres_level;
+        jsonData[h.resource_paths.wanikani_link]['progres_timestamp'] = h.progres_timestamp;
+      }
+      if (is_custom_meaning) jsonData[h.resource_paths.wanikani_link]['custom_meaning'] = h.mnemonics.custom_meaning;
+      if (is_custom_reading) jsonData[h.resource_paths.wanikani_link]['custom_reading'] = h.mnemonics.custom_reading;
+    }
+  }
 
   const dataStr = JSON.stringify(jsonData, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
