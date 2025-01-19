@@ -374,6 +374,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     resizeMnemonics(document.getElementById('detail-mnemonic-reading'));
     });
   });
+
+  document.getElementById('detail-mnemonic-meaning').addEventListener('input', () => {resizeMnemonics(this);});
+  document.getElementById('detail-mnemonic-reading').addEventListener('input', () => {resizeMnemonics(this);});
+
   // KEYBOARD HANDLER
   document.addEventListener('keydown', handleUserInteractionKeyDown);
   
@@ -1030,7 +1034,7 @@ function customMnemonicSave(targetId) {
 }
 
 // ---------------------------------------
-// Load from localStorage
+// Load and Save from localStorage
 // ---------------------------------------
 function loadProgressFromLocalStorage() {
   const savedData = localStorage.getItem("JaniPaniProgress");
@@ -1038,59 +1042,14 @@ function loadProgressFromLocalStorage() {
     return;
   }
   const jsonData = JSON.parse(savedData);
-  
-  // Re-initialize progress level
-  ProgressLevel = 1;
+  _overwriteDB(jsonData)
 
-  // Apply the loaded data to each hieroglyph in DB
-  for (let h of DB.hieroglyphs) {
-    const wanikani_link = h.resource_paths.wanikani_link;
-    if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
-      h.progres_level = jsonData[wanikani_link].progres_level;
-      h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
-      if (h.level > ProgressLevel) ProgressLevel = h.level;
-    } else {
-      // If not progress
-      h.progres_level = [-1, -1];
-      h.progres_timestamp = [-1, -1];
-    }
-
-    // If custom mnemonic
-    if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
-      h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
-      h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
-    }
-  }
   if (isLesson) lessonButtonClick();
   showNewQuestion();
 }
   
-// ---------------------------------------
-// Save to localStorage
-// ---------------------------------------
 function saveProgressToLocalStorage() {
-  const jsonData = {};
-  for (const h of DB.hieroglyphs) {
-    const is_progress = (h.level <= ProgressLevel) && (h.progres_level[0] !== -1 || h.progres_level[1] !== -1);
-    const is_custom_meaning = h.mnemonics.meaning !== h.mnemonics.custom_meaning;
-    const is_custom_reading = h.mnemonics.reading !== h.mnemonics.custom_reading;
-
-    if (is_progress || is_custom_meaning || is_custom_reading) {
-      jsonData[h.resource_paths.wanikani_link] = {
-        'progres_level': "",
-        'progres_timestamp': "",
-        'custom_meaning': "",
-        'custom_reading': "",
-      };
-      if (is_progress) {
-        jsonData[h.resource_paths.wanikani_link]['progres_level']     = h.progres_level;
-        jsonData[h.resource_paths.wanikani_link]['progres_timestamp'] = h.progres_timestamp;
-      }
-      if (is_custom_meaning) jsonData[h.resource_paths.wanikani_link]['custom_meaning'] = h.mnemonics.custom_meaning;
-      if (is_custom_reading) jsonData[h.resource_paths.wanikani_link]['custom_reading'] = h.mnemonics.custom_reading;
-    }
-    
-  }
+  const jsonData = _fetchProgress();
   localStorage.setItem("JaniPaniProgress", JSON.stringify(jsonData));
 }
 
@@ -1108,30 +1067,38 @@ async function handleFileUpload(event) {
   let jsonData = {};
   reader.onload = function(e) {
     jsonData = JSON.parse(e.target.result);
-    ProgressLevel = 1;
-    for (let h of DB.hieroglyphs) {
-      const wanikani_link = h.resource_paths.wanikani_link;
-      if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
-        h.progres_level = jsonData[wanikani_link].progres_level;
-        h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
-        if (h.level > ProgressLevel) ProgressLevel = h.level;
-      } else {
-        h.progres_level = [-1, -1];
-        h.progres_timestamp = [-1, -1];
-      }
-      // If custom mnemonic
-      if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
-        h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
-        h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
-      }
-    }
-  if (isLesson) lessonButtonClick();
-  showNewQuestion();
+    _overwriteDB(jsonData);
+
+    if (isLesson) lessonButtonClick();
+    showNewQuestion();
   };
   reader.readAsText(file);
 }
 
 function handleFileDownload() {
+  const jsonData = _fetchProgress();
+  const dataStr = JSON.stringify(jsonData, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'JaniPaniProgress.json';
+  document.body.appendChild(a);
+  a.click();
+
+  // Clean up
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+}
+
+
+// ---------------------------------------
+// fetch Json & overwrite DB
+// ---------------------------------------
+function _fetchProgress() {
   const jsonData = {};
   for (const h of DB.hieroglyphs) {
     const is_progress = (h.level <= ProgressLevel) && (h.progres_level[0] !== -1 || h.progres_level[1] !== -1);
@@ -1153,20 +1120,25 @@ function handleFileDownload() {
       if (is_custom_reading) jsonData[h.resource_paths.wanikani_link]['custom_reading'] = h.mnemonics.custom_reading;
     }
   }
+  return jsonData;
+}
 
-  const dataStr = JSON.stringify(jsonData, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'JaniPaniProgress.json';
-  document.body.appendChild(a);
-  a.click();
-
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 0);
+function _overwriteDB(jsonData) {
+  ProgressLevel = 1;
+  for (let h of DB.hieroglyphs) {
+    const wanikani_link = h.resource_paths.wanikani_link;
+    if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
+      h.progres_level = jsonData[wanikani_link].progres_level;
+      h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
+      if (h.level > ProgressLevel) ProgressLevel = h.level;
+    } else {
+      h.progres_level = [-1, -1];
+      h.progres_timestamp = [-1, -1];
+    }
+    // If custom mnemonic
+    if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
+      h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
+      h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
+    }
+  }
 }
