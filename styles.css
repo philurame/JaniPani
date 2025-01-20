@@ -261,6 +261,7 @@ button:hover {
   flex-direction: row;
   list-style: none;
   justify-content: center;
+  margin-right: 42px;
 }
 #symbol-composition li {
   font-size: 30px;
@@ -329,13 +330,11 @@ button:hover {
 #detail-meaning {
   font-size: 30px;
   color: var(--color-primary);
-  margin-left: 35px;
 }
 #extra-meanings {
   font-size: 25px;
 }
 #onkun {
-  margin-top: 15px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -357,8 +356,9 @@ button:hover {
 #detail-kunyomi-title {
   color: var(--color-blue)
 }
+#line-radical {margin-top: 15px;}
 #detail-level {
-  margin-top: 20px;
+  margin-top: 15px;
   font-size: 15px;
   color: var(--color-primary)
 }

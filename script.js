@@ -934,7 +934,9 @@ function fillHieroglyphDetail(h) {
   document.getElementById("line-radical").classList.add("hidden");
   document.getElementById("onkun").style.display='none';
 
-  document.getElementById("detail-level").textContent = 'level: '+ h.level + ', progress: ' + HieroglyphProgress[h.progres_level[0]];
+  const progress = h.progres_level[0] > -1 ? '(' + HieroglyphProgress[h.progres_level[0]] + ', ' + HieroglyphProgress[h.progres_level[1]]+')': HieroglyphProgress[h.progres_level[0]];
+  document.getElementById("detail-level").innerHTML = "Level: " + "<span style='color:var(--color-purple); font-size: 20px; font-weight: bold'>" + h.level + "</span>" +
+    "<br><br>" + "Progress: " + "<span style='color:var(--color-purple); font-size: 20px; font-weight: bold'>" + progress + "</span>";
 
   const meaning = h.meanings[0].charAt(0).toUpperCase() + h.meanings[0].slice(1) + (h.meanings.length > 1 ? ', ' : '');
   const meanings = h.meanings.length > 1 ? h.meanings.slice(1).join(", ") : '';
@@ -965,6 +967,7 @@ function fillHieroglyphDetail(h) {
     document.getElementById("line-radical").classList.remove("hidden");
   }
   else if (h.hieroglyph_type === HieroglyphType.KANJI) {
+    document.getElementById("line-radical").classList.remove("hidden");
     document.getElementById("onkun").style.display = 'flex';
 
     const onyomi_style  = (h.readings.main_reading === 'onyomi') ? h.readings.onyomi.join(", ") : '<span class="faded">' + h.readings.onyomi.join(", ")  + '</span>';
