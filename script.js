@@ -740,6 +740,15 @@ function updateLevelInfo() {
   ).length;
 
   document.getElementById("level-info").style.display = 'flex';
+  if (isLesson) {
+    document.getElementById("n-reviews-lessons").textContent = 'Lessons';
+    const n_lessons = filteredHieroglyphs.filter(h => (h.level === ProgressLevel) && (h.progres_timestamp[0] === -1 || h.progres_timestamp[1] === -1));
+    document.getElementById("n-reviews-lessons-num").textContent = n_lessons.length;
+  } else {
+    document.getElementById("n-reviews-lessons").textContent = 'Reviews';
+    const n_reviews = filteredHieroglyphs.filter(h => (h.level < ProgressLevel) || (h.progres_level[0] > -1 && h.progres_level[1] > -1));
+    document.getElementById("n-reviews-lessons-num").textContent = n_reviews.length;
+  }
   document.getElementById("progress-level-num").textContent = ProgressLevel + ' / ' + 60;
   document.getElementById("kanji-level-num").textContent = nkanji_learned + ' / ' + Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
   document.getElementById("vocab-level-num").textContent = nvocab_learned + ' / ' + progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length;
