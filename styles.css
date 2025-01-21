@@ -135,8 +135,7 @@ button:hover {
 /* ============================
  HIEROGLYPH & QUESTION/ANSWER 
 ============================ */
-.radical {
-  background-color: var(--color-radical);
+.radical, .kanji, .vocab {
   width: 350px;
   height: 300px;
   display: flex;
@@ -147,30 +146,9 @@ button:hover {
   margin: auto;
   border-radius: 15%;
 }
-.kanji {
-  background-color: var(--color-kanji);
-  width: 350px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);
-  font-size: 6em;
-  margin: auto;
-  border-radius: 15%;
-}
-.vocab {
-  background-color: var(--color-vocab);
-  width: 350px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);
-  font-size: 6em;
-  margin: auto;
-  border-radius: 15%;
-}
+.radical {background-color: var(--color-radical);}
+.kanji {background-color:   var(--color-kanji);}
+.vocab {background-color:   var(--color-vocab);}
 
 #question-area {
   display: flex;
@@ -252,6 +230,7 @@ button:hover {
 .radical-search {background-color: var(--color-radical); color: var(--color-primary);}
 .kanji-search {background-color: var(--color-kanji); color: var(--color-primary);}
 .vocab-search {background-color: var(--color-vocab); color: var(--color-primary);}
+
 .radical-search:hover{ color: var(--color-grey); background-color: var(--color-radical-hover);}
 .kanji-search:hover{color: var(--color-grey); background-color: var(--color-kanji-hover);}
 .vocab-search:hover{ color: var(--color-grey); background-color: var(--color-vocab-hover);}
@@ -284,8 +263,7 @@ button:hover {
   margin-top: 20px;   
   gap: 20px;
 }
-.radical-info {
-  background-color: var(--color-radical);
+.radical-info, .kanji-info, .vocab-info {
   width: 250px;
   height: 200px;
   display: flex;
@@ -293,27 +271,16 @@ button:hover {
   justify-content: center;
   color: var(--color-white);;
   border-radius: 15%;
+  border: none;
+  outline: none;
 }
-.kanji-info {
-  background-color: var(--color-kanji);
-  width: 250px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);;
-  border-radius: 15%;
-}
-.vocab-info {
-  background-color: var(--color-vocab);
-  width: 250px;
-  height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-white);;
-  border-radius: 15%;
-}
+.radical-info {background-color: var(--color-radical);}
+.kanji-info {background-color: var(--color-kanji);}
+.vocab-info {background-color: var(--color-vocab);}
+
+.radical-info:hover{ color: var(--color-grey); background-color: var(--color-radical-hover);}
+.kanji-info:hover{color: var(--color-grey); background-color: var(--color-kanji-hover);}
+.vocab-info:hover{ color: var(--color-grey); background-color: var(--color-vocab-hover);}
 
 /* ============================
   INFO-DETAILS
@@ -331,9 +298,11 @@ button:hover {
   font-size: 30px;
   color: var(--color-primary);
 }
-#extra-meanings {
-  font-size: 25px;
-}
+#extra-meanings {font-size: 25px;}
+
+#detail-onyomi-title {color: var(--color-blue)}
+#detail-kunyomi-title {color: var(--color-blue)}
+
 #onkun {
   display: flex;
   flex-direction: row;
@@ -345,17 +314,12 @@ button:hover {
   flex-direction: column;
   justify-content: center;
 }
-#detail-onyomi-title {
-  color: var(--color-blue)
-}
 #kunkun {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-#detail-kunyomi-title {
-  color: var(--color-blue)
-}
+
 #line-radical {margin-top: 15px;}
 #detail-level {
   margin-top: 15px;
@@ -430,10 +394,7 @@ button:hover {
   background-color: var(--color-purple-hover);
   color: var(--color-grey);
 }
-.mnemonic-content.show {
-  display: block;
-}
-#detail-mnemonic-meaning {
+#detail-mnemonic-meaning, #detail-mnemonic-reading {
   width: 100%;
   resize: none;
   overflow-wrap: break-word;
@@ -444,20 +405,9 @@ button:hover {
   font-size: 18px;
   font-family: Arial, sans-serif, Meiryo;
 }
-#detail-mnemonic-reading {
-  width: 100%;
-  resize: none;
-  overflow-wrap: break-word;
-  background-color: var(--color-purple);
-  color: var(--color-white);
-  border: none;
-  outline: none;
-  font-size: 18px;
-  font-family: Arial, sans-serif, Meiryo;
-}
-.flash-effect {
-  animation: flash-color 0.6s ease-in-out forwards;
-}
+
+.mnemonic-content.show {display: block;}
+.flash-effect {animation: flash-color 0.6s ease-in-out forwards;}
 @keyframes flash-color {
   0% {color: var(--color-white);}
   50% {color: var(--color-correct);}

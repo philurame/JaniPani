@@ -358,11 +358,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById('downloadBtn').addEventListener('click', handleFileDownload);
   document.getElementById('uploadBtn').addEventListener('click', () => {document.getElementById('fileInput').click();});
   document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-  // document.getElementById('downloadBtn').addEventListener('click', saveProgressToLocalStorage);
-  // document.getElementById('uploadBtn').addEventListener('click', loadProgressFromLocalStorage);
   
   // INFO SECTION BUTTONS
   document.getElementById("search-button").addEventListener("click", searchHieroglyphs);
+  document.getElementById("detail-symbol").addEventListener("click", searchDetail);
   document.getElementById("vocab-sound-button").addEventListener("click", () => _playSound(currentSoundPath)); 
   document.querySelectorAll(".show-mnemonic").forEach(button => {
     button.addEventListener("click", () => {
@@ -1043,6 +1042,11 @@ function customMnemonicSave(targetId) {
   }, 500);
 
   saveProgressToLocalStorage();
+}
+
+function searchDetail() {
+  document.getElementById("search-query").value = currentInfo.symbol;
+  searchHieroglyphs();
 }
 
 // ---------------------------------------
