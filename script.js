@@ -1045,7 +1045,8 @@ function customMnemonicSave(targetId) {
 }
 
 function searchDetail() {
-  document.getElementById("search-query").value = currentInfo.symbol;
+  const search_text = (currentInfo.symbol) ? currentInfo.symbol : currentInfo.meanings[0];
+  document.getElementById("search-query").value = search_text;
   searchHieroglyphs();
 }
 
