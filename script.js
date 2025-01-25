@@ -1,170 +1,4 @@
 //-----------------------------------------------------------
-// romajiToJapanese converter taken from https://github.com/aleckretch/Romaji-to-Japanese-Converter and modified
-//-----------------------------------------------------------
-function _romajiToJapanese(romaji) {
-  const hiragana = {
-    "a": "あ", "i": "い", "u": "う", "e": "え", "o": "お",
-    "ka": "か", "ki": "き", "ku": "く", "ke": "け", "ko": "こ",
-    "ga": "が", "gi": "ぎ", "gu": "ぐ", "ge": "げ", "go": "ご",
-    "sa": "さ", "shi": "し", "su": "す", "se": "せ", "so": "そ",
-    "za": "ざ", "ji": "じ", "zu": "ず", "ze": "ぜ", "zo": "ぞ",
-    "ta": "た", "chi": "ち", "tsu": "つ", "te": "て", "to": "と",
-    "da": "だ", "de": "で", "do": "ど",
-    "na": "な", "ni": "に", "nu": "ぬ", "ne": "ね", "no": "の",
-    "ha": "は", "hi": "ひ", "fu": "ふ", "he": "へ", "ho": "ほ",
-    "ba": "ば", "bi": "び", "bu": "ぶ", "be": "べ", "bo": "ぼ",
-    "pa": "ぱ", "pi": "ぴ", "pu": "ぷ", "pe": "ぺ", "po": "ぽ",
-    "ma": "ま", "mi": "み", "mu": "む", "me": "め", "mo": "も",
-    "ya": "や", "yu": "ゆ", "yo": "よ",
-    "ra": "ら", "ri": "り", "ru": "る", "re": "れ", "ro": "ろ",
-    "wa": "わ", "wo": "を",
-    "n": "ん",
-    "kya": "きゃ", "kyu": "きゅ", "kyo": "きょ",
-    "gya": "ぎゃ", "gyu": "ぎゅ", "gyo": "ぎょ",
-    "sha": "しゃ", "shu": "しゅ", "sho": "しょ",
-    "ja": "じゃ", "ju": "じゅ", "jo": "じょ",
-    "cha": "ちゃ", "chu": "ちゅ", "cho": "ちょ",
-    "nya": "にゃ", "nyu": "にゅ", "nyo": "にょ",
-    "hya": "ひゃ", "hyu": "ひゅ", "hyo": "ひょ",
-    "bya": "びゃ", "byu": "びゅ", "byo": "びょ",
-    "pya": "ぴゃ", "pyu": "ぴゅ", "pyo": "ぴょ",
-    "mya": "みゃ", "myu": "みゅ", "myo": "みょ",
-    "rya": "りゃ", "ryu": "りゅ", "ryo": "りょ",
-    "vu": "ゔ",
-    "sakuon": "っ"
-  };
-
-  const katakana = {
-    "a": "ア", "i": "イ", "u": "ウ", "e": "エ", "o": "オ",
-    "ka": "カ", "ki": "キ", "ku": "ク", "ke": "ケ", "ko": "コ",
-    "ga": "ガ", "gi": "ギ", "gu": "グ", "ge": "ゲ", "go": "ゴ",
-    "sa": "サ", "shi": "シ", "su": "ス", "se": "セ", "so": "ソ",
-    "za": "ザ", "ji": "ジ", "zu": "ズ", "ze": "ゼ", "zo": "ゾ",
-    "ta": "タ", "chi": "チ", "tsu": "ツ", "te": "テ", "to": "ト",
-    "da": "ダ", "de": "デ", "do": "ド",
-    "na": "ナ", "ni": "ニ", "nu": "ヌ", "ne": "ネ", "no": "ノ",
-    "ha": "ハ", "hi": "ヒ", "fu": "フ", "he": "ヘ", "ho": "ホ",
-    "ba": "バ", "bi": "ビ", "bu": "ブ", "be": "ベ", "bo": "ボ",
-    "pa": "パ", "pi": "ピ", "pu": "プ", "pe": "ペ", "po": "ポ",
-    "ma": "マ", "mi": "ミ", "mu": "ム", "me": "メ", "mo": "モ",
-    "ya": "ヤ", "yu": "ユ", "yo": "ヨ",
-    "ra": "ラ", "ri": "リ", "ru": "ル", "re": "レ", "ro": "ロ",
-    "wa": "ワ", "wo": "ヲ",
-    "n": "ン",
-    "kya": "キャ", "kyu": "キュ", "kyo": "キョ",
-    "gya": "ギャ", "gyu": "ギュ", "gyo": "ギョ",
-    "sha": "シャ", "shu": "シュ", "sho": "ショ",
-    "ja": "ジャ", "ju": "ジュ", "jo": "ジョ",
-    "cha": "チャ", "chu": "チュ", "cho": "チョ",
-    "nya": "ニャ", "nyu": "ニュ", "nyo": "ニョ",
-    "hya": "ヒャ", "hyu": "ヒュ", "hyo": "ヒョ",
-    "bya": "ビャ", "byu": "ビュ", "byo": "ビョ",
-    "pya": "ピャ", "pyu": "ピュ", "pyo": "ピョ",
-    "mya": "ミャ", "myu": "ミュ", "myo": "ミョ",
-    "rya": "リャ", "ryu": "リュ", "ryo": "リョ",
-    "vu": "ヴ",
-    "va": "ヴァ", "vi": "ヴィ", "ve": "ヴェ", "vo": "ヴォ",
-    "wi": "ウィ", "we": "ウェ",
-    "fa": "ファ", "fi": "フィ", "fe": "フェ", "fo": "フォ",
-    "che": "チェ",
-    "di": "ディ", "du": "ドゥ",
-    "ti": "ティ", "tu": "トゥ",
-    "je": "ジェ",
-    "she": "シェ",
-    "sakuon": "ッ",
-    "pause": "ー"
-  };
-
-  romaji = romaji.toLowerCase();
-  let currentAlphabet = hiragana;
-  let hiraganaIsCurrent = true;
-  let resultStr = "";
-  let i = 0;
-
-  while (i < romaji.length) {
-    if (romaji[i] === "*") {
-      // Switch alphabets
-      if (hiraganaIsCurrent) {
-        currentAlphabet = katakana;
-        hiraganaIsCurrent = false;
-      } else {
-        currentAlphabet = hiragana;
-        hiraganaIsCurrent = true;
-      }
-      i++;
-    } else if (romaji[i] === " ") {
-      // Check for " wa " conversion to " は "
-      if (i + 3 < romaji.length && romaji.substring(i, i + 4) === " wa ") {
-        resultStr += " " + currentAlphabet["ha"] + " ";
-        i += 4;
-        continue;
-      }
-      resultStr += " ";
-      i++;
-    } else if (
-      i + 2 < romaji.length &&
-      romaji[i] === "n" &&
-      romaji[i + 1] === "n" &&
-      !currentAlphabet.hasOwnProperty(romaji.substring(i + 1, i + 3))
-    ) {
-      // "nn" when next doesn't match => sokuon
-      resultStr += currentAlphabet["sakuon"];
-      i++;
-    } else {
-      let checkLen = Math.min(3, romaji.length - i);
-      while (checkLen > 0) {
-        let checkStr = romaji.substring(i, i + checkLen);
-        if (currentAlphabet.hasOwnProperty(checkStr)) {
-          resultStr += currentAlphabet[checkStr];
-          i += checkLen;
-
-          // Additional rules for repeated vowels, repeated letters, etc.
-          if (i < romaji.length) {
-            if (
-              romaji[i] === romaji[i - 1] &&
-              !hiraganaIsCurrent
-            ) {
-              // For Katakana double letters
-              if (romaji[i] === "n") {
-                // Do nothing special if repeated "n"
-              } else if (["a", "e", "i", "o", "u"].includes(romaji[i])) {
-                resultStr += currentAlphabet["pause"];
-                i++;
-              } else {
-                resultStr += currentAlphabet["sakuon"];
-                i++;
-              }
-            }
-          }
-          break;
-        } else if (checkLen === 1) {
-          // Handle punctuation or non-alphabet
-          if (["?", ".", "!"].includes(checkStr)) {
-            resultStr += "。";
-          } else if (!/^[a-z]$/.test(checkStr)) {
-            resultStr += checkStr;
-          } else if (i + 1 < romaji.length) {
-            // Little tsu rule for double letters (e.g., kk => っk)
-            if (checkStr === romaji[i + 1]) {
-              resultStr += currentAlphabet["sakuon"];
-            }
-          } else {
-            // just leave it as is
-            resultStr += checkStr;
-          }
-          i++;
-          break;
-        }
-        checkLen--;
-      }
-    }
-  }
-  return resultStr;
-}
-
-
-
-//-----------------------------------------------------------
 // HIEROGLYPH CLASS
 //-----------------------------------------------------------
 class HieroglyphType {
@@ -298,8 +132,6 @@ const kanjiQuotaDefault = 5;  // number of kanji per day
 const vocabQuotaDefault = 9;  // number of vocab per day
 let kanjiQuota = kanjiQuotaDefault; // can be extended for one day
 let vocabQuota = vocabQuotaDefault; // can be extended for one day
-let romajiBuffer   = '';      // user english input buffer
-let japaneseBuffer = '';      // user japanese input buffer (which is shown)
 let soundOn = 1;              // always 1 for now
 
 const NextLevelRadical = 6;      // radical level required for ProgressLevel+=1
@@ -316,17 +148,11 @@ window.addEventListener('DOMContentLoaded', () => {
   const inputField = document.getElementById('answer-input');
   
   inputField.addEventListener('input', () => {
+    const answerInput = document.getElementById('answer-input');
     if (currentQuestion && questionType === 'reading') {
-      const japaneseInput= inputField.value;
-      // if japaneseInput last character is english character:
-      if (/^[a-zA-Z]$/.test(japaneseInput.slice(-1)) ) {
-        const newRomajiSymbol = japaneseInput.slice(-1);
-        romajiBuffer += newRomajiSymbol;
-        inputField.value = _romajiToJapanese(romajiBuffer);
-       } else { // else user deleted something probably!
-        romajiBuffer = romajiBuffer.slice(0, japaneseInput.length);
-       }
-      japaneseBuffer = japaneseInput;
+      wanakana.bind(answerInput);
+    } else {
+      wanakana.unbind(answerInput);
     }
   });
 });
@@ -468,9 +294,7 @@ function lessonButtonClick() {
 // SHOWS A NEW HIEROGLYPH
 //-----------------------------------------------------------
 function showNewQuestion() {
-  romajiBuffer = '';
-  japaneseBuffer = '';
-  
+
   // filter hieroglyphs based on ProgressLevel etc
   _filterHieroglyphs();
   updateLevelInfo();
@@ -700,7 +524,7 @@ function submitClick() {
 
   let softPossibleAnswers = [];
   softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.meanings);
-  softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.meanings.map(ans => _romajiToJapanese(ans)));
+  softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.meanings.map(ans => wanakana.toHiragana(ans)));
   softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.readings.kunyomi || []);
   softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.readings.onyomi || []);
   softPossibleAnswers = softPossibleAnswers.concat(currentQuestion.readings.vocab || []);
@@ -710,7 +534,7 @@ function submitClick() {
   possibleAnswers = possibleAnswers.map(ans => ans.toLowerCase());
   if (possibleAnswers.includes(userAnswerLower)) {
     correct = true;
-  } else if (softPossibleAnswers.includes(userAnswerLower) || softPossibleAnswers.includes(_romajiToJapanese(userAnswerLower))) {
+  } else if (softPossibleAnswers.includes(userAnswerLower) || softPossibleAnswers.includes(wanakana.toHiragana(userAnswerLower))) {
     half_correct = true;
   }  
 
@@ -874,14 +698,14 @@ function searchHieroglyphs() {
     if (h.readings.kunyomi.some(r => (r.toLowerCase().includes(query) && h.readings.main_reading === "kunyomi"))) {h._priority = 3; return true;}
 
     // try romaji readings:
-    if (h.readings.vocab.some(r => r.toLowerCase().includes(_romajiToJapanese(query)))) {h._priority = 4; return true;}
-    if (h.readings.onyomi.some( r => (r.toLowerCase().includes(_romajiToJapanese(query)) && h.readings.main_reading === "onyomi")))  {h._priority = 4; return true;}
-    if (h.readings.kunyomi.some(r => (r.toLowerCase().includes(_romajiToJapanese(query)) && h.readings.main_reading === "kunyomi"))) {h._priority = 4; return true;}
+    if (h.readings.vocab.some(r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 4; return true;}
+    if (h.readings.onyomi.some( r => (r.toLowerCase().includes(wanakana.toHiragana(query)) && h.readings.main_reading === "onyomi")))  {h._priority = 4; return true;}
+    if (h.readings.kunyomi.some(r => (r.toLowerCase().includes(wanakana.toHiragana(query)) && h.readings.main_reading === "kunyomi"))) {h._priority = 4; return true;}
 
     if (h.readings.onyomi.some( r => r.toLowerCase().includes(query))) {h._priority = 5; return true;}
     if (h.readings.kunyomi.some(r => r.toLowerCase().includes(query))) {h._priority = 5; return true;}
-    if (h.readings.onyomi.some( r => r.toLowerCase().includes(_romajiToJapanese(query)))) {h._priority = 6; return true;}
-    if (h.readings.kunyomi.some(r => r.toLowerCase().includes(_romajiToJapanese(query)))) {h._priority = 6; return true;}
+    if (h.readings.onyomi.some( r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 6; return true;}
+    if (h.readings.kunyomi.some(r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 6; return true;}
 
     // try compounds:
     if (h.resource_paths.radical_links.some(r => DB.hieroglyphs[LinkIdx[r]].symbol.toLowerCase().includes(query))) {h._priority = 7; return true;}
