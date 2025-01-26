@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/earlyaccess/notosansjp.css);
 :root {
   --color-correct: #74bc0c;
   --color-incorrect: #f8043c;
@@ -17,7 +18,7 @@
 }
 
 body {
-  font-family: Arial, sans-serif, Meiryo;
+  font-family: Arial, 'Noto Sans JP', sans-serif;
   margin: 20px;
   padding: 0;
   background-color: var(--color-black); 
@@ -273,6 +274,7 @@ button:hover {
   border-radius: 15%;
   border: none;
   outline: none;
+  font-family: 'Noto Sans JP', sans-serif;
 }
 .radical-info {background-color: var(--color-radical);}
 .kanji-info {background-color: var(--color-kanji);}
@@ -403,7 +405,7 @@ button:hover {
   border: none;
   outline: none;
   font-size: 18px;
-  font-family: Arial, sans-serif, Meiryo;
+  font-family: 'Noto Sans JP', sans-serif;
 }
 
 .mnemonic-content.show {display: block;}
