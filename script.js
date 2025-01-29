@@ -387,10 +387,10 @@ function _get_next_review_sec() {
     return Math.min(a_meaning, a_reading) < Math.min(b_meaning, b_reading) ? a : b;
   })
   current_timestamp = Math.floor(Date.now() / 1000);
-  if (next_review_h.progres_timestamp[0] < next_review_h.progres_timestamp[1]) {
-    return next_review_h.progres_timestamp[0]+SecToReview[next_review_h.progres_level[0]] - current_timestamp;
-  }
-  return next_review_h.progres_timestamp[1]+SecToReview[next_review_h.progres_level[1]] - current_timestamp;
+  const t_next_review_meaning = next_review_h.progres_timestamp[0]+SecToReview[next_review_h.progres_level[0]] - current_timestamp;
+  const t_next_review_reading = next_review_h.progres_timestamp[1]+SecToReview[next_review_h.progres_level[1]] - current_timestamp;
+  
+  return Math.min(t_next_review_meaning, t_next_review_reading);
 }
 
 function _playSound(path) {
