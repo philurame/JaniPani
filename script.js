@@ -592,9 +592,10 @@ function _update_progress(is_correct, is_half_correct) {
   if (currentQuestion.hieroglyph_type === HieroglyphType.RADICAL || isLesson) {
     currentQuestion.progres_level[1-progres_level_idx] = currentQuestion.progres_level[progres_level_idx];
     currentQuestion.progres_timestamp[1-progres_level_idx] = currentQuestion.progres_timestamp[progres_level_idx];
-  }
-  if (isLesson) {
-    learnedHieroglyphs.push(currentQuestion);
+    if (isLesson) {
+      currentQuestion.progres_level = [0, 0];
+      learnedHieroglyphs.push(currentQuestion);
+    }
   }
 
   saveProgressToLocalStorage();
