@@ -1,5 +1,43 @@
-from extras.hieroglyph_class import *
-import json, os
+from hieroglyph_class import *
+import json, os, requests
+from datetime import datetime
+
+# -----------------------------------------------------------------------------------------------------------------------
+# GET WANIKANI PROGRESS
+# -----------------------------------------------------------------------------------------------------------------------
+def save_wanikani_progress(save_to=None):
+  api_token = input("ENTER YOUR WANIKANI API TOKEN: ")
+  print("Please wait...")
+  headers = {
+    "Wanikani-Revision": "20170710",
+    "Authorization": f"Bearer {api_token}"
+  }
+
+  def _get_data_url(url):
+    all_subjects = []
+    next_url = url
+    while next_url:
+      response = requests.get(next_url, headers=headers)
+      if response.status_code != 200:
+        print(f"Error {response.status_code}: {response.text}")
+        print("I guess... You can try again idk")
+        return None
+      data = response.json()
+      all_subjects.extend(data["data"])
+      next_url = data["pages"]["next_url"]
+    return all_subjects
+  
+  sub = _get_data_url("https://api.wanikani.com/v2/subjects")
+  ass = _get_data_url("https://api.wanikani.com/v2/assignments")
+
+  fix_url = lambda s: 'http://wanikani.com/' + '/'.join(s.split("/")[-2:])
+  fix_ts  = lambda t:  int(datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%fZ").timestamp())
+
+  id_to_url = {i['id']: fix_url(i['data']['document_url']) for i in sub}
+  res_data  = {id_to_url[i['data']['subject_id']]: {"progres_level": [i['data']['srs_stage']]*2, "progres_timestamp": [fix_ts(i['data']['created_at'])]*2, "custom_meaning": "", "custom_reading": ""}  for i in ass}
+
+  with open(save_to or 'JaniPaniProgress.json', 'w+') as f:
+    json.dump(res_data, f)
 
 # -----------------------------------------------------------------------------------------------------------------------
 # LOAD HIEROGLYPHDB from JSON

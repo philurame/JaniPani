@@ -134,6 +134,9 @@ let kanjiQuota = kanjiQuotaDefault; // can be extended for one day
 let vocabQuota = vocabQuotaDefault; // can be extended for one day
 let soundOn = 1;              // always 1 for now
 
+let prevLvls = [];
+let prevTimestamps = [];
+
 const NextLevelRadical = 6;      // radical level required for ProgressLevel+=1
 const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
 const NextLevelVocab = 2;        // vocab level required for ProgressLevel+=1
@@ -179,6 +182,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     button.addEventListener('click', () => {showSection("game-section")});
   });
   document.getElementById("extend-lessons").addEventListener("click", extendLessons);
+  document.getElementById("try-again").addEventListener("click", tryAgain);
 
   // fileSync buttons
   document.getElementById('downloadBtn').addEventListener('click', handleFileDownload);
@@ -294,6 +298,9 @@ function lessonButtonClick() {
 // SHOWS A NEW HIEROGLYPH
 //-----------------------------------------------------------
 function showNewQuestion() {
+  if (!document.getElementById("try-again").classList.contains("hidden")) {
+    document.getElementById("try-again").classList.add("hidden");
+  }
 
   // filter hieroglyphs based on ProgressLevel etc
   _filterHieroglyphs();
@@ -536,13 +543,17 @@ function submitClick() {
     correct = true;
   } else if (softPossibleAnswers.includes(userAnswerLower) || softPossibleAnswers.includes(wanakana.toHiragana(userAnswerLower))) {
     half_correct = true;
-  }  
+  }
 
   // update progress
   _update_progress(correct, half_correct);
 
   // FEEDBACK
   _displayFeedback(correct, half_correct, possibleAnswers);
+
+  if (!correct && !half_correct) {
+    document.getElementById("try-again").classList.remove("hidden");
+  }
   
   if (correct || !half_correct) {
     document.getElementById("submit-answer").textContent = "Next";
@@ -582,6 +593,9 @@ function _update_progress(is_correct, is_half_correct) {
     return;
   }
 
+  prevLvls = currentQuestion.progres_level.slice();
+  prevTimestamps = currentQuestion.progres_timestamp.slice();
+
   // update levels
   const progres_level_idx = (questionType === 'meaning') ? 0 : 1;
   currentQuestion.progres_level[progres_level_idx] += is_correct ? 1 : (currentQuestion.progres_level[progres_level_idx]<5 ? -1: -2);
@@ -620,6 +634,23 @@ function _update_progress(is_correct, is_half_correct) {
   }
   if (n_kanji_learned < NextLevelKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
   ProgressLevel += 1;
+}
+
+function tryAgain() {
+  // give me my progress back! (and try again)
+
+  currentQuestion.progres_level     = prevLvls;
+  currentQuestion.progres_timestamp = prevTimestamps;
+  saveProgressToLocalStorage();
+
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("answer-input").style.borderBottom = "2px solid var(--color-primary)";
+  document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'none');
+  document.getElementById("question-text").textContent = questionType.toUpperCase();
+  document.getElementById("answer-input").value = "";
+  document.getElementById("answer-input").focus();
+  document.getElementById("submit-answer").textContent = "Submit";
+  document.getElementById("try-again").classList.add("hidden");
 }
 
 function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
@@ -681,9 +712,10 @@ function searchHieroglyphs() {
     if ((h.level + h.hieroglyph_type[0]) === query) {h._priority = 1; return true;}
     if ((h.level + h.hieroglyph_type[0] + h.symbol) === query.split(' ')[0]) {
       h._priority = 1; 
-      if (query.split(' ').length === 3 && !isNaN(query.split(' ')[1]) && !isNaN(query.split(' ')[2])) {
-        const p2 = parseInt(query.split(' ')[1]);
-        const p3 = parseInt(query.split(' ')[2]);
+      if (query.split(' ').length >= 2 && !isNaN(query.split(' ')[1])) {
+        const [, second, third] = query.split(' ');
+        const p2 = parseInt(second);
+        const p3 = !isNaN(third) ? parseInt(third) : p2;
         if (p2 >= -1 && p2 <= 9 && p3 >= -1 && p3 <= 9) {h.progres_level = [p2, p3];}
       }
       return true;
