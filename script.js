@@ -999,13 +999,12 @@ function _fetchProgress() {
 }
 
 function _overwriteDB(jsonData) {
-  ProgressLevel = 1;
-  for (let h of DB.hieroglyphs) {
+  // Update hieroglyph progress data
+  for (const h of DB.hieroglyphs) {
     const wanikani_link = h.resource_paths.wanikani_link;
     if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
       h.progres_level = jsonData[wanikani_link].progres_level;
       h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
-      if (h.level > ProgressLevel) ProgressLevel = h.level;
     } else {
       h.progres_level = [-1, -1];
       h.progres_timestamp = [-1, -1];
@@ -1015,5 +1014,21 @@ function _overwriteDB(jsonData) {
       h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
       h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
     }
+  }
+  
+  // Count how many kanji exist at each level (only if it has progress data > 0)
+  const levelKanjiCount = {};
+  for (const h of DB.hieroglyphs) {
+    if ((h.progres_level[0] > 0 || h.progres_level[1] > 0) && h.hieroglyph_type === HieroglyphType.KANJI) {
+      levelKanjiCount[h.level] = (levelKanjiCount[h.level] || 0) + 1;
+    }
+  }
+  
+  // ProgressLevel := highest level with at least one hieroglyph on this level and at least 15 kanji on previous level
+  ProgressLevel = 1;
+  while (true) {
+    const hasAnyHieroglyph = levelKanjiCount[ProgressLevel+1] > 0;
+    const hasEnoughKanji   = levelKanjiCount[ProgressLevel] >= 15;
+    if (hasAnyHieroglyph && hasEnoughKanji) {ProgressLevel += 1;} else {break;}
   }
 }
