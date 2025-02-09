@@ -118,7 +118,7 @@ class HieroglyphDB {
 // GLOBALS
 //-----------------------------------------------------------
 let DB = null;                // Will hold HieroglyphDB
-let LinkIdx = null;            // dict with wanikani link: Db idx
+let LinkIdx = null;           // dict with wanikani link: Db idx
 let filteredHieroglyphs = []; // Hieroglyphs that match ProgressLevel etc
 let currentQuestion = null;   // The current Hieroglyph being asked about
 let currentInfo     = null;   // The current Hieroglyph in Info section
@@ -126,6 +126,7 @@ let questionType = null;      // either 'meaning', 'reading'
 let currentSoundPath = null;  // The sound path to the current vocabulary
 let ProgressLevel = 1;        // The current user's progress level
 let isLesson = 1;             // either 1 or 0
+let isInQuestion = false;     // is review active now or feedback given
 let current_timestamp = null; // current timestamp in seconds (UTC)
 
 let prevLvls = [];
@@ -225,8 +226,8 @@ function showSection(sectionId) {
     document.getElementById("search-query").value = "";
     document.getElementById("search-results").innerHTML = "";
     document.getElementById("symbol-composition").innerHTML = "";
-
-    document.getElementById("submit-answer").textContent = isLesson ? "Next" : "Submit";
+  
+    document.getElementById("submit-answer").textContent = isInQuestion ? "Submit" : "Next";
     document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
   }
   if (sectionId === "info-section") {document.getElementById("search-query").focus();}
@@ -279,6 +280,7 @@ async function _loadHieroglyphDB() {
 //-----------------------------------------------------------
 function LessonReviewButtonClick(is_lesson) {
   isLesson = is_lesson;
+  isInQuestion = 1 - isLesson;
   showSection("game-section");
   is_sampled = showNewQuestion();
 };
@@ -472,13 +474,15 @@ function submitClick() {
     return;
   }
 
-  if (document.getElementById("submit-answer").textContent === "Next") {
+  if (!isInQuestion) {
     is_sampled = showNewQuestion();
     if (is_sampled) {
+      isInQuestion = true;
       document.getElementById("submit-answer").textContent = "Submit";
     }
     return;
   }
+  isInQuestion = false;
 
   const userAnswer = document.getElementById("answer-input").value.trim();
   
@@ -579,6 +583,7 @@ function _update_progress(is_correct, is_half_correct) {
 
 function tryAgain() {
   // give me my progress back! (and try again)
+  isInQuestion = true;
 
   currentQuestion.progres_level     = prevLvls;
   currentQuestion.progres_timestamp = prevTimestamps;
