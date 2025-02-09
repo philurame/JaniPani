@@ -51,7 +51,10 @@ button:hover {
   color: var(--color-grey);
 }
 
-
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
 
 /* ============================
   STATS SECTION
@@ -440,7 +443,6 @@ button:hover {
   border-radius: 15%;
   border: none;
   outline: none;
-  font-family: 'Noto Sans JP', sans-serif;
 }
 .radical-info {background-color: var(--color-radical);}
 .kanji-info {background-color: var(--color-kanji);}

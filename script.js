@@ -183,7 +183,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("back-to-stats").addEventListener("click", () => {showSection("stats-section");});
   document.querySelectorAll('.back-to-game').forEach(button => {
-    button.addEventListener('click', () => {showSection("game-section")});
+    button.addEventListener('click', () => {showSection("game-section"); LessonReviewButtonClick(isLesson);});
   });
   document.getElementById("try-again").addEventListener("click", tryAgain);
 
@@ -234,12 +234,14 @@ function showSection(sectionId) {
     document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
   }
   if (sectionId === "info-section") {document.getElementById("search-query").focus();}
+  if (sectionId === "stats-section") {currentQuestion = null;}
 }
 
 // KEYBOARD HANDLER
 function handleUserInteractionKeyDown(event) {
   const is_question = !document.getElementById("game-section").classList.contains("hidden");
   const is_info     = !document.getElementById("info-section").classList.contains("hidden");
+  const is_stats    = !document.getElementById("stats-section").classList.contains("hidden");
   
   if (event.key === 'Enter') {
     event.preventDefault();
@@ -256,9 +258,14 @@ function handleUserInteractionKeyDown(event) {
       document.querySelectorAll(".mnemonic-content").forEach(content => {content.classList.remove("show");});
       searchHieroglyphs();
     }
-    else if (!is_question) {
-      if (is_info) {showSection("game-section");}
-      else {showSection("stats-section");}
+    else if (!is_question && is_info && currentQuestion) {
+      showSection("game-section");
+    }
+    else if (is_stats) {
+      showSection("info-section");
+    }
+    else {
+      showSection("stats-section");
     }
   }
 };
@@ -644,7 +651,7 @@ function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
 //-----------------------------------------------------------
 function showInfoForCurrent() {
   showSection("info-section");
-  fillHieroglyphDetail(currentQuestion);
+  if (currentQuestion) {fillHieroglyphDetail(currentQuestion);}
 }
   
 function searchHieroglyphs() {
