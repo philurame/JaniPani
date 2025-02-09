@@ -245,7 +245,8 @@ function handleUserInteractionKeyDown(event) {
 
     if (is_question) {submitClick();}
     else if (is_info) {searchHieroglyphs();}
-  } else if (event.key === 'Escape') {
+  } 
+  else if (event.key === 'Escape') {
     event.preventDefault();
     if (is_question) {showInfoForCurrent();}
     else if (is_info && document.getElementById("search-results").innerHTML) {
@@ -254,7 +255,10 @@ function handleUserInteractionKeyDown(event) {
       document.querySelectorAll(".mnemonic-content").forEach(content => {content.classList.remove("show");});
       searchHieroglyphs();
     }
-    else if (!is_question) {showSection("stats-section");}
+    else if (!is_question) {
+      if (is_info) {showSection("game-section");}
+      else {showSection("stats-section");}
+    }
   }
 };
 
