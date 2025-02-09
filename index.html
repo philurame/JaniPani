@@ -7,24 +7,104 @@
     <link rel="icon" type="image/x-icon" href="extras/favicon.png">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/wanakana"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
-    
-    <!-- Game Section: lessons/reviews pages -->
-    <div id="game-section" class="section hidden">
 
-      <div id="left-rect" class="feedback-rectangles"></div>
-      <div id="right-rect" class="feedback-rectangles"></div>
 
-      <div class="button-row">
-        <button id="LessonButton">Go to Review</button>
-        <div class="data-buttons">
-          <input type="file" id="fileInput" accept=".json" style="display: none;">
-          <button id="uploadBtn">Load</button>
-          <button id="downloadBtn">Save</button>
+    <!-- ============================================================= -->
+    <!-- Main Section: whole statistics --> 
+    <!-- ============================================================= -->
+    <div id="stats-section">
+      <div id="stats-left-container">
+        <!-- lessons & reviews stats and buttons -->
+        <div id="stats-left-up-container">
+          <div id="level-info-data-container">
+            <button id="statsRefresh">↺</button>
+            <div id="level-info-container">
+              <div id="level-info-text">
+                <span id="progress-level">Progress Level</span>
+                <span id="kanji-level">Passed Kanji</span>
+                <span id="vocab-level">Passed Vocab</span>
+              </div>
+              <div id="level-info-numbers">
+                <span id="progress-level-num">None</span>
+                <span id="kanji-level-num">None</span>
+                <span id="vocab-level-num">None</span>
+              </div>
+              <div id="progress-slashes">
+                <span>/</span>
+                <span>/</span>
+                <span>/</span>
+              </div>
+              <div id="level-info-numbers-numbers">
+                <span id="progress-level-num-num">None</span>
+                <span id="kanji-level-num-num">None</span>
+                <span id="vocab-level-num-num">None</span>
+              </div>
+            </div>
+            <div id="data-buttons">
+              <input type="file" id="fileInput" accept=".json" style="display: none;">
+              <button id="downloadBtn">Save</button>
+              <button id="uploadBtn">Load</button>
+            </div>
+          </div>
+          <div id="stats-lessons-review-container">
+            <div id="stats-lessons-container">
+              <div id="stats-lessons-text">None</div>
+              <button id="stats-lessons-button">Go to Lessons</button>
+            </div>
+            <div id="stats-reviews-container">
+              <div id="stats-review-text">None</div>
+              <button id="stats-reviews-button">Go to Reviews</button>
+            </div>
+          </div>            
+        </div>
+
+        <!-- Stats Chart -->
+        <div id="stats-left-down-container">
+          <canvas id="stats-reviewChart"></canvas>
         </div>
       </div>
 
+      <div id="stats-right-container">
+        <!-- level bars stats  -->
+        <div id="stats-right-up-container">
+          <div id="stats-bars-legend">
+            <div><span class="stats-legend-box stats-passed"></span>Passed</div>
+            <div><span class="stats-legend-box stats-apprentice"></span>Apprentice</div>
+            <div><span class="stats-legend-box stats-lessons"></span>Lessons</div>
+            <div><span class="stats-legend-box stats-locked"></span>Locked</div>
+          </div>
+          <div class="stats-scrollable-container" id="stats-progress-container"><!-- Progress bars will be inserted here --></div>
+        </div>
+
+          <!-- "squares" stats  -->
+        <div id="stats-right-down-container">
+          <div class="stats-box" id="stats-box-radical">Radical<br>289</div>
+          <div class="stats-box" id="stats-box-kanji">Kanji<br>562</div>
+          <div class="stats-box" id="stats-box-vocab">Vocabulary<br>1,513</div>
+          <div class="stats-box" id="stats-box-empty">have a nice<br>day</div>
+          <div class="stats-box" id="stats-box-apprentice">Apprentice<br>206</div>
+          <div class="stats-box" id="stats-box-guru">Guru<br>239</div>
+          <div class="stats-box" id="stats-box-master">Master<br>181</div>
+          <div class="stats-box" id="stats-box-enlightened">Enlightened<br>209</div>
+          <div class="stats-box" id="stats-box-burned">Burned<br>1,529</div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================================= -->
+    <!-- Game Section: lessons/reviews pages -->
+    <!-- ============================================================= -->
+    <div id="game-section" class="section hidden">
+      <div id="left-rect" class="feedback-rectangles"></div>
+      <div id="right-rect" class="feedback-rectangles"></div>
+      <div id="lesson-stats-buttons">
+        <button id="StatsButton">Go to Stats</button>
+        <button id="SwitchLessonButton">Switch to Review</button>
+      </div>
 
       <!-- hieroglyph review question -->
       <div id="question-area" class="hidden">
@@ -38,90 +118,69 @@
         </div>  
         <p id="feedback"></p>
       </div>
-      
-
-      <!-- user progress info -->
-      <div id="level-info" class="hidden">
-        <div id="level-info-text">
-          <span id="n-reviews-lessons"></span>
-          <span id="progress-level">Level</span>
-          <span id="kanji-level">Kanji</span>
-          <span id="vocab-level">Vocab</span>
-        </div>
-        <div id="level-info-numbers">
-          <span id="n-reviews-lessons-num">None</span>
-          <span id="progress-level-num">None</span>
-          <span id="kanji-level-num">None</span>
-          <span id="vocab-level-num">None</span>
-        </div>
-      </div>
     </div>
 
+
+    <!-- ============================================================= -->
     <!-- Info/Search Section -->
+    <!-- ============================================================= -->
     <div id="info-section" class="section hidden">
       <button id="search-button">Search</button>
       <button class="back-to-game">Back to Game</button>
       <input type="text" id="search-query" placeholder="" autofocus>
-      <ul id="search-results">
-        <!-- Filled by JavaScript -->
-      </ul>
-
+      <ul id="search-results"></ul>
       <div id="hieroglyph-detail" class="hidden">
-        <div id="symbol-details-container">
-          <div id="info-container">
-            <div id="details">
-              <div id="meaning">
-                <span id="detail-meaning"></span>  
-                <span id="extra-meanings" class="faded"></span> 
-              </div>
-              <ul id="symbol-composition">
-                <!-- Filled by JavaScript -->
-              </ul>
-              <button id="vocab-sound-button"></button>
-              <div id="onkun">
-                <div id="onon">
-                  <span id="detail-onyomi-title">On'yomi</span>
-                  <span id="detail-onyomi"></span>
-                </div>
-                <div id="kunkun">
-                  <span id="detail-kunyomi-title">Kun'yomi</span>
-                  <span id="detail-kunyomi"></span>
-                </div>
-              </div>
-              <hr id="line-radical" width="80%">
-              <span id="detail-level"></span>
+        <div id="info-container">
+          <div id="details">
+            <div id="meaning">
+              <span id="detail-meaning"></span>  
+              <span id="extra-meanings" class="faded"></span> 
             </div>
-            <div id="mnemonic-container">
-              <div class="mnemonic-item">
-                <button class="show-mnemonic">Mnemonics Meaning</button>
-                <div class="mnemonic-content">
-                  <textarea id="detail-mnemonic-meaning"></textarea>
-                </div>
+            <ul id="symbol-composition"></ul>
+            <button id="vocab-sound-button"></button>
+            <div id="onkun">
+              <div id="onon">
+                <span id="detail-onyomi-title">On'yomi</span>
+                <span id="detail-onyomi"></span>
               </div>
-              <div class="mnemonic-item">
-                <button class="show-mnemonic">Mnemonics Reading</button>
-                <div class="mnemonic-content">
-                  <textarea id="detail-mnemonic-reading"></textarea>
-                </div>
+              <div id="kunkun">
+                <span id="detail-kunyomi-title">Kun'yomi</span>
+                <span id="detail-kunyomi"></span>
               </div>
             </div>
-            <ul id="detail-sentences"></ul>
+            <hr id="line-radical" width="80%">
+            <span id="detail-level"></span>
           </div>
-          <div id="symbol-ref">
-            <button id="detail-symbol" class="hidden"></button>
-            <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
+          <div id="mnemonic-container">
+            <div class="mnemonic-item">
+              <button class="show-mnemonic">Mnemonics Meaning</button>
+              <div class="mnemonic-content">
+                <textarea id="detail-mnemonic-meaning"></textarea>
+              </div>
+            </div>
+            <div class="mnemonic-item">
+              <button class="show-mnemonic">Mnemonics Reading</button>
+              <div class="mnemonic-content">
+                <textarea id="detail-mnemonic-reading"></textarea>
+              </div>
+            </div>
           </div>
+          <ul id="detail-sentences"></ul>
+        </div>
+        <div id="symbol-ref">
+          <button id="detail-symbol" class="hidden"></button>
+          <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
         </div>
       </div>
     </div>
     
+
+    <!-- ============================================================= -->
     <!-- next_review_in section -->
+    <!-- ============================================================= -->
     <div id="no-lesson-section" class="section hidden">
-      <div id="no-lesson-container">
-        <span id="next-in"></span>  
-        <button class="back-to-game">Back to Game</button>
-        <button id="extend-lessons">Double the Lessons</button>
-      </div>
+      <span id="next-in"></span>  
+      <button id="back-to-stats">Back to Stats</button>
     </div>
 
     <script src="script.js"></script>

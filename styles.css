@@ -1,3 +1,6 @@
+/* ============================
+ Commons
+============================ */
 @import url(https://fonts.googleapis.com/earlyaccess/notosansjp.css);
 :root {
   --color-correct: #74bc0c;
@@ -12,6 +15,7 @@
   --color-kanji: #fc5494;
   --color-kanji-hover: #9d365e;
   --color-vocab: #600090;
+  --color-vocab-light: #a22edc;
   --color-vocab-hover: #3d025a;
   --color-black: #121212;
   --color-white: #fff;
@@ -27,13 +31,8 @@ body {
   position: relative;
 }
 
-.hidden {
-  display: none;
-}
+.hidden {display: none;}
 
-/* ============================
- All Buttons
-============================ */
 button {
   background-color: var(--color-purple);
   color: var(--color-primary);
@@ -48,35 +47,225 @@ button:hover {
   color: var(--color-grey);
 }
 
-/* ============================
- Lesson Button & Load/Save Buttons
-============================ */
-.button-row {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  margin-top: 30px;
-}
-#LessonButton {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-.data-buttons {
-  display: flex;
-  margin-right: 2%;
-  flex-direction: row;
-}
-.data-buttons button {
-  padding: 4px 10px;
-}
+
 
 /* ============================
- Rectangles Correct/Incorrect 
+  STATS SECTION
 ============================ */
+#stats-section {
+  margin-top: 20px;
+  height: 90vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  gap: 20px;
+}
+#stats-section.hidden { display: none; }
+
+/* stats left-right containers */
+#stats-left-container {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  gap: 2.5%;
+  flex-direction: column;
+} 
+#stats-right-container {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  gap: 2.5%;
+  flex-direction: column;
+}
+
+/* stats corner containers */
+#stats-left-up-container {
+  height: 45%;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#stats-left-down-container { 
+  height: 50%; 
+  border: 1px solid var(--color-blue); 
+  border-radius: 10px; 
+}
+#stats-right-up-container {
+  height: 45%;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+}
+#stats-right-down-container {
+  height: 50%;
+  display: grid;
+  grid-column-gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+/* stats-left-up-container contents*/
+#level-info-data-container {
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+#level-info-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  padding: 10px;
+  gap: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+#progress-level {color: var(--color-blue); margin: 0;}
+#kanji-level    {color: var(--color-kanji); margin: 0;}
+#vocab-level    {color: var(--color-vocab-light); margin: 0;}
+
+#level-info-text, #progress-slashes, #level-info-numbers, #level-info-numbers-numbers {
+  display: flex;
+  flex-direction: column;
+  text-align: end;
+  color: var(--color-primary);
+  gap: 6px;
+  margin-right: 5px;
+}
+#level-info-text {text-align: start; margin-right: 10px;}
+#level-info-numbers {text-align: end; margin-right: 5px;}
+#level-info-numbers-numbers, #progress-slashes {text-align: center;}
+
+#statsRefresh {
+  font-size: 50px;
+  justify-content: center;
+  padding-top: 0px;
+}
+#data-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#downloadBtn, #uploadBtn {padding: 4px 10px;}
+
+#stats-lessons-review-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  width: 80%;
+  margin-top: 20px;
+}
+#stats-lessons-container, #stats-reviews-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40%;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+
+/* stats-right-up-container contents*/
+#stats-bars-legend {
+  display: flex;
+  justify-content: space-between;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+.stats-legend-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+.stats-scrollable-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  max-height: 75%;
+  overflow-y: auto;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+.stats-level-row {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.stats-label {
+  width: 60px;
+  text-align: center;
+  color: var(--color-primary);
+}
+.stats-progress-bar-wrapper {
+  flex: 1;
+  height: 25px;
+  background-color: var(--color-black);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  margin-left: 10px;
+}
+.stats-progress-bar {height: 100%; display: flex;}
+.stats-progress-bar-section {height: 100%;}
+.stats-passed {background-color: #1565C0;}
+.stats-apprentice {background-color: #42A5F5;}
+.stats-lessons {background-color: #BBDEFB;}
+.stats-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,#525252 10px,#525252 20px);}
+
+
+/* stats-right-down-container contents*/
+.stats-box {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  color: var(--color-black);
+}
+#stats-box-apprentice {background-color:  #E2F5C9; border: 1px solid #74BC0C;}
+#stats-box-guru {background-color:        #C6E79A; border: 1px solid #74BC0C;}
+#stats-box-master {background-color:      #AAD96B; border: 1px solid #74BC0C;}
+#stats-box-enlightened {background-color: #8ECB3C; border: 1px solid #74BC0C;}
+#stats-box-burned {background-color:      #74BC0C; border: 1px solid #74BC0C;}
+#stats-box-empty {background-color: var(--color-black); color: #74BC0C; border: 1px solid #74BC0C; }
+#stats-box-radical {background-color: var(--color-black); color: var(--color-radical); border: 1px solid var(--color-radical);}
+#stats-box-kanji {background-color: var(--color-black); color: var(--color-kanji); border: 1px solid var(--color-kanji); } 
+#stats-box-vocab {background-color: var(--color-black); color: var(--color-vocab-light); border: 1px solid var(--color-vocab-light); }
+
+
+
+/* ============================
+ Game Section
+============================ */
+#lesson-stats-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Rectangles Correct/Incorrect  */
 .feedback-rectangles {
   align-items: center;
   justify-content: center;
@@ -95,47 +284,7 @@ button:hover {
 #left-rect  {left: 22%;}
 #right-rect {right: 22%;}
 
-
-/* ============================
- Level/Kanji/Vocab Progress 
-============================ */
-#level-info {
-  right: 20px;
-  display: block;
-  position: absolute;
-  top: 87px;
-  width: 210px;
-  height: 130px;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  font-size: 24px;
-  border: 1px solid var(--color-purple);
-  border-radius: 10px;
-}
-
-#progress-level {color: var(--color-radical); margin: 0;}
-#kanji-level    {color: var(--color-kanji);   margin: 0;}
-#vocab-level    {color: var(--color-vocab);   margin: 0;}
-
-#level-info-text {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: 4px;
-}
-
-#level-info-numbers {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  color: var(--color-primary);
-  gap: 4px;
-}
-
-/* ============================
- HIEROGLYPH & QUESTION/ANSWER 
-============================ */
+/* HIEROGLYPH & QUESTION/ANSWER  */
 .radical, .kanji, .vocab {
   width: 350px;
   height: 300px;
@@ -181,23 +330,36 @@ button:hover {
   padding: 8px 28px; 
 }
 
+
+
 /* ============================
-  NEXT REVIEW IN... PAGE
+  NEXT REVIEW IN... SECTION 
 ============================ */
-#no-lesson-container {
+#no-lesson-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: var(--color-purple);
   font-size: 24px;
-  gap: 20px;
+  width: 30%;
+  height: 40%;
+  margin-left: 30%;
   margin-top: 20%;
+  border: 1px solid var(--color-purple);
+  border-radius: 10px;
+  padding: 50px;
+  gap: 20px;
 }
+#no-lesson-section.hidden {display: none;}
+
+
 
 /* ============================
-  INFO-INPUT/RESULTS
+  INFO-INPUT/RESULTS SECTION
 ============================ */
+
+/* info-search */
 #search-query {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -251,10 +413,8 @@ button:hover {
   text-align: center;
 }
 
-/* ============================
-  INFO-HIEROGLYPH
-============================ */
-#symbol-details-container {
+/* hieroglyph-details container */
+#hieroglyph-detail {
   max-width: 1000px;
   margin: 20px auto 0 auto;
   display: flex;
@@ -264,6 +424,8 @@ button:hover {
   margin-top: 20px;   
   gap: 20px;
 }
+#hieroglyph-detail.hidden {display: none;}
+
 .radical-info, .kanji-info, .vocab-info {
   width: 250px;
   height: 200px;
@@ -284,9 +446,7 @@ button:hover {
 .kanji-info:hover{color: var(--color-grey); background-color: var(--color-kanji-hover);}
 .vocab-info:hover{ color: var(--color-grey); background-color: var(--color-vocab-hover);}
 
-/* ============================
-  INFO-DETAILS
-============================ */
+/* meanings/readings */
 #details {
   width: 100%;
   height: 250px;
@@ -337,9 +497,7 @@ button:hover {
   color: var(--color-primary);
 }
 
-/* ============================
- INFO-SYMBOLS
-============================ */
+/* wanikani link */
 #symbol-ref {
   margin-left: 50px;
   margin-top: 50px;
@@ -354,9 +512,7 @@ button:hover {
   padding: 10px 20px; 
   }
 
-/* ============================
-  INFO-DETAILS-MNEMONICS
-============================ */
+/* mnemonics */
 #mnemonic-container {
   display: flex;
   flex-direction: row;
@@ -416,9 +572,7 @@ button:hover {
   100% {color: var(--color-white);}
 }
 
-/* ============================
-  INFO-DETAILS-SENTENCES
-============================ */
+/* sample vocab sentences */
 #detail-sentences {
   display: flex;
   flex-direction: column;

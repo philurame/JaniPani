@@ -39,8 +39,8 @@ class Mnemonics {
   constructor(meaning, reading) {
     this.meaning = meaning;
     this.reading = reading;
-    this.custom_meaning = meaning;
-    this.custom_reading = reading;
+    this.custom_meaning = "";
+    this.custom_reading = "";
   }
   
   static fromJSON(json) {
@@ -126,13 +126,7 @@ let questionType = null;      // either 'meaning', 'reading'
 let currentSoundPath = null;  // The sound path to the current vocabulary
 let ProgressLevel = 1;        // The current user's progress level
 let isLesson = 1;             // either 1 or 0
-let learnedHieroglyphs = [];  // today's learned hieroglyphs
 let current_timestamp = null; // current timestamp in seconds (UTC)
-const kanjiQuotaDefault = 5;  // number of kanji per day
-const vocabQuotaDefault = 9;  // number of vocab per day
-let kanjiQuota = kanjiQuotaDefault; // can be extended for one day
-let vocabQuota = vocabQuotaDefault; // can be extended for one day
-let soundOn = 1;              // always 1 for now
 
 let prevLvls = [];
 let prevTimestamps = [];
@@ -177,11 +171,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   // REVIEW & LESSON BUTTONS
   document.getElementById("submit-answer").addEventListener("click", submitClick);
   document.getElementById("show-info-page").addEventListener("click", showInfoForCurrent);
-  document.getElementById("LessonButton").addEventListener("click", lessonButtonClick);
+  document.getElementById("SwitchLessonButton").addEventListener("click", () => {LessonReviewButtonClick(1-isLesson);});
+  document.getElementById("stats-lessons-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(1);});
+  document.getElementById("stats-reviews-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(0);});
+  document.getElementById("StatsButton").addEventListener("click", () => {showSection("stats-section");});
+  document.getElementById("statsRefresh").addEventListener("click", update_stats_section);
+
+  document.getElementById("back-to-stats").addEventListener("click", () => {showSection("stats-section");});
   document.querySelectorAll('.back-to-game').forEach(button => {
     button.addEventListener('click', () => {showSection("game-section")});
   });
-  document.getElementById("extend-lessons").addEventListener("click", extendLessons);
   document.getElementById("try-again").addEventListener("click", tryAgain);
 
   // fileSync buttons
@@ -210,36 +209,27 @@ window.addEventListener("DOMContentLoaded", async () => {
   // KEYBOARD HANDLER
   document.addEventListener('keydown', handleUserInteractionKeyDown);
   
-  showSection("game-section");
   loadProgressFromLocalStorage();
+  update_stats_section();
+  showSection("stats-section");
 });
 
 // show a specific section and hide the others
 function showSection(sectionId) {
-  const allSections = ["game-section", "info-section", "no-lesson-section"];
-  allSections.forEach(s => {
-    document.getElementById(s).classList.add("hidden");
-  });
+  const allSections = ["game-section", "info-section", "no-lesson-section", "stats-section"];
+  allSections.forEach(s => {document.getElementById(s).classList.add("hidden");});
   document.getElementById(sectionId).classList.remove("hidden");
-  if (sectionId === "game-section") {
-    document.getElementById("answer-input").focus();
 
+  if (sectionId === "game-section") {document.getElementById("answer-input").focus();
     // clear info's display
     document.getElementById("search-query").value = "";
     document.getElementById("search-results").innerHTML = "";
     document.getElementById("symbol-composition").innerHTML = "";
-    
-  }
-  else if (sectionId === "info-section") {
-    document.getElementById("search-query").focus();
-  }
-}
 
-// add more lessons for one day - button
-function extendLessons() {
-  kanjiQuota += kanjiQuotaDefault;
-  vocabQuota += vocabQuotaDefault;
-  showSection("game-section");
+    document.getElementById("submit-answer").textContent = isLesson ? "Next" : "Submit";
+    document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
+  }
+  if (sectionId === "info-section") {document.getElementById("search-query").focus();}
 }
 
 // KEYBOARD HANDLER
@@ -281,18 +271,24 @@ async function _loadHieroglyphDB() {
 }
 
 //-----------------------------------------------------------
-// SWAP BETWEEN LESSON AND REVIEW
+// Lesson / Review Button
 //-----------------------------------------------------------
-function lessonButtonClick() {
-  isLesson = 1 - isLesson;
+function LessonReviewButtonClick(is_lesson) {
+  isLesson = is_lesson;
+  showSection("game-section");
   is_sampled = showNewQuestion();
-  if (is_sampled) {
-    document.getElementById("LessonButton").textContent = isLesson ? "Go to Reviews" : "Go to Lessons";
+};
+
+function NoLessonsReviews() {
+  document.getElementById("game-section").classList.add("hidden");
+  showSection("no-lesson-section");
+  if (isLesson) {
+    document.getElementById("next-in").innerHTML = "No active lessons! Do more reviews!";
   } else {
-    isLesson = 1 - isLesson;
+    document.getElementById("next-in").innerHTML = "Next review in " + "<span style='color:var(--color-primary)'>" + Math.round(_get_next_review_sec() / 60) + "</span>" + " minutes";
   }
-  document.getElementById("submit-answer").textContent = isLesson ? "Next" : "Submit";
 }
+
 
 //-----------------------------------------------------------
 // SHOWS A NEW HIEROGLYPH
@@ -304,26 +300,14 @@ function showNewQuestion() {
 
   // filter hieroglyphs based on ProgressLevel etc
   _filterHieroglyphs();
-  updateLevelInfo();
 
   // Pick a hieroglyph and question type for lesson or review:
   const is_sampled = _sampleQuestion(filteredHieroglyphs);
 
   if (!is_sampled) {
-    // no hieroglyphs left for review/lesson
-    document.getElementById("game-section").classList.add("hidden");
-    showSection("no-lesson-section");
-    if (isLesson) {
-      document.getElementById("next-in").innerHTML = "Next lesson in " + "<span style='color:var(--color-primary)'>" + Math.round(_get_next_lesson_sec() / 3600) + "</span>" + " hours... Or do more reviews";
-      if (document.getElementById("extend-lessons").classList.contains("hidden")) {
-        document.getElementById("extend-lessons").classList.remove("hidden");
-      }
-    } else {
-      document.getElementById("next-in").innerHTML = "Next review in " + "<span style='color:var(--color-primary)'>" + Math.round(_get_next_review_sec() / 60) + "</span>" + " minutes";
-      document.getElementById("extend-lessons").classList.add("hidden");
-    }
+    NoLessonsReviews();
     return false;
-    }
+  }
     
   // Display the hieroglyph or image
   _showHieroglyph("symbol-display", currentQuestion);
@@ -342,7 +326,7 @@ function showNewQuestion() {
     document.getElementById("answer-input").classList.remove("hidden"); 
     document.getElementById("answer-input").focus();
   }
-  
+
   return true;
 }
 
@@ -378,12 +362,6 @@ function _showHieroglyph(placeholder, h) {
   }
 }
 
-function _get_next_lesson_sec() {
-  const now = new Date();
-  const startOfTodayUTC = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000);
-  return 24*3600 - (Math.floor(Date.now()/1000) - startOfTodayUTC);
-}
-
 function _get_next_review_sec() {
   const filteredHieroglyphs =  DB.hieroglyphs.filter(h => ((h.level <= ProgressLevel)));
   const next_review_h = filteredHieroglyphs.reduce((a, b) => {
@@ -413,9 +391,9 @@ function _playSound(path) {
 function _sampleQuestion() {
   if (isLesson) {
     // 5 kanjis and 9 vocab per day!
-    const n_kanji_today = learnedHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length;
-    const n_vocab_today = learnedHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length;
     questionType = 'meaning';
+
+    const progress_radicals = DB.hieroglyphs.filter(h => (h.level === ProgressLevel) && (h.hieroglyph_type === HieroglyphType.RADICAL));
 
     for (const hieroglyph of filteredHieroglyphs) {
       if (hieroglyph.progres_level[0] === -1) {
@@ -423,16 +401,15 @@ function _sampleQuestion() {
           currentQuestion = hieroglyph;
           return true;
         }
-        else if (hieroglyph.hieroglyph_type === HieroglyphType.KANJI 
-          && filteredHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.RADICAL).every(h => h.progres_level[0] >= RadicalKanjiLessonLevel)
-          && n_kanji_today < kanjiQuota
+        else if ((hieroglyph.hieroglyph_type === HieroglyphType.KANJI)
+          && progress_radicals.every(h => h.progres_level[0] >= RadicalKanjiLessonLevel)
         ) {
           currentQuestion = hieroglyph;
           return true;
         }
-        else if (hieroglyph.hieroglyph_type === HieroglyphType.VOCAB 
+        else if ((hieroglyph.hieroglyph_type === HieroglyphType.VOCAB)
           && is_kanji_compounds_learned(hieroglyph)
-          && n_vocab_today < vocabQuota) {
+        ) {
           currentQuestion = hieroglyph;
           return true;
         }
@@ -479,15 +456,6 @@ function _filterHieroglyphs() {
       current_timestamp - h.progres_timestamp[1] > SecToReview[h.progres_level[1]]
     )
   ));
-  // filter learnedHieroglyphs so that only today's hieroglyphs stay:
-  const now = new Date();
-  const startOfTodayUTC = Math.floor(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000);
-  learnedHieroglyphs = learnedHieroglyphs.filter(h => (h.progres_timestamp[0]-startOfTodayUTC) < 24*3600);
-
-  if (learnedHieroglyphs.length === 0) {
-    kanjiQuota = kanjiQuotaDefault;
-    vocabQuota = vocabQuotaDefault;
-  }
 }
  
 //-----------------------------------------------------------
@@ -560,34 +528,6 @@ function submitClick() {
   }
 }
 
-function updateLevelInfo() {
-  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel))
-
-  const nkanji_learned = progress_hieroglyphs.filter(
-    h => h.hieroglyph_type === HieroglyphType.KANJI  &&
-    h.progres_level[0] >= NextLevelKanji && h.progres_level[1] >= NextLevelKanji
-  ).length;
-
-  const nvocab_learned = progress_hieroglyphs.filter(
-    h => h.hieroglyph_type === HieroglyphType.VOCAB  &&
-    h.progres_level[0] >= NextLevelVocab && h.progres_level[1] >= NextLevelVocab
-  ).length;
-
-  document.getElementById("level-info").style.display = 'flex';
-  if (isLesson) {
-    document.getElementById("n-reviews-lessons").textContent = 'Lessons';
-    const n_lessons = filteredHieroglyphs.filter(h => (h.level === ProgressLevel) && (h.progres_timestamp[0] === -1 || h.progres_timestamp[1] === -1));
-    document.getElementById("n-reviews-lessons-num").textContent = n_lessons.length;
-  } else {
-    document.getElementById("n-reviews-lessons").textContent = 'Reviews';
-    const n_reviews = filteredHieroglyphs.filter(h => (h.level < ProgressLevel) || (h.progres_level[0] > -1 && h.progres_level[1] > -1));
-    document.getElementById("n-reviews-lessons-num").textContent = n_reviews.length;
-  }
-  document.getElementById("progress-level-num").textContent = ProgressLevel + ' / ' + 60;
-  document.getElementById("kanji-level-num").textContent = nkanji_learned + ' / ' + Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
-  document.getElementById("vocab-level-num").textContent = nvocab_learned + ' / ' + progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length;
-}
-
 function _update_progress(is_correct, is_half_correct) {  
   if (!is_correct && is_half_correct && !isLesson) {
     return;
@@ -606,10 +546,7 @@ function _update_progress(is_correct, is_half_correct) {
   if (currentQuestion.hieroglyph_type === HieroglyphType.RADICAL || isLesson) {
     currentQuestion.progres_level[1-progres_level_idx] = currentQuestion.progres_level[progres_level_idx];
     currentQuestion.progres_timestamp[1-progres_level_idx] = currentQuestion.progres_timestamp[progres_level_idx];
-    if (isLesson) {
-      currentQuestion.progres_level = [0, 0];
-      learnedHieroglyphs.push(currentQuestion);
-    }
+    if (isLesson) {currentQuestion.progres_level = [0, 0];}
   }
 
   saveProgressToLocalStorage();
@@ -847,8 +784,8 @@ function fillHieroglyphDetail(h) {
     document.getElementById("vocab-sound-button").textContent = h.readings.vocab.join(", ");
   }
   document.querySelectorAll(".mnemonic-content").forEach(content => content.classList.remove("show"));
-  document.getElementById("detail-mnemonic-meaning").value = h.mnemonics.custom_meaning;
-  document.getElementById("detail-mnemonic-reading").value = h.mnemonics.custom_reading;
+  document.getElementById("detail-mnemonic-meaning").value = h.mnemonics.custom_meaning || h.mnemonics.meaning;
+  document.getElementById("detail-mnemonic-reading").value = h.mnemonics.custom_reading || h.mnemonics.reading;
   
   // Sentences
   const detailSentences = document.getElementById("detail-sentences");
@@ -912,15 +849,8 @@ function searchDetail() {
 // ---------------------------------------
 function loadProgressFromLocalStorage() {
   const savedData = localStorage.getItem("JaniPaniProgress");
-  if (!savedData) {
-    showNewQuestion();
-    return;
-  }
-  const jsonData = JSON.parse(savedData);
-  _overwriteDB(jsonData)
-
-  if (isLesson) lessonButtonClick();
-  showNewQuestion();
+  if (!savedData) {return;}
+  _overwriteDB(JSON.parse(savedData));
 }
   
 function saveProgressToLocalStorage() {
@@ -943,9 +873,7 @@ async function handleFileUpload(event) {
   reader.onload = function(e) {
     jsonData = JSON.parse(e.target.result);
     _overwriteDB(jsonData);
-
-    if (isLesson) lessonButtonClick();
-    showNewQuestion();
+    showSection("stats-section");
   };
   reader.readAsText(file);
 }
@@ -977,22 +905,18 @@ function _fetchProgress() {
   const jsonData = {};
   for (const h of DB.hieroglyphs) {
     const is_progress = (h.level <= ProgressLevel) && (h.progres_level[0] !== -1 || h.progres_level[1] !== -1);
-    const is_custom_meaning = h.mnemonics.meaning !== h.mnemonics.custom_meaning;
-    const is_custom_reading = h.mnemonics.reading !== h.mnemonics.custom_reading;
 
-    if (is_progress || is_custom_meaning || is_custom_reading) {
+    if (is_progress || h.mnemonics.custom_meaning || h.mnemonics.custom_reading) {
       jsonData[h.resource_paths.wanikani_link] = {
         'progres_level': "",
         'progres_timestamp': "",
-        'custom_meaning': "",
-        'custom_reading': "",
+        'custom_meaning': h.mnemonics.custom_meaning,
+        'custom_reading': h.mnemonics.custom_reading,
       };
       if (is_progress) {
         jsonData[h.resource_paths.wanikani_link]['progres_level']     = h.progres_level;
         jsonData[h.resource_paths.wanikani_link]['progres_timestamp'] = h.progres_timestamp;
       }
-      if (is_custom_meaning) jsonData[h.resource_paths.wanikani_link]['custom_meaning'] = h.mnemonics.custom_meaning;
-      if (is_custom_reading) jsonData[h.resource_paths.wanikani_link]['custom_reading'] = h.mnemonics.custom_reading;
     }
   }
   return jsonData;
@@ -1002,17 +926,16 @@ function _overwriteDB(jsonData) {
   // Update hieroglyph progress data
   for (const h of DB.hieroglyphs) {
     const wanikani_link = h.resource_paths.wanikani_link;
-    if (jsonData[wanikani_link] && jsonData[wanikani_link].progres_level) {
-      h.progres_level = jsonData[wanikani_link].progres_level;
-      h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
-    } else {
-      h.progres_level = [-1, -1];
-      h.progres_timestamp = [-1, -1];
-    }
-    // If custom mnemonic
-    if (jsonData[wanikani_link] && (jsonData[wanikani_link].custom_meaning || jsonData[wanikani_link].custom_reading)) {
+    if (jsonData[wanikani_link]) {
       h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
       h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
+      if (jsonData[wanikani_link].progres_level) {
+        h.progres_level = jsonData[wanikani_link].progres_level;
+        h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
+      } else {
+        h.progres_level = [-1, -1];
+        h.progres_timestamp = [-1, -1];
+      }
     }
   }
   
@@ -1031,4 +954,295 @@ function _overwriteDB(jsonData) {
     const hasEnoughKanji   = levelKanjiCount[ProgressLevel] >= 15;
     if (hasAnyHieroglyph && hasEnoughKanji) {ProgressLevel += 1;} else {break;}
   }
+}
+
+
+// ---------------------------------------
+// Update(Fill) Stats Section
+// ---------------------------------------
+function update_stats_section() {
+  _fill_lesson_review_stats();
+  _fill_progress_bars();
+  _fill_chart_js();
+  _fill_hieroglyph_stats();
+}
+
+function _count_active_lessons(lvl) {
+  const lvl_hieroglyphs = DB.hieroglyphs.filter(h => (h.level===lvl));
+  const h_not_learned = lvl_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1))
+  const n_radicals = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
+  const n_vocab = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && is_kanji_compounds_learned(h)).length;
+  
+  const rads = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL));
+  const n_rads_kanji = rads.filter(h => (h.progres_level[0]>=RadicalKanjiLessonLevel)).length;
+  const n_kanji = ((lvl === ProgressLevel) && (n_rads_kanji !== rads.length)) ? 0 : h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI)).length;
+
+  return n_radicals + n_kanji + n_vocab;
+}
+
+function _fill_lesson_review_stats() {
+  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel))
+
+  const nkanji_learned = progress_hieroglyphs.filter(
+    h => (h.hieroglyph_type === HieroglyphType.KANJI)  &&
+    (h.progres_level[0] >= NextLevelKanji) && (h.progres_level[1] >= NextLevelKanji)
+  ).length;
+  const nvocab_learned = progress_hieroglyphs.filter(
+    h => (h.hieroglyph_type === HieroglyphType.VOCAB)  &&
+    (h.progres_level[0] >= NextLevelVocab) && (h.progres_level[1] >= NextLevelVocab)
+  ).length;
+
+  const n_acive_lessons = _count_active_lessons(ProgressLevel);
+  const n_all_lessons = progress_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1)).length;
+
+  _filterHieroglyphs();
+  const n_reviews = filteredHieroglyphs.filter(h => (h.level < ProgressLevel) || (h.progres_level[0] > -1 && h.progres_level[1] > -1));
+
+  document.getElementById("level-info-data-container").style.display = 'flex';
+  document.getElementById("progress-level-num").textContent = ProgressLevel;
+  document.getElementById("progress-level-num-num").textContent = 60;
+  document.getElementById("kanji-level-num").textContent = nkanji_learned;
+  document.getElementById("kanji-level-num-num").textContent = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
+  document.getElementById("vocab-level-num").textContent = nvocab_learned;
+  document.getElementById("vocab-level-num-num").textContent = progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length;
+  document.getElementById("stats-lessons-text").innerHTML = "<span style='color:var(--color-correct); font-size: 24px;'>Active Lessons <span style='color:var(--color-primary); font-size: 24px;'>" + n_acive_lessons + ' / ' + n_all_lessons + "</span>";
+  document.getElementById("stats-review-text").innerHTML = "<span style='color:var(--color-correct); font-size: 24px;'>Active Reviews <span style='color:var(--color-primary); font-size: 24px;'>" + n_reviews.length + "</span>";
+}
+
+function _fill_chart_js() {
+  const resData = {
+    labels: [],
+    datasets: [
+      {
+        label: 'Cumulative Reviews',
+        data: Array(15).fill(null),
+        borderColor: '#00aaff',
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0.1,
+        pointHoverRadius: 3,
+        pointBackgroundColor: '#00aaff',
+      },
+      {
+        label: 'Apprentice',
+        data: Array(15).fill(null),
+        backgroundColor: '#00a3f5',
+        type: 'bar',
+        borderWidth: 0,
+        barThickness: 6,
+      },
+      {
+        label: 'Guru',
+        data: Array(15).fill(null),
+        backgroundColor: '#74bc0c',
+        type: 'bar',
+        borderWidth: 0,
+        barThickness: 6,
+      },
+      {
+        label: 'Master',
+        data: Array(15).fill(null),
+        backgroundColor: '#ffc401',
+        type: 'bar',
+        borderWidth: 0,
+        barThickness: 6,
+      },
+      {
+        label: 'Enlighted',
+        data: Array(15).fill(null),
+        backgroundColor: '#f8043c',
+        type: 'bar',
+        borderWidth: 0,
+        barThickness: 6,
+      }
+    ]
+  };
+  
+  function formatLabel(date) {return date.toLocaleDateString('en-US', { weekday: 'short' }) + " " + date.getHours().toString().padStart(2, '0') + ":00";}
+  
+  const now = new Date();
+  const currentRounded = new Date(now);
+  currentRounded.setMinutes(0, 0, 0);
+  
+  const intervals = [];
+  let intervalStart = currentRounded;
+  let intervalEnd = new Date(currentRounded);
+  
+  if (currentRounded.getHours() < 12) {intervalEnd.setHours(12, 0, 0, 0);} 
+  else {
+    intervalEnd.setDate(intervalEnd.getDate() + 1);
+    intervalEnd.setHours(0, 0, 0, 0);
+  }
+  intervals.push({ start: intervalStart, end: intervalEnd });
+  
+  const totalIntervals = 15;
+  for (let i = 1; i < totalIntervals; i++) {
+    intervalStart = new Date(intervalEnd);
+    intervalEnd = new Date(intervalEnd.getTime() + 12 * 60 * 60 * 1000);
+    intervals.push({ start: intervalStart, end: intervalEnd });
+  }
+  
+  intervals.forEach((interval, index) => {
+    resData.labels.push(formatLabel(interval.end));
+
+    const tsStart = interval.start.getTime() / 1000;
+    const tsEnd = interval.end.getTime() / 1000;
+  
+    let apprentice = 0, guru = 0, master = 0, enlighted = 0;
+  
+    DB.hieroglyphs.forEach(h => {
+      if (
+        (tsEnd - h.progres_timestamp[0] > SecToReview[h.progres_level[0]]) &&
+        (tsStart - h.progres_timestamp[0] < SecToReview[h.progres_level[0]])
+      ) {
+        const lvl = h.progres_level[0];
+        if (lvl < 5) apprentice++;
+        else if (lvl < 7) guru++;
+        else if (lvl === 7) master++;
+        else if (lvl === 8) enlighted++;
+      }
+      if (
+        (tsEnd - h.progres_timestamp[1] < SecToReview[h.progres_level[1]]) &&
+        (tsStart - h.progres_timestamp[1] > SecToReview[h.progres_level[1]])
+      ) {
+        const lvl = h.progres_level[1];
+        if (lvl < 5) apprentice++;
+        else if (lvl < 7) guru++;
+        else if (lvl === 7) master++;
+        else if (lvl === 8) enlighted++;
+      }
+    });
+  
+    resData.datasets[1].data[index] = apprentice?apprentice:null;
+    resData.datasets[2].data[index] = guru?guru:null;
+    resData.datasets[3].data[index] = master?master:null;
+    resData.datasets[4].data[index] = enlighted?enlighted:null;
+    resData.datasets[0].data[index] = (index<1?0:resData.datasets[0].data[index-1]) + apprentice + guru + master + enlighted;
+  });
+
+  const config = {
+    type: 'line',
+    data: resData,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'category',
+          grid: {color: '#3c3c3c',},
+          ticks: {
+            color: '#d8d8d8',
+            font: {
+              size: 8
+            }
+          },
+          barPercentage: 0.5,
+          categoryPercentage: 0.8,
+        },
+        y: {
+          beginAtZero: true,
+          grid: {color: '#3c3c3c'},
+          ticks: {color: '#d8d8d8'}
+        },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: 'Upcoming Reviews'
+        },
+        legend: {
+          position: 'bottom',
+            labels: {
+              pointStyle: 'rect',
+              boxWidth: 10,
+              color: '#d8d8d8'
+            },
+        },
+        tooltip: {
+          backgroundColor: '#333',
+          titleColor: '#fff',
+          bodyColor: '#fff'
+        }
+      }
+    }
+  };
+
+  const ctx = document.getElementById('stats-reviewChart').getContext('2d');
+  if (Chart.getChart('stats-reviewChart')) {Chart.getChart('stats-reviewChart').destroy();}
+  new Chart(ctx, config);
+}
+
+
+function _fill_progress_bars() {
+  const progressData = [];
+  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level<=ProgressLevel));
+  for (let i = 1; i <= ProgressLevel; i++) {
+    const lvl_hieroglyphs = progress_hieroglyphs.filter(h => (h.level===i));
+    const N = lvl_hieroglyphs.length;
+    const passed = lvl_hieroglyphs.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
+    const apprentice = lvl_hieroglyphs.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const lessons = _count_active_lessons(i)/N*100;
+    const locked = Math.floor(100.5 - (passed + apprentice + lessons));
+    progressData.push({ passed, apprentice, lessons, locked });
+  }
+
+  function createSection(widthPercent, sectionClass) {
+    const section = document.createElement('div');
+    section.classList.add('stats-progress-bar-section', sectionClass);
+    section.style.width = `${widthPercent}%`;
+    return section;
+    }
+
+  const container = document.getElementById('stats-progress-container');
+  container.innerHTML = '';
+
+  progressData.forEach((entry, index) => {
+    const levelRow = document.createElement('div');
+    levelRow.classList.add('stats-level-row');
+
+    const label = document.createElement('div');
+    label.classList.add('stats-label');
+    label.textContent = `Level ${index + 1}`;
+
+    const progressBarWrapper = document.createElement('div');
+    progressBarWrapper.classList.add('stats-progress-bar-wrapper');
+
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('stats-progress-bar');
+
+    progressBar.appendChild(createSection(entry.passed, 'stats-passed'));
+    progressBar.appendChild(createSection(entry.apprentice, 'stats-apprentice'));
+    progressBar.appendChild(createSection(entry.lessons, 'stats-lessons'));
+    progressBar.appendChild(createSection(entry.locked, 'stats-locked'));
+
+    progressBarWrapper.appendChild(progressBar);
+    levelRow.appendChild(label);
+    levelRow.appendChild(progressBarWrapper);
+    container.appendChild(levelRow);
+  });
+
+}
+
+
+function _fill_hieroglyph_stats() {
+  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level<=ProgressLevel));
+
+  const apprentice = progress_hieroglyphs.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length;
+  const guru = progress_hieroglyphs.filter(h => ((h.progres_level[0] >= 5) && (h.progres_level[1] >= 5) && ((h.progres_level[0] < 7) || (h.progres_level[1] < 7)))).length;
+  const master = progress_hieroglyphs.filter(h => ((h.progres_level[0] >= 7) && (h.progres_level[1] >= 7) && ((h.progres_level[0] < 8) || (h.progres_level[1] < 8)))).length;
+  const enlighted = progress_hieroglyphs.filter(h => ((h.progres_level[0] >= 8) && (h.progres_level[1] >=8) && ((h.progres_level[0] < 9) || (h.progres_level[1] < 9)))).length;
+  const burned = progress_hieroglyphs.filter(h => (h.progres_level[0] === 9 && h.progres_level[1] === 9)).length;
+
+  const radical = progress_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL) && (h.progres_level[0] > 0)).length;
+  const kanji = progress_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI) && (h.progres_level[0] > 0)).length;
+  const vocab = progress_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && (h.progres_level[0] > 0)).length;
+
+  document.getElementById('stats-box-apprentice').innerHTML = "Apprentice" + "<br>" + apprentice;
+  document.getElementById('stats-box-guru').innerHTML = "Guru" + "<br>" + guru;
+  document.getElementById('stats-box-master').innerHTML = "Master" + "<br>" + master;
+  document.getElementById('stats-box-enlightened').innerHTML = "Enlightened" + "<br>" + enlighted;
+  document.getElementById('stats-box-burned').innerHTML = "Burned" + "<br>" + burned;
+  document.getElementById('stats-box-radical').innerHTML = "Radical" + "<br>" + radical;
+  document.getElementById('stats-box-kanji').innerHTML = "Kanji" + "<br>" + kanji;
+  document.getElementById('stats-box-vocab').innerHTML = "Vocabulary" + "<br>" + vocab;
 }

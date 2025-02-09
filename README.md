@@ -30,5 +30,8 @@
 >![alt text](extras/mnemonics_reading.png)
 >![alt text](extras/mnemonics_meaning.png)
 
+> #### Stats Panel
+> ![alt text](extras/stats.png)
+
 >#### Search Panel
 >![alt text](extras/info_search.png)
