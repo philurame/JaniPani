@@ -601,7 +601,7 @@ function tryAgain() {
 
 function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
   // play sound if vocab reading + correct + soundOn
-  if (currentQuestion.hieroglyph_type === HieroglyphType.VOCAB && questionType === 'reading' && is_correct && soundOn) {
+  if (currentQuestion.hieroglyph_type === HieroglyphType.VOCAB && questionType === 'reading' && is_correct) {
     currentSoundPath = 'sounds/'+encodeURIComponent(currentQuestion.resource_paths.sound);
     _playSound(currentSoundPath);
   }
