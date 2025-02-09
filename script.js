@@ -254,7 +254,7 @@ function handleUserInteractionKeyDown(event) {
       document.querySelectorAll(".mnemonic-content").forEach(content => {content.classList.remove("show");});
       searchHieroglyphs();
     }
-    else if (!is_question) {showSection("game-section");}
+    else if (!is_question) {showSection("stats-section");}
   }
 };
 
