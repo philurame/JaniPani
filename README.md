@@ -20,6 +20,8 @@
 
 > Stage Overwrite (in search section) – Adjust a character’s progress with `{lvl}{r/k/v}{Symbol} {newStage} {newStage}`. Example: `1v大人 5 6` sets 大人 to Guru 1 for meaning and Guru 2 for reading.
 
+---
+
 ### 🎏 Visuals
 
 > #### Review Feedback
