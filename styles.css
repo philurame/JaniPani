@@ -1,7 +1,11 @@
 /* ============================
  Commons
 ============================ */
-@import url(https://fonts.googleapis.com/earlyaccess/notosansjp.css);
+@font-face {
+  font-family: 'meiryo';
+  src: url('extras/meiryo.ttf');
+}
+
 :root {
   --color-correct: #74bc0c;
   --color-incorrect: #f8043c;
@@ -22,10 +26,10 @@
 }
 
 body {
-  font-family: Arial, 'Noto Sans JP', sans-serif;
+  font-family: 'meiryo', Arial;
   margin: 20px;
   padding: 0;
-  background-color: var(--color-black); 
+  background-color: var(--color-black);
   color: var(--color-primary);
   text-align: center;
   position: relative;
@@ -102,7 +106,7 @@ button:hover {
 #stats-right-down-container {
   height: 50%;
   display: grid;
-  grid-column-gap: 20px;
+  grid-column-gap: 10px;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;
   text-align: center;
@@ -162,7 +166,7 @@ button:hover {
   flex-direction: row;
   justify-content: center;
   gap: 20px;
-  width: 80%;
+  width: 90%;
   margin-top: 20px;
 }
 #stats-lessons-container, #stats-reviews-container {
@@ -561,7 +565,6 @@ button:hover {
   border: none;
   outline: none;
   font-size: 18px;
-  font-family: 'Noto Sans JP', sans-serif;
 }
 
 .mnemonic-content.show {display: block;}

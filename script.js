@@ -139,6 +139,8 @@ const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLev
 const RadicalKanjiLessonLevel = 5; // radical level required for kanji lesson
 const KanjiVocabLessonLevel   = 3; // kanji-compound level required for vocab lesson
 
+let is_wanakana_bind = false;
+
 //-----------------------------------------------------------
 // AUTO ROMAJI-TO-JAPANESE INPUT CONVERSION
 //-----------------------------------------------------------
@@ -148,9 +150,10 @@ window.addEventListener('DOMContentLoaded', () => {
   inputField.addEventListener('input', () => {
     const answerInput = document.getElementById('answer-input');
     if (currentQuestion && questionType === 'reading') {
-      wanakana.bind(answerInput);
-    } else {
-      wanakana.unbind(answerInput);
+      wanakana.bind(answerInput); is_wanakana_bind = true;
+    } 
+    else if (is_wanakana_bind){
+      wanakana.unbind(answerInput); is_wanakana_bind = false;
     }
   });
 });
@@ -240,10 +243,7 @@ function handleUserInteractionKeyDown(event) {
   
   if (event.key === 'Enter') {
     event.preventDefault();
-    if (event.target.id === "detail-mnemonic-meaning" || event.target.id === "detail-mnemonic-reading") {
-      customMnemonicSave(event.target.id);
-    }
-
+    if (event.target.id === "detail-mnemonic-meaning" || event.target.id === "detail-mnemonic-reading") {customMnemonicSave(event.target.id);}
     if (is_question) {submitClick();}
     else if (is_info) {searchHieroglyphs();}
   } 
@@ -352,6 +352,8 @@ function _showHieroglyph(placeholder, h) {
     symbolField.innerHTML = `<img src="${h.resource_paths.pic}" alt="Image for radical" style="max-width: ${is_info?60:80}%; height: auto;">`;
   } else {
     symbolField.textContent = h.symbol;
+    // use font
+    symbolField.style.fontFamily = 'meiryo';
     switch (symbolField.textContent.length) {
       case 1:
         symbolField.style.fontSize = is_info ? '6em' : '10em';
@@ -482,8 +484,7 @@ function submitClick() {
     }
     return;
   }
-  isInQuestion = false;
-
+  
   const userAnswer = document.getElementById("answer-input").value.trim();
   
   let correct = false;
@@ -532,6 +533,7 @@ function submitClick() {
   }
   
   if (correct || !half_correct) {
+    isInQuestion = false;
     document.getElementById("submit-answer").textContent = "Next";
   }
 }
@@ -600,7 +602,7 @@ function tryAgain() {
 }
 
 function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
-  // play sound if vocab reading + correct + soundOn
+  // play sound if vocab reading + correct
   if (currentQuestion.hieroglyph_type === HieroglyphType.VOCAB && questionType === 'reading' && is_correct) {
     currentSoundPath = 'sounds/'+encodeURIComponent(currentQuestion.resource_paths.sound);
     _playSound(currentSoundPath);
