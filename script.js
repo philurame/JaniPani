@@ -279,10 +279,13 @@ async function _loadHieroglyphDB() {
 // Lesson / Review Button
 //-----------------------------------------------------------
 function LessonReviewButtonClick(is_lesson) {
-  isLesson = is_lesson;
   isInQuestion = 1 - isLesson;
   showSection("game-section");
-  is_sampled = showNewQuestion();
+  if ((isLesson !== is_lesson) || !currentQuestion) {
+    isLesson = is_lesson;
+    showNewQuestion();
+  }
+  isLesson = is_lesson;
 };
 
 function NoLessonsReviews() {
