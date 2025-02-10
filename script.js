@@ -952,7 +952,6 @@ function _overwriteDB(jsonData) {
       h.mnemonics.custom_reading = jsonData[wanikani_link].custom_reading;
       if (jsonData[wanikani_link].progres_level) {
         h.progres_level = jsonData[wanikani_link].progres_level;
-        if (h.symbol === 'お金') {console.log(h.progres_level);}
         h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
       } else {
         h.progres_level = [-1, -1];
