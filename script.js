@@ -583,7 +583,7 @@ function _update_progress_level() {
   // all of radical should be >= NextLevelRadical
   // NextLevelKanjiShare of kanji should be >= NextLevelKanji
   // all of vocab should be >= NextLevelVocab
-  const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level <= ProgressLevel));
+  const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
   let n_kanji_learned = 0;
   for (const hieroglyph of ProgressHieroglyphs) {
     switch (hieroglyph.hieroglyph_type) {
