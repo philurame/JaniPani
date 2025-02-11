@@ -589,12 +589,14 @@ function _update_progress_level() {
     switch (hieroglyph.hieroglyph_type) {
       case HieroglyphType.RADICAL: 
         if (hieroglyph.progres_level[0] < NextLevelRadical) {return;}
+        break;
       case HieroglyphType.KANJI:
-        if (hieroglyph.progres_level[0] >= NextLevelKanji) {n_kanji_learned += 1;}
-        if (hieroglyph.progres_level[1] >= NextLevelKanji) {n_kanji_learned += 1;}
+        if ( (hieroglyph.progres_level[0] >= NextLevelKanji) && (hieroglyph.progres_level[1] >= NextLevelKanji) ) {n_kanji_learned += 1;}
+        break;
       case HieroglyphType.VOCAB:
         if (hieroglyph.progres_level[0] < NextLevelVocab) {return;}
         if (hieroglyph.progres_level[1] < NextLevelVocab) {return;}
+        break;
     }
   }
   if (n_kanji_learned < NextLevelKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
