@@ -365,7 +365,7 @@ function _showHieroglyph(placeholder, h) {
   if (!h.symbol) {
     symbolField.innerHTML = `<img src="${h.resource_paths.pic}" alt="Image for radical" style="max-width: ${is_info?60:80}%; height: auto;">`;
   } else {
-    symbolField.textContent = h.symbol;
+    symbolField.textContent = h.symbol.toUpperCase();
     // use font
     symbolField.style.fontFamily = 'meiryo';
     switch (symbolField.textContent.length) {
@@ -742,7 +742,7 @@ function searchHieroglyphs() {
 
   for (let i = 0; i < searchLength; i++) {
     const li = document.createElement("li");
-    li.textContent = results[i].symbol + " (" + results[i].meanings[0] + ")";
+    li.textContent = results[i].symbol.toUpperCase() + " (" + results[i].meanings[0] + ")";
     switch (results[i].hieroglyph_type) {
       case HieroglyphType.RADICAL:
         li.classList.add("radical-search");
@@ -812,7 +812,7 @@ function fillHieroglyphDetail(h) {
     }
     const li = document.createElement("li");
     const link_hieroglyph = DB.hieroglyphs[LinkIdx[composition_links[i]]];
-    li.textContent = link_hieroglyph.symbol;
+    li.textContent = link_hieroglyph.symbol.toUpperCase();
     li.classList.add((link_hieroglyph.hieroglyph_type === HieroglyphType.RADICAL) ? "radical-search" : "kanji-search");
     li.onclick = () => {composition.innerHTML = ""; fillHieroglyphDetail(link_hieroglyph);}
     composition.appendChild(li);
@@ -889,7 +889,7 @@ function customMnemonicSave(targetId) {
 }
 
 function searchDetail() {
-  const search_text = (currentInfo.symbol) ? currentInfo.symbol : currentInfo.meanings[0];
+  const search_text = (currentInfo.symbol) ? currentInfo.symbol.toUpperCase() : currentInfo.meanings[0];
   document.getElementById("search-query").value = search_text;
   searchHieroglyphs();
 }
