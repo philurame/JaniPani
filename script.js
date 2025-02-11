@@ -575,11 +575,15 @@ function _update_progress(is_correct, is_half_correct) {
 
   saveProgressToLocalStorage();
 
+  _update_progress_level();
+}
+
+function _update_progress_level() {
   // check if progress level can be updated
   // all of radical should be >= NextLevelRadical
   // NextLevelKanjiShare of kanji should be >= NextLevelKanji
   // all of vocab should be >= NextLevelVocab
-  const ProgressHieroglyphs = filteredHieroglyphs.filter(h => (h.level <= ProgressLevel));
+  const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level <= ProgressLevel));
   let n_kanji_learned = 0;
   for (const hieroglyph of ProgressHieroglyphs) {
     switch (hieroglyph.hieroglyph_type) {
@@ -758,12 +762,35 @@ function fillHieroglyphDetail(h) {
   currentInfo = h;
   document.getElementById("hieroglyph-detail").classList.remove("hidden");
   document.getElementById("vocab-sound-button").classList.add("hidden");
-  document.getElementById("line-radical").classList.add("hidden");
   document.getElementById("onkun").style.display='none';
 
-  const progress = h.progres_level[0] > -1 ? '(' + HieroglyphProgress[h.progres_level[0]] + ', ' + HieroglyphProgress[h.progres_level[1]]+')': HieroglyphProgress[h.progres_level[0]];
-  document.getElementById("detail-level").innerHTML = "Level: " + "<span style='color:var(--color-purple); font-size: 20px; font-weight: bold'>" + h.level + "</span>" +
-    "<br><br>" + "Progress: " + "<span style='color:var(--color-purple); font-size: 20px; font-weight: bold'>" + progress + "</span>";
+  document.getElementById("info-level").innerHTML = `Level: <span class="info-level-time-style">${h.level}</span>`;
+
+  if (h.progres_level[0] === -1) {
+    document.getElementById("info-progress").innerHTML = `Progress: <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[0]]}</span>`;
+  }
+  else {
+    document.getElementById("info-progress").innerHTML = `Progress: <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[0]]}</span>, 
+                                                                    <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[1]]}</span>`;
+  };
+  
+
+  const is_inf = Math.min(h.progres_level[0], h.progres_level[1]) === -1 || Math.max(h.progres_level[0], h.progres_level[1]) === 9;
+  if (is_inf) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">Infinity</span>`;}
+  else {
+    current_timestamp = Math.floor(Date.now() / 1000);
+    const t_next_review_meaning = h.progres_timestamp[0]+SecToReview[h.progres_level[0]] - current_timestamp;
+    const t_next_review_reading = h.progres_timestamp[1]+SecToReview[h.progres_level[1]] - current_timestamp;
+    const next_review_sec = Math.min(t_next_review_meaning, t_next_review_reading);
+    const next_review_days = Math.round(next_review_sec / 86400);
+    const hrs_residual = Math.round((next_review_sec % 86400) / 3600);
+    const mins_residual = Math.round((next_review_sec % 3600) / 60);
+
+    document.getElementById("info-next-review-in").innerHTML = `Next Review in: 
+    <span class="info-level-time-style">${next_review_days}</span> days 
+    <span class="info-level-time-style">${hrs_residual}</span> hours 
+    <span class="info-level-time-style">${mins_residual}</span> minutes`;
+  }
 
   const meaning = h.meanings[0].charAt(0).toUpperCase() + h.meanings[0].slice(1) + (h.meanings.length > 1 ? ', ' : '');
   const meanings = h.meanings.length > 1 ? h.meanings.slice(1).join(", ") : '';
@@ -790,11 +817,7 @@ function fillHieroglyphDetail(h) {
   }
   
 
-  if (h.hieroglyph_type === HieroglyphType.RADICAL) {
-    document.getElementById("line-radical").classList.remove("hidden");
-  }
-  else if (h.hieroglyph_type === HieroglyphType.KANJI) {
-    document.getElementById("line-radical").classList.remove("hidden");
+  if (h.hieroglyph_type === HieroglyphType.KANJI) {
     document.getElementById("onkun").style.display = 'flex';
 
     const onyomi_style  = (h.readings.main_reading === 'onyomi') ? h.readings.onyomi.join(", ") : '<span class="faded">' + h.readings.onyomi.join(", ")  + '</span>';
@@ -979,6 +1002,8 @@ function _overwriteDB(jsonData) {
     const hasEnoughKanji   = levelKanjiCount[ProgressLevel] >= 15;
     if (hasAnyHieroglyph && hasEnoughKanji) {ProgressLevel += 1;} else {break;}
   }
+
+  _update_progress_level();
 }
 
 

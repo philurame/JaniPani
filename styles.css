@@ -423,12 +423,12 @@ textarea {
 /* hieroglyph-details container */
 #hieroglyph-detail {
   max-width: 1000px;
-  margin: 20px auto 0 auto;
+  margin: 0px auto 0px auto;
   display: flex;
   flex-direction: row;
   align-items: left;
   justify-content: center;
-  margin-top: 20px;   
+  margin-top: 40px;   
   gap: 20px;
 }
 #hieroglyph-detail.hidden {display: none;}
@@ -490,10 +490,24 @@ textarea {
 
 #line-radical {margin-top: 15px;}
 #detail-level {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
   margin-top: 15px;
   font-size: 15px;
-  color: var(--color-primary)
+  color: var(--color-primary);
+  gap: 10px;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+  padding: 10px;
 }
+.info-level-time-style {
+  color: var(--color-purple);
+  font-size: 20px;
+  font-weight: bold;
+}
+
 #vocab-sound-button{
   font-size: 30px;
   margin-bottom: 0px;
@@ -524,7 +538,7 @@ textarea {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-top: 30px;
+  margin-top: 50px;
   position: relative;
   margin-left: 50px;
 }
