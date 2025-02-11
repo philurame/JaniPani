@@ -991,16 +991,18 @@ function _overwriteDB(jsonData) {
   
   // Count how many kanji exist at each level (only if it has progress data > 0)
   const levelKanjiCount = {};
+  const levelHyerCount  = {};
   for (const h of DB.hieroglyphs) {
-    if ((h.progres_level[0] > 0 || h.progres_level[1] > 0) && h.hieroglyph_type === HieroglyphType.KANJI) {
-      levelKanjiCount[h.level] = (levelKanjiCount[h.level] || 0) + 1;
+    if (h.progres_level[0] > 0 || h.progres_level[1] > 0) {
+      levelHyerCount[h.level] = (levelHyerCount[h.level] || 0) + 1;
+      if (h.hieroglyph_type === HieroglyphType.KANJI) { levelKanjiCount[h.level] = (levelKanjiCount[h.level] || 0) + 1; }
     }
   }
-  
+
   // ProgressLevel := highest level with at least one hieroglyph on this level and at least 15 kanji on previous level
   ProgressLevel = 1;
   while (true) {
-    const hasAnyHieroglyph = levelKanjiCount[ProgressLevel+1] > 0;
+    const hasAnyHieroglyph = levelHyerCount[ProgressLevel+1] > 0;
     const hasEnoughKanji   = levelKanjiCount[ProgressLevel] >= 15;
     if (hasAnyHieroglyph && hasEnoughKanji) {ProgressLevel += 1;} else {break;}
   }
