@@ -182,8 +182,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("statsRefresh").addEventListener("click", update_stats_section);
 
   document.getElementById("back-to-stats").addEventListener("click", () => {showSection("stats-section");});
-  document.querySelectorAll('.back-to-game').forEach(button => {
-    button.addEventListener('click', () => {showSection("game-section"); LessonReviewButtonClick(isLesson);});
+  document.getElementById('back-to-game').addEventListener('click', () => {
+    showSection("game-section"); 
+    if (!currentQuestion) {LessonReviewButtonClick(isLesson);}
   });
   document.getElementById("try-again").addEventListener("click", tryAgain);
 
@@ -293,6 +294,9 @@ function LessonReviewButtonClick(is_lesson) {
     showNewQuestion();
   }
   isLesson = is_lesson;
+
+  document.getElementById("submit-answer").textContent = isInQuestion ? "Submit" : "Next";
+  document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
 };
 
 function NoLessonsReviews() {
