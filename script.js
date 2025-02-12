@@ -117,29 +117,30 @@ class HieroglyphDB {
 //-----------------------------------------------------------
 // GLOBALS
 //-----------------------------------------------------------
-let DB = null;                // Will hold HieroglyphDB
-let LinkIdx = null;           // dict with wanikani link: Db idx
-let filteredHieroglyphs = []; // Hieroglyphs that match ProgressLevel etc
-let currentQuestion = null;   // The current Hieroglyph being asked about
-let currentInfo     = null;   // The current Hieroglyph in Info section
-let questionType = null;      // either 'meaning', 'reading'
-let currentSoundPath = null;  // The sound path to the current vocabulary
-let ProgressLevel = 1;        // The current user's progress level
-let isLesson = 1;             // either 1 or 0
-let isInQuestion = false;     // is review active now or feedback given
-let current_timestamp = null; // current timestamp in seconds (UTC)
+var DB = null;                // Will hold HieroglyphDB
+var LinkIdx = null;           // dict with wanikani link: Db idx
+var filteredHieroglyphs = []; // Hieroglyphs that match ProgressLevel etc
+var currentQuestion = null;   // The current Hieroglyph being asked about
+var currentInfo     = null;   // The current Hieroglyph in Info section
+var questionType = null;      // either 'meaning', 'reading'
+var currentSoundPath = null;  // The sound path to the current vocabulary
+var ProgressLevel = 1;        // The current user's progress level
+var isLesson = 1;             // either 1 or 0
+var isInQuestion = false;     // is review active now or feedback given
+var current_timestamp = null; // current timestamp in seconds (UTC)
+var prevLvls = [];
+var prevTimestamps = [];
 
-let prevLvls = [];
-let prevTimestamps = [];
+var is_wanakana_bind = false;
+var chartViewMode = "week";
 
 const NextLevelRadical = 6;      // radical level required for ProgressLevel+=1
 const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
-const NextLevelVocab = 2;        // vocab level required for ProgressLevel+=1
+const NextLevelVocab = 3;        // vocab level required for ProgressLevel+=1
 const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
 const RadicalKanjiLessonLevel = 5; // radical level required for kanji lesson
 const KanjiVocabLessonLevel   = 3; // kanji-compound level required for vocab lesson
 
-let is_wanakana_bind = false;
 
 //-----------------------------------------------------------
 // AUTO ROMAJI-TO-JAPANESE INPUT CONVERSION
@@ -305,7 +306,8 @@ function NoLessonsReviews() {
   if (isLesson) {
     document.getElementById("next-in").innerHTML = "No active lessons! Do more reviews!";
   } else {
-    document.getElementById("next-in").innerHTML = "Next review in " + "<span style='color:var(--color-primary)'>" + Math.round(_get_next_review_sec() / 60) + "</span>" + " minutes";
+    const [next_review_sec, h] = _get_next_review_sec();
+    document.getElementById("next-in").innerHTML = "Next review of " + `<span style='color:var(--color-primary)'>${h.symbol}</span>`  + " in <span style='color:var(--color-primary)'>" + Math.round(next_review_sec / 60) + "</span>" + " minutes";
   }
 }
 
@@ -397,7 +399,7 @@ function _get_next_review_sec() {
   const t_next_review_meaning = next_review_h.progres_timestamp[0]+SecToReview[next_review_h.progres_level[0]] - current_timestamp;
   const t_next_review_reading = next_review_h.progres_timestamp[1]+SecToReview[next_review_h.progres_level[1]] - current_timestamp;
   
-  return Math.min(t_next_review_meaning, t_next_review_reading);
+  return [Math.min(t_next_review_meaning, t_next_review_reading), next_review_h];
 }
 
 function _playSound(path) {
@@ -1063,87 +1065,112 @@ function _fill_lesson_review_stats() {
   document.getElementById("stats-review-text").innerHTML = "<span style='color:var(--color-correct); font-size: 24px;'>Active Reviews <span style='color:var(--color-primary); font-size: 24px;'>" + n_reviews.length + "</span>";
 }
 
+
+function switchChartViewMode() {
+  if (chartViewMode === 'week') {chartViewMode = 'daily';} else {chartViewMode = 'week';}
+  _fill_chart_js();
+}
+
 function _fill_chart_js() {
+  let intervals = [];
+  const now = new Date();
+  // Round current time to the nearest hour:
+  const currentRounded = new Date(now);
+  currentRounded.setMinutes(0, 0, 0);
+
+  // Build intervals based on viewMode:
+  if (chartViewMode === "week") {// Weekly view: 15 intervals of 12 hours
+    let intervalStart = currentRounded;
+    let intervalEnd = new Date(currentRounded);
+    if (currentRounded.getHours() < 12) {intervalEnd.setHours(12, 0, 0, 0);} 
+    else {intervalEnd.setDate(intervalEnd.getDate() + 1); intervalEnd.setHours(0, 0, 0, 0);}
+    intervals.push({ start: intervalStart, end: intervalEnd });
+
+    const totalIntervals = 15;
+    for (let i = 1; i < totalIntervals; i++) {
+      intervalStart = new Date(intervalEnd);
+      intervalEnd = new Date(intervalEnd.getTime() + 12 * 60 * 60 * 1000);
+      intervals.push({ start: intervalStart, end: intervalEnd });
+    }
+  } else {// Daily view: 24 intervals of 1 hour each for the next 24 hours
+    const totalIntervals = 24;
+    let intervalStart = currentRounded;
+    for (let i = 1; i <= totalIntervals; i++) {
+      let intervalEnd = new Date(intervalStart.getTime() + 60 * 60 * 1000);
+      intervals.push({ start: intervalStart, end: intervalEnd });
+      intervalStart = intervalEnd;
+    }
+  }
+
+  // Prepare the datasets with array lengths matching the number of intervals:
   const resData = {
     labels: [],
     datasets: [
       {
         label: 'Cumulative Reviews',
-        data: Array(15).fill(null),
-        borderColor: '#00aaff',
+        data: Array(intervals.length).fill(null),
+        borderColor: '#1565C0',
         backgroundColor: 'transparent',
         fill: false,
         tension: 0.1,
         pointHoverRadius: 3,
-        pointBackgroundColor: '#00aaff',
+        pointBackgroundColor: '#121212',
       },
       {
         label: 'Apprentice',
-        data: Array(15).fill(null),
+        data: Array(intervals.length).fill(null),
         backgroundColor: '#00a3f5',
         type: 'bar',
         borderWidth: 0,
-        barThickness: 6,
+        barThickness: 10,
+        stack: 'reviewsStack'
       },
       {
         label: 'Guru',
-        data: Array(15).fill(null),
+        data: Array(intervals.length).fill(null),
         backgroundColor: '#74bc0c',
         type: 'bar',
         borderWidth: 0,
-        barThickness: 6,
+        barThickness: 10,
+        stack: 'reviewsStack'
       },
       {
         label: 'Master',
-        data: Array(15).fill(null),
+        data: Array(intervals.length).fill(null),
         backgroundColor: '#ffc401',
         type: 'bar',
         borderWidth: 0,
-        barThickness: 6,
+        barThickness: 10,
+        stack: 'reviewsStack'
       },
       {
         label: 'Enlighted',
-        data: Array(15).fill(null),
+        data: Array(intervals.length).fill(null),
         backgroundColor: '#f8043c',
         type: 'bar',
         borderWidth: 0,
-        barThickness: 6,
+        barThickness: 10,
+        stack: 'reviewsStack'
       }
     ]
   };
-  
-  function formatLabel(date) {return date.toLocaleDateString('en-US', { weekday: 'short' }) + " " + date.getHours().toString().padStart(2, '0') + ":00";}
-  
-  const now = new Date();
-  const currentRounded = new Date(now);
-  currentRounded.setMinutes(0, 0, 0);
-  
-  const intervals = [];
-  let intervalStart = currentRounded;
-  let intervalEnd = new Date(currentRounded);
-  
-  if (currentRounded.getHours() < 12) {intervalEnd.setHours(12, 0, 0, 0);} 
-  else {
-    intervalEnd.setDate(intervalEnd.getDate() + 1);
-    intervalEnd.setHours(0, 0, 0, 0);
-  }
-  intervals.push({ start: intervalStart, end: intervalEnd });
-  
-  const totalIntervals = 15;
-  for (let i = 1; i < totalIntervals; i++) {
-    intervalStart = new Date(intervalEnd);
-    intervalEnd = new Date(intervalEnd.getTime() + 12 * 60 * 60 * 1000);
-    intervals.push({ start: intervalStart, end: intervalEnd });
-  }
-  
-  intervals.forEach((interval, index) => {
-    resData.labels.push(formatLabel(interval.end));
 
+  // Format labels differently for week vs. daily view:
+  function _formatLabel(date) {
+    if (chartViewMode === 'week') { 
+      return date.toLocaleDateString('en-US', { weekday: 'short' }) + " " + date.getHours().toString().padStart(2, '0') + ":00";
+    } else {
+      return date.getHours().toString().padStart(2, '0') + ":00";
+    }
+  }
+
+  // Process each interval and calculate dummy review counts:
+  intervals.forEach((interval, index) => {
+    resData.labels.push(_formatLabel(interval.end));
     const tsStart = interval.start.getTime() / 1000;
     const tsEnd = interval.end.getTime() / 1000;
-  
     let apprentice = 0, guru = 0, master = 0, enlighted = 0;
-  
+
     DB.hieroglyphs.forEach(h => {
       if (
         (tsEnd - h.progres_timestamp[0] > SecToReview[h.progres_level[0]]) &&
@@ -1166,14 +1193,15 @@ function _fill_chart_js() {
         else if (lvl === 8) enlighted++;
       }
     });
-  
-    resData.datasets[1].data[index] = apprentice?apprentice:null;
-    resData.datasets[2].data[index] = guru?guru:null;
-    resData.datasets[3].data[index] = master?master:null;
-    resData.datasets[4].data[index] = enlighted?enlighted:null;
-    resData.datasets[0].data[index] = (index<1?0:resData.datasets[0].data[index-1]) + apprentice + guru + master + enlighted;
+
+    resData.datasets[1].data[index] = apprentice ? apprentice : null;
+    resData.datasets[2].data[index] = guru ? guru : null;
+    resData.datasets[3].data[index] = master ? master : null;
+    resData.datasets[4].data[index] = enlighted ? enlighted : null;
+    resData.datasets[0].data[index] = (index < 1 ? 0 : resData.datasets[0].data[index - 1]) + apprentice + guru + master + enlighted;
   });
 
+  // Define the chart configuration:
   const config = {
     type: 'line',
     data: resData,
@@ -1182,35 +1210,60 @@ function _fill_chart_js() {
       maintainAspectRatio: false,
       scales: {
         x: {
+          stacked: true,
           type: 'category',
-          grid: {color: '#3c3c3c',},
+          grid: { color: '#3c3c3c' },
           ticks: {
             color: '#d8d8d8',
-            font: {
-              size: 8
-            }
+            font: { size: chartViewMode === 'week' ? 8 : 10 }
           },
           barPercentage: 0.5,
-          categoryPercentage: 0.8,
+          categoryPercentage: 0.8
         },
         y: {
+          stacked: true,
           beginAtZero: true,
-          grid: {color: '#3c3c3c'},
-          ticks: {color: '#d8d8d8'}
-        },
+          grid: { color: '#3c3c3c' },
+          ticks: { color: '#d8d8d8' }
+        }
       },
       plugins: {
         title: {
           display: true,
-          text: 'Upcoming Reviews'
+          text: chartViewMode === 'week' ? 'Upcoming Reviews (Weekly)' : 'Upcoming Reviews (Daily)'
         },
         legend: {
           position: 'bottom',
-            labels: {
-              pointStyle: 'rect',
-              boxWidth: 10,
-              color: '#d8d8d8'
+          labels: {
+            usePointStyle: true,
+            pointStyle: 'rectRounded',
+            boxWidth: 10,
+            color: '#d8d8d8',
+
+            generateLabels: function(chart) {
+              var defaultItems = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+              defaultItems.unshift({
+                pointStyle: 'circle',
+                text: (chartViewMode === 'week') ? "Switch to Daily View" : "Switch to Weekly View",
+                fontColor: '#fff',
+                fillStyle: '#fff',
+                hidden: false,
+                viewToggle: true
+              });
+              return defaultItems;
             },
+          },
+          onClick: function(e, legendItem, legend) {
+            if (legendItem.viewToggle) {switchChartViewMode();} else {
+              var index = legendItem.datasetIndex;
+              if (typeof index !== "undefined") {
+                var chart = legend.chart;
+                var meta = chart.getDatasetMeta(index);
+                meta.hidden = meta.hidden ? null : true;
+                chart.update();
+              }
+            }
+          }
         },
         tooltip: {
           backgroundColor: '#333',
@@ -1221,10 +1274,12 @@ function _fill_chart_js() {
     }
   };
 
+  // Obtain the canvas context and destroy any existing chart instance before creating a new one.
   const ctx = document.getElementById('stats-reviewChart').getContext('2d');
-  if (Chart.getChart('stats-reviewChart')) {Chart.getChart('stats-reviewChart').destroy();}
+  if (Chart.getChart('stats-reviewChart')) { Chart.getChart('stats-reviewChart').destroy(); }
   new Chart(ctx, config);
 }
+
 
 
 function _fill_progress_bars() {
