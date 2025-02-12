@@ -1109,12 +1109,12 @@ function _fill_chart_js() {
       {
         label: 'Cumulative Reviews',
         data: Array(intervals.length).fill(null),
-        borderColor: '#1565C0',
+        borderColor: '#00a3f5',
         backgroundColor: 'transparent',
         fill: false,
         tension: 0.1,
-        pointHoverRadius: 3,
-        pointBackgroundColor: '#121212',
+        pointRadius: 2,
+        pointHoverRadius: 5,
       },
       {
         label: 'Apprentice',
@@ -1243,10 +1243,10 @@ function _fill_chart_js() {
             generateLabels: function(chart) {
               var defaultItems = Chart.defaults.plugins.legend.labels.generateLabels(chart);
               defaultItems.unshift({
-                pointStyle: 'circle',
-                text: (chartViewMode === 'week') ? "Switch to Daily View" : "Switch to Weekly View",
-                fontColor: '#fff',
-                fillStyle: '#fff',
+                pointStyle: 'rectRounded',
+                text: "Switch View",
+                fontColor: '#d8d8d8',
+                fillStyle: '#d8d8d8',
                 hidden: false,
                 viewToggle: true
               });
