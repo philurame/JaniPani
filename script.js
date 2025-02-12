@@ -1066,11 +1066,6 @@ function _fill_lesson_review_stats() {
 }
 
 
-function switchChartViewMode() {
-  if (chartViewMode === 'week') {chartViewMode = 'daily';} else {chartViewMode = 'week';}
-  _fill_chart_js();
-}
-
 function _fill_chart_js() {
   let intervals = [];
   const now = new Date();
@@ -1254,7 +1249,10 @@ function _fill_chart_js() {
             },
           },
           onClick: function(e, legendItem, legend) {
-            if (legendItem.viewToggle) {switchChartViewMode();} else {
+            if (legendItem.viewToggle) {
+              if (chartViewMode === 'week') {chartViewMode = 'daily';} else {chartViewMode = 'week';}
+              _fill_chart_js();
+            } else {
               var index = legendItem.datasetIndex;
               if (typeof index !== "undefined") {
                 var chart = legend.chart;
