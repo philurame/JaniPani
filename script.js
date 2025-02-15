@@ -139,7 +139,7 @@ const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
 const NextLevelVocab = 3;        // vocab level required for ProgressLevel+=1
 const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
 const RadicalKanjiLessonLevel = 5; // radical level required for kanji lesson
-const KanjiVocabLessonLevel   = 3; // kanji-compound level required for vocab lesson
+const KanjiVocabLessonLevel   = 5; // kanji-compound level required for vocab lesson
 
 
 //-----------------------------------------------------------
@@ -414,29 +414,40 @@ function _playSound(path) {
 //-----------------------------------------------------------
 function _sampleQuestion() {
   if (isLesson) {
-    // 5 kanjis and 9 vocab per day!
     questionType = 'meaning';
 
-    const progress_radicals = DB.hieroglyphs.filter(h => (h.level === ProgressLevel) && (h.hieroglyph_type === HieroglyphType.RADICAL));
+    const h_not_learned = filteredHieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1));
 
-    for (const hieroglyph of filteredHieroglyphs) {
-      if (hieroglyph.progres_level[0] === -1) {
-        if (hieroglyph.hieroglyph_type === HieroglyphType.RADICAL) {
-          currentQuestion = hieroglyph;
-          return true;
-        }
-        else if ((hieroglyph.hieroglyph_type === HieroglyphType.KANJI)
-          && progress_radicals.every(h => h.progres_level[0] >= RadicalKanjiLessonLevel)
-        ) {
-          currentQuestion = hieroglyph;
-          return true;
-        }
-        else if ((hieroglyph.hieroglyph_type === HieroglyphType.VOCAB)
-          && is_kanji_compounds_learned(hieroglyph)
-        ) {
-          currentQuestion = hieroglyph;
-          return true;
-        }
+    // sample order of type of hieroglyphs in lessons
+    const orders = [
+      [HieroglyphType.RADICAL, HieroglyphType.KANJI, HieroglyphType.VOCAB], // 0: rad -> kan -> voc
+      [HieroglyphType.RADICAL, HieroglyphType.VOCAB, HieroglyphType.KANJI], // 1: rad -> voc -> kan
+      [HieroglyphType.KANJI, HieroglyphType.RADICAL, HieroglyphType.VOCAB], // 2: kan -> rad -> voc
+      [HieroglyphType.KANJI, HieroglyphType.VOCAB, HieroglyphType.RADICAL], // 3: kan -> voc -> rad
+      [HieroglyphType.VOCAB, HieroglyphType.RADICAL, HieroglyphType.KANJI], // 4: voc -> rad -> kan
+      [HieroglyphType.VOCAB, HieroglyphType.KANJI, HieroglyphType.RADICAL]  // 5: voc -> kan -> rad
+    ];
+    const selectedOrder = orders[Math.floor(Math.random() * 6)];
+    h_not_learned.sort((a, b) =>
+      selectedOrder.indexOf(a.hieroglyph_type) - selectedOrder.indexOf(b.hieroglyph_type)
+    );
+
+    for (const hieroglyph of h_not_learned) {
+      if (hieroglyph.hieroglyph_type === HieroglyphType.RADICAL) {
+        currentQuestion = hieroglyph;
+        return true;
+      }
+      else if ((hieroglyph.hieroglyph_type === HieroglyphType.KANJI)
+        && is_rads_compounds_learned(hieroglyph)
+      ) {
+        currentQuestion = hieroglyph;
+        return true;
+      }
+      else if ((hieroglyph.hieroglyph_type === HieroglyphType.VOCAB)
+        && is_kanji_compounds_learned(hieroglyph)
+      ) {
+        currentQuestion = hieroglyph;
+        return true;
       }
     }
     // all hieroglyphs have been learned so only review mode is avaliable!
@@ -455,6 +466,16 @@ function _sampleQuestion() {
     questionType = 'reading';
   }
   else {questionType = (Math.random() < 0.5) ? 'meaning' : 'reading';}
+  return true;
+}
+
+function is_rads_compounds_learned(kanji) {
+  // check if all rads-components have been learned:
+  for (let i = 0; i < kanji.resource_paths.radical_links.length; i++) {
+    const radical_link = kanji.resource_paths.radical_links[i];
+    const progres = DB.hieroglyphs[LinkIdx[radical_link]].progres_level;
+    if (progres[0] < RadicalKanjiLessonLevel || progres[1] < RadicalKanjiLessonLevel) {return false;}
+  }
   return true;
 }
 
@@ -1027,11 +1048,8 @@ function _count_active_lessons(lvl) {
   const lvl_hieroglyphs = DB.hieroglyphs.filter(h => (h.level===lvl));
   const h_not_learned = lvl_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1))
   const n_radicals = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
+  const n_kanji = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI) && is_rads_compounds_learned(h)).length;
   const n_vocab = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && is_kanji_compounds_learned(h)).length;
-  
-  const rads = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL));
-  const n_rads_kanji = rads.filter(h => (h.progres_level[0]>=RadicalKanjiLessonLevel)).length;
-  const n_kanji = ((lvl === ProgressLevel) && (n_rads_kanji !== rads.length)) ? 0 : h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI)).length;
 
   return n_radicals + n_kanji + n_vocab;
 }
