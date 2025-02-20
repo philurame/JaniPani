@@ -122,45 +122,64 @@ textarea {
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+#refresh-level-info-container {
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  gap: 10px;
 }
 
 #level-info-container {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid var(--color-grey);
-  border-radius: 10px;
-  padding: 10px;
-  gap: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-#progress-level {color: var(--color-blue); margin: 0;}
-#kanji-level    {color: var(--color-kanji); margin: 0;}
-#vocab-level    {color: var(--color-vocab-light); margin: 0;}
-
-#level-info-text, #progress-slashes, #level-info-numbers, #level-info-numbers-numbers {
-  display: flex;
   flex-direction: column;
-  text-align: end;
-  color: var(--color-primary);
-  gap: 6px;
-  margin-right: 5px;
+  align-items: center;
+  gap: 10px;
+  margin-left: 5px;
+  margin-top: 18px;  
+  margin-bottom: 18px;  
 }
-#level-info-text {text-align: start; margin-right: 10px;}
-#level-info-numbers {text-align: end; margin-right: 5px;}
-#level-info-numbers-numbers, #progress-slashes {text-align: center;}
+.progress-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progress-bar label {
+  width: 80px;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+.progress-bar progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 200px;
+  height: 20px;
+}
+.progress-bar progress::-webkit-progress-bar   {border-radius: 10px; background-color: var(--color-blue);}
+.progress-bar progress::-webkit-progress-value {border-radius: 10px; background-color: var(--color-correct);}
+.progress-bar span {min-width: 90px; color: var(--color-primary);}
 
 #statsRefresh {
   font-size: 50px;
   justify-content: center;
   padding-top: 0px;
+  margin-right: 15px;
 }
 #data-buttons {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
 }
 #downloadBtn, #uploadBtn {padding: 4px 10px;}
 

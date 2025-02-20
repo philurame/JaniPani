@@ -136,9 +136,8 @@ var chartViewMode = "week";
 
 const NextLevelRadical = 6;      // radical level required for ProgressLevel+=1
 const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
-const NextLevelVocab = 3;        // vocab level required for ProgressLevel+=1
 const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
-const RadicalKanjiLessonLevel = 5; // radical level required for kanji lesson
+const RadicalKanjiLessonLevel = 5; // radical-compound level required for kanji lesson
 const KanjiVocabLessonLevel   = 5; // kanji-compound level required for vocab lesson
 
 
@@ -605,7 +604,6 @@ function _update_progress_level() {
   // check if progress level can be updated
   // all of radical should be >= NextLevelRadical
   // NextLevelKanjiShare of kanji should be >= NextLevelKanji
-  // all of vocab should be >= NextLevelVocab
   const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
   let n_kanji_learned = 0;
   for (const hieroglyph of ProgressHieroglyphs) {
@@ -615,10 +613,6 @@ function _update_progress_level() {
         break;
       case HieroglyphType.KANJI:
         if ( (hieroglyph.progres_level[0] >= NextLevelKanji) && (hieroglyph.progres_level[1] >= NextLevelKanji) ) {n_kanji_learned += 1;}
-        break;
-      case HieroglyphType.VOCAB:
-        if (hieroglyph.progres_level[0] < NextLevelVocab) {return;}
-        if (hieroglyph.progres_level[1] < NextLevelVocab) {return;}
         break;
     }
   }
@@ -1055,16 +1049,21 @@ function _count_active_lessons(lvl) {
 }
 
 function _fill_lesson_review_stats() {
-  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel))
+  const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
 
   const nkanji_learned = progress_hieroglyphs.filter(
     h => (h.hieroglyph_type === HieroglyphType.KANJI)  &&
     (h.progres_level[0] >= NextLevelKanji) && (h.progres_level[1] >= NextLevelKanji)
   ).length;
-  const nvocab_learned = progress_hieroglyphs.filter(
-    h => (h.hieroglyph_type === HieroglyphType.VOCAB)  &&
-    (h.progres_level[0] >= NextLevelVocab) && (h.progres_level[1] >= NextLevelVocab)
-  ).length;
+  
+  const totalKanji = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
+  const kanjiLevelBar = document.getElementById("kanji-level-bar");
+  kanjiLevelBar.value = nkanji_learned;
+  kanjiLevelBar.max = totalKanji;
+
+  document.getElementById("progress-level-bar").value = ProgressLevel-1;
+  document.getElementById("progress-level-text").innerHTML = `<span style='color:var(--color-correct); font-size: 24px;'>${ProgressLevel}</span><span style='color:var(--color-primary); font-size: 24px;'> / 60</span>`;
+  document.getElementById("kanji-level-text").innerHTML    = `<span style='color:var(--color-correct); font-size: 24px;'>${nkanji_learned}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${totalKanji}</span>`;
 
   const n_acive_lessons = _count_active_lessons(ProgressLevel);
   const n_all_lessons = progress_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1)).length;
@@ -1072,15 +1071,8 @@ function _fill_lesson_review_stats() {
   _filterHieroglyphs();
   const n_reviews = filteredHieroglyphs.filter(h => (h.level < ProgressLevel) || (h.progres_level[0] > -1 && h.progres_level[1] > -1));
 
-  document.getElementById("level-info-data-container").style.display = 'flex';
-  document.getElementById("progress-level-num").textContent = ProgressLevel;
-  document.getElementById("progress-level-num-num").textContent = 60;
-  document.getElementById("kanji-level-num").textContent = nkanji_learned;
-  document.getElementById("kanji-level-num-num").textContent = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
-  document.getElementById("vocab-level-num").textContent = nvocab_learned;
-  document.getElementById("vocab-level-num-num").textContent = progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length;
-  document.getElementById("stats-lessons-text").innerHTML = "<span style='color:var(--color-correct); font-size: 24px;'>Active Lessons <span style='color:var(--color-primary); font-size: 24px;'>" + n_acive_lessons + ' / ' + n_all_lessons + "</span>";
-  document.getElementById("stats-review-text").innerHTML = "<span style='color:var(--color-correct); font-size: 24px;'>Active Reviews <span style='color:var(--color-primary); font-size: 24px;'>" + n_reviews.length + "</span>";
+  document.getElementById("stats-lessons-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Lessons: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_acive_lessons}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${n_all_lessons}</span>`;
+  document.getElementById("stats-review-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Reviews: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_reviews.length}</span>`;
 }
 
 

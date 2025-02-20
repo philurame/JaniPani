@@ -20,33 +20,25 @@
         <!-- lessons & reviews stats and buttons -->
         <div id="stats-left-up-container">
           <div id="level-info-data-container">
-            <button id="statsRefresh">↺</button>
-            <div id="level-info-container">
-              <div id="level-info-text">
-                <span id="progress-level">Progress Level</span>
-                <span id="kanji-level">Passed Kanji</span>
-                <span id="vocab-level">Passed Vocab</span>
-              </div>
-              <div id="level-info-numbers">
-                <span id="progress-level-num">None</span>
-                <span id="kanji-level-num">None</span>
-                <span id="vocab-level-num">None</span>
-              </div>
-              <div id="progress-slashes">
-                <span>/</span>
-                <span>/</span>
-                <span>/</span>
-              </div>
-              <div id="level-info-numbers-numbers">
-                <span id="progress-level-num-num">None</span>
-                <span id="kanji-level-num-num">None</span>
-                <span id="vocab-level-num-num">None</span>
-              </div>
-            </div>
             <div id="data-buttons">
               <input type="file" id="fileInput" accept=".json" style="display: none;">
               <button id="downloadBtn">Save</button>
               <button id="uploadBtn">Load</button>
+            </div>
+            <div id="refresh-level-info-container">
+              <div id="level-info-container">
+                <div class="progress-bar">
+                  <label for="progress-level-bar" style="color: var(--color-radical);">Level</label>
+                  <progress id="progress-level-bar" value="0" max="59" min="1"></progress>
+                  <span id="progress-level-text">0 / 60</span>
+                </div>
+                <div class="progress-bar">
+                  <label for="kanji-level-bar" style="color: var(--color-kanji);">Kanji</label>
+                  <progress id="kanji-level-bar" value="0" max="0"></progress>
+                  <span id="kanji-level-text">0 / 0</span>
+                </div>
+              </div>
+              <button id="statsRefresh">↺</button>
             </div>
           </div>
           <div id="stats-lessons-review-container">
