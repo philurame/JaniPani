@@ -134,7 +134,7 @@ var prevTimestamps = [];
 var is_wanakana_bind = false;
 var chartViewMode = "week";
 
-const NextLevelRadical = 6;      // radical level required for ProgressLevel+=1
+const NextLevelRadical = 5;      // radical level required for ProgressLevel+=1
 const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
 const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
 const RadicalKanjiLessonLevel = 5; // radical-compound level required for kanji lesson
