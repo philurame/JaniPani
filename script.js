@@ -1066,12 +1066,11 @@ function _fill_lesson_review_stats() {
   document.getElementById("kanji-level-text").innerHTML    = `<span style='color:var(--color-correct); font-size: 24px;'>${nkanji_learned}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${totalKanji}</span>`;
 
   const n_acive_lessons = _count_active_lessons(ProgressLevel);
-  const n_all_lessons = progress_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1)).length;
 
   _filterHieroglyphs();
   const n_reviews = filteredHieroglyphs.filter(h => (h.level < ProgressLevel) || (h.progres_level[0] > -1 && h.progres_level[1] > -1));
 
-  document.getElementById("stats-lessons-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Lessons: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_acive_lessons}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${n_all_lessons}</span>`;
+  document.getElementById("stats-lessons-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Lessons: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_acive_lessons}</span>`;
   document.getElementById("stats-review-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Reviews: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_reviews.length}</span>`;
 }
 
