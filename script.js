@@ -417,19 +417,8 @@ function _sampleQuestion() {
 
     const h_not_learned = filteredHieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1));
 
-    // sample order of type of hieroglyphs in lessons
-    const orders = [
-      [HieroglyphType.RADICAL, HieroglyphType.KANJI, HieroglyphType.VOCAB], // 0: rad -> kan -> voc
-      [HieroglyphType.RADICAL, HieroglyphType.VOCAB, HieroglyphType.KANJI], // 1: rad -> voc -> kan
-      [HieroglyphType.KANJI, HieroglyphType.RADICAL, HieroglyphType.VOCAB], // 2: kan -> rad -> voc
-      [HieroglyphType.KANJI, HieroglyphType.VOCAB, HieroglyphType.RADICAL], // 3: kan -> voc -> rad
-      [HieroglyphType.VOCAB, HieroglyphType.RADICAL, HieroglyphType.KANJI], // 4: voc -> rad -> kan
-      [HieroglyphType.VOCAB, HieroglyphType.KANJI, HieroglyphType.RADICAL]  // 5: voc -> kan -> rad
-    ];
-    const selectedOrder = orders[Math.floor(Math.random() * 6)];
-    h_not_learned.sort((a, b) =>
-      selectedOrder.indexOf(a.hieroglyph_type) - selectedOrder.indexOf(b.hieroglyph_type)
-    );
+    // cover the previous level first!
+    h_not_learned.sort((a, b) => a.level - b.level);
 
     for (const hieroglyph of h_not_learned) {
       if (hieroglyph.hieroglyph_type === HieroglyphType.RADICAL) {
