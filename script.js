@@ -590,6 +590,9 @@ function _update_progress(is_correct, is_half_correct) {
 }
 
 function _update_progress_level() {
+  ProgressLevel = Math.min(ProgressLevel, 60);
+  if (ProgressLevel === 60) {return;}
+
   // check if progress level can be updated
   // all of radical should be >= NextLevelRadical
   // NextLevelKanjiShare of kanji should be >= NextLevelKanji
@@ -790,14 +793,17 @@ function fillHieroglyphDetail(h) {
     const t_next_review_meaning = h.progres_timestamp[0]+SecToReview[h.progres_level[0]] - current_timestamp;
     const t_next_review_reading = h.progres_timestamp[1]+SecToReview[h.progres_level[1]] - current_timestamp;
     const next_review_sec = Math.min(t_next_review_meaning, t_next_review_reading);
-    const next_review_days = Math.round(next_review_sec / 86400);
-    const hrs_residual = Math.round((next_review_sec % 86400) / 3600);
-    const mins_residual = Math.round((next_review_sec % 3600) / 60);
+    if (next_review_sec < 0) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">NOW!</span>`;}
+    else {
+      const next_review_days = Math.round(next_review_sec / 86400);
+      const hrs_residual = Math.round((next_review_sec % 86400) / 3600);
+      const mins_residual = Math.round((next_review_sec % 3600) / 60);
 
     document.getElementById("info-next-review-in").innerHTML = `Next Review in: 
     <span class="info-level-time-style">${next_review_days}</span> days 
     <span class="info-level-time-style">${hrs_residual}</span> hours 
     <span class="info-level-time-style">${mins_residual}</span> minutes`;
+    }
   }
 
   const meaning = h.meanings[0].charAt(0).toUpperCase() + h.meanings[0].slice(1) + (h.meanings.length > 1 ? ', ' : '');
@@ -981,6 +987,8 @@ function _fetchProgress() {
 function _overwriteDB(jsonData) {
   // Update hieroglyph progress data
   for (const h of DB.hieroglyphs) {
+    h.progres_level = [-1, -1];
+    h.progres_timestamp = [-1, -1];
     const wanikani_link = h.resource_paths.wanikani_link;
     if (jsonData[wanikani_link]) {
       h.mnemonics.custom_meaning = jsonData[wanikani_link].custom_meaning;
@@ -988,9 +996,6 @@ function _overwriteDB(jsonData) {
       if (jsonData[wanikani_link].progres_level) {
         h.progres_level = jsonData[wanikani_link].progres_level;
         h.progres_timestamp = jsonData[wanikani_link].progres_timestamp;
-      } else {
-        h.progres_level = [-1, -1];
-        h.progres_timestamp = [-1, -1];
       }
     }
   }

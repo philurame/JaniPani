@@ -111,7 +111,9 @@ def save_progress(progress_dict, save_to=None):
       for h in [i for i in db if i.level==level and i.hieroglyph_type.value == hieroglyph_type]:
         res_data[h.resource_paths.wanikani_link] = dict(
           progres_level = [levels_progress[level]] * 2,
-          progres_timestamp = [-1, -1]
+          progres_timestamp = [-1, -1],
+          custom_meaning = "",
+          
         )
   with open(save_to or 'JaniPaniProgress.json', 'w+') as f:
     json.dump(res_data, f)
