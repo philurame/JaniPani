@@ -1027,14 +1027,24 @@ function update_stats_section() {
   _fill_hieroglyph_stats();
 }
 
-function _count_active_lessons(lvl) {
+function _count_active_lessons(lvl, type=null) {
   const lvl_hieroglyphs = DB.hieroglyphs.filter(h => (h.level===lvl));
   const h_not_learned = lvl_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1))
-  const n_radicals = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
-  const n_kanji = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI) && is_rads_compounds_learned(h)).length;
-  const n_vocab = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && is_kanji_compounds_learned(h)).length;
-
-  return n_radicals + n_kanji + n_vocab;
+  if (type === null) {
+    const n_radicals = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
+    const n_kanji = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI) && is_rads_compounds_learned(h)).length;
+    const n_vocab = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && is_kanji_compounds_learned(h)).length;
+    return n_radicals + n_kanji + n_vocab;
+  }
+  if (type === HieroglyphType.RADICAL) {
+    return h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
+  }
+  if (type === HieroglyphType.KANJI) {
+    return h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI) && is_rads_compounds_learned(h)).length;
+  }
+  if (type === HieroglyphType.VOCAB) {
+    return h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB) && is_kanji_compounds_learned(h)).length;
+  }
 }
 
 function _fill_lesson_review_stats() {
@@ -1288,10 +1298,29 @@ function _fill_progress_bars() {
     const apprentice = lvl_hieroglyphs.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
     const lessons = _count_active_lessons(i)/N*100;
     const locked = Math.floor(100.5 - (passed + apprentice + lessons));
-    progressData.push({ passed, apprentice, lessons, locked });
+    
+    const rads = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL));
+    const rad_passed = rads.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
+    const rad_apprentice = rads.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const rad_lessons = _count_active_lessons(i, HieroglyphType.RADICAL)/N*100;
+
+    const kanji = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI));
+    const kanji_passed = kanji.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
+    const kanji_apprentice = kanji.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const kanji_lessons = _count_active_lessons(i, HieroglyphType.KANJI)/N*100;
+
+    const vocab = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB));
+    const vocab_passed = vocab.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
+    const vocab_apprentice = vocab.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const vocab_lessons = _count_active_lessons(i, HieroglyphType.VOCAB)/N*100;
+
+    progressData.push({ rad_passed, rad_apprentice, rad_lessons, 
+                        kanji_passed, kanji_apprentice, kanji_lessons, 
+                        vocab_passed, vocab_apprentice, vocab_lessons, 
+                        locked });
   }
 
-  function createSection(widthPercent, sectionClass) {
+  function _createSection(widthPercent, sectionClass) {
     const section = document.createElement('div');
     section.classList.add('stats-progress-bar-section', sectionClass);
     section.style.width = `${widthPercent}%`;
@@ -1315,10 +1344,19 @@ function _fill_progress_bars() {
     const progressBar = document.createElement('div');
     progressBar.classList.add('stats-progress-bar');
 
-    progressBar.appendChild(createSection(entry.passed, 'stats-passed'));
-    progressBar.appendChild(createSection(entry.apprentice, 'stats-apprentice'));
-    progressBar.appendChild(createSection(entry.lessons, 'stats-lessons'));
-    progressBar.appendChild(createSection(entry.locked, 'stats-locked'));
+    progressBar.appendChild(_createSection(entry.rad_passed, 'stats-rad-passed'));
+    progressBar.appendChild(_createSection(entry.rad_apprentice, 'stats-rad-apprentice'));
+    progressBar.appendChild(_createSection(entry.rad_lessons, 'stats-rad-lessons'));
+
+    progressBar.appendChild(_createSection(entry.kanji_passed, 'stats-kanji-passed'));
+    progressBar.appendChild(_createSection(entry.kanji_apprentice, 'stats-kanji-apprentice'));
+    progressBar.appendChild(_createSection(entry.kanji_lessons, 'stats-kanji-lessons'));
+
+    progressBar.appendChild(_createSection(entry.vocab_passed, 'stats-vocab-passed'));
+    progressBar.appendChild(_createSection(entry.vocab_apprentice, 'stats-vocab-apprentice'));
+    progressBar.appendChild(_createSection(entry.vocab_lessons, 'stats-vocab-lessons'));
+
+    progressBar.appendChild(_createSection(entry.locked, 'stats-locked'));
 
     progressBarWrapper.appendChild(progressBar);
     levelRow.appendChild(label);

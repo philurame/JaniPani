@@ -16,10 +16,13 @@
   --color-blue: #606cc4;
   --color-radical: #00a3f5;
   --color-radical-hover: #04608e;
+  --color-radical-light: #9eddfd;
   --color-kanji: #fc5494;
   --color-kanji-hover: #9d365e;
+  --color-kanji-light: #fec0e6;
   --color-vocab: #600090;
-  --color-vocab-light: #a22edc;
+  --color-vocab-light: #be7edf;
+  --color-vocab-lighter: #a22edc;
   --color-vocab-hover: #3d025a;
   --color-black: #121212;
   --color-white: #fff;
@@ -253,11 +256,21 @@ textarea {
 }
 .stats-progress-bar {height: 100%; display: flex;}
 .stats-progress-bar-section {height: 100%;}
-.stats-passed {background-color: #1565C0;}
-.stats-apprentice {background-color: #42A5F5;}
-.stats-lessons {background-color: #BBDEFB;}
+
+.stats-passed {background: repeating-linear-gradient(45deg,var(--color-radical-hover), var(--color-radical-hover) 33%,var(--color-kanji-hover) 33%, var(--color-kanji-hover) 66%,var(--color-vocab-hover) 66%, var(--color-vocab-hover) 100%);}
+.stats-apprentice {background: repeating-linear-gradient(45deg,var(--color-radical), var(--color-radical) 33%,var(--color-kanji) 33%, var(--color-kanji) 66%,var(--color-vocab) 66%, var(--color-vocab) 100%);}
+.stats-lessons {background: repeating-linear-gradient(45deg,var(--color-radical-light), var(--color-radical-light) 33%,var(--color-kanji-light) 33%, var(--color-kanji-light) 66%,var(--color-vocab-light) 66%, var(--color-vocab-light) 100%);}
 .stats-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,#525252 10px,#525252 20px);}
 
+.stats-rad-passed {background-color: var(--color-radical-hover);}
+.stats-rad-apprentice {background-color: var(--color-radical);}
+.stats-rad-lessons {background-color: var(--color-radical-light);}
+.stats-kanji-passed {background-color: var(--color-kanji-hover);}
+.stats-kanji-apprentice {background-color: var(--color-kanji);}
+.stats-kanji-lessons {background-color: var(--color-kanji-light);}
+.stats-vocab-passed {background-color: var(--color-vocab-hover);}
+.stats-vocab-apprentice {background-color: var(--color-vocab);}
+.stats-vocab-lessons {background-color: var(--color-vocab-light);}
 
 /* stats-right-down-container contents*/
 .stats-box {
@@ -276,7 +289,7 @@ textarea {
 #stats-box-empty {background-color: var(--color-black); color: #74BC0C; border: 1px solid #74BC0C; }
 #stats-box-radical {background-color: var(--color-black); color: var(--color-radical); border: 1px solid var(--color-radical);}
 #stats-box-kanji {background-color: var(--color-black); color: var(--color-kanji); border: 1px solid var(--color-kanji); } 
-#stats-box-vocab {background-color: var(--color-black); color: var(--color-vocab-light); border: 1px solid var(--color-vocab-light); }
+#stats-box-vocab {background-color: var(--color-black); color: var(--color-vocab-lighter); border: 1px solid var(--color-vocab-lighter); }
 
 
 
