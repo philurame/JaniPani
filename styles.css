@@ -16,14 +16,16 @@
   --color-blue: #606cc4;
   --color-radical: #00a3f5;
   --color-radical-hover: #04608e;
-  --color-radical-light: #9eddfd;
+  --color-radical-light: #65cbfd;
   --color-kanji: #fc5494;
   --color-kanji-hover: #9d365e;
-  --color-kanji-light: #fec0e6;
+  --color-kanji-light: #faa0c3;
+  --color-kanji-grey: #714756;
   --color-vocab: #600090;
   --color-vocab-light: #be7edf;
   --color-vocab-lighter: #a22edc;
   --color-vocab-hover: #3d025a;
+  --color-vocab-grey:#5c4667;
   --color-black: #121212;
   --color-white: #fff;
 }
@@ -260,7 +262,7 @@ textarea {
 .stats-passed {background: repeating-linear-gradient(45deg,var(--color-radical-hover), var(--color-radical-hover) 33%,var(--color-kanji-hover) 33%, var(--color-kanji-hover) 66%,var(--color-vocab-hover) 66%, var(--color-vocab-hover) 100%);}
 .stats-apprentice {background: repeating-linear-gradient(45deg,var(--color-radical), var(--color-radical) 33%,var(--color-kanji) 33%, var(--color-kanji) 66%,var(--color-vocab) 66%, var(--color-vocab) 100%);}
 .stats-lessons {background: repeating-linear-gradient(45deg,var(--color-radical-light), var(--color-radical-light) 33%,var(--color-kanji-light) 33%, var(--color-kanji-light) 66%,var(--color-vocab-light) 66%, var(--color-vocab-light) 100%);}
-.stats-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,#525252 10px,#525252 20px);}
+.stats-locked {background: repeating-linear-gradient(45deg,#616161, #616161 33%,var(--color-kanji-grey) 33%, var(--color-kanji-grey) 66%, var(--color-vocab-grey) 66%, var(--color-vocab-grey) 100%);}
 
 .stats-rad-passed {background-color: var(--color-radical-hover);}
 .stats-rad-apprentice {background-color: var(--color-radical);}
@@ -271,6 +273,8 @@ textarea {
 .stats-vocab-passed {background-color: var(--color-vocab-hover);}
 .stats-vocab-apprentice {background-color: var(--color-vocab);}
 .stats-vocab-lessons {background-color: var(--color-vocab-light);}
+.stats-kanji-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,var(--color-kanji-grey) 10px,var(--color-kanji-grey) 20px);}
+.stats-vocab-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,var(--color-vocab-grey) 10px,var(--color-vocab-grey) 20px);}
 
 /* stats-right-down-container contents*/
 .stats-box {

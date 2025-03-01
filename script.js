@@ -1294,10 +1294,6 @@ function _fill_progress_bars() {
   for (let i = 1; i <= ProgressLevel; i++) {
     const lvl_hieroglyphs = progress_hieroglyphs.filter(h => (h.level===i));
     const N = lvl_hieroglyphs.length;
-    const passed = lvl_hieroglyphs.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
-    const apprentice = lvl_hieroglyphs.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
-    const lessons = _count_active_lessons(i)/N*100;
-    const locked = Math.floor(100.5 - (passed + apprentice + lessons));
     
     const rads = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL));
     const rad_passed = rads.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
@@ -1308,16 +1304,18 @@ function _fill_progress_bars() {
     const kanji_passed = kanji.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
     const kanji_apprentice = kanji.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
     const kanji_lessons = _count_active_lessons(i, HieroglyphType.KANJI)/N*100;
+    const kanji_locked = kanji.length/N*100 - (kanji_passed + kanji_apprentice + kanji_lessons);
 
     const vocab = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB));
     const vocab_passed = vocab.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
     const vocab_apprentice = vocab.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
     const vocab_lessons = _count_active_lessons(i, HieroglyphType.VOCAB)/N*100;
+    const vocab_locked = vocab.length/N*100 - (vocab_passed + vocab_apprentice + vocab_lessons);
 
     progressData.push({ rad_passed, rad_apprentice, rad_lessons, 
                         kanji_passed, kanji_apprentice, kanji_lessons, 
                         vocab_passed, vocab_apprentice, vocab_lessons, 
-                        locked });
+                        kanji_locked, vocab_locked,});
   }
 
   function _createSection(widthPercent, sectionClass) {
@@ -1355,8 +1353,9 @@ function _fill_progress_bars() {
     progressBar.appendChild(_createSection(entry.vocab_passed, 'stats-vocab-passed'));
     progressBar.appendChild(_createSection(entry.vocab_apprentice, 'stats-vocab-apprentice'));
     progressBar.appendChild(_createSection(entry.vocab_lessons, 'stats-vocab-lessons'));
-
-    progressBar.appendChild(_createSection(entry.locked, 'stats-locked'));
+    
+    progressBar.appendChild(_createSection(entry.kanji_locked, 'stats-kanji-locked'));
+    progressBar.appendChild(_createSection(entry.vocab_locked, 'stats-vocab-locked'));
 
     progressBarWrapper.appendChild(progressBar);
     levelRow.appendChild(label);
