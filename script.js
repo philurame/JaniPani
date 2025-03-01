@@ -1297,18 +1297,18 @@ function _fill_progress_bars() {
     
     const rads = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL));
     const rad_passed = rads.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
-    const rad_apprentice = rads.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const rad_apprentice = rads.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] >= 0)).length/N*100;
     const rad_lessons = _count_active_lessons(i, HieroglyphType.RADICAL)/N*100;
 
     const kanji = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.KANJI));
     const kanji_passed = kanji.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
-    const kanji_apprentice = kanji.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const kanji_apprentice = kanji.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] >= 0)).length/N*100;
     const kanji_lessons = _count_active_lessons(i, HieroglyphType.KANJI)/N*100;
     const kanji_locked = kanji.length/N*100 - (kanji_passed + kanji_apprentice + kanji_lessons);
 
     const vocab = lvl_hieroglyphs.filter(h => (h.hieroglyph_type===HieroglyphType.VOCAB));
     const vocab_passed = vocab.filter(h => (h.progres_level[0] >= 5) && (h.progres_level[1] >= 5)).length/N*100;
-    const vocab_apprentice = vocab.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] > 0)).length/N*100;
+    const vocab_apprentice = vocab.filter(h => ((h.progres_level[0] < 5) || (h.progres_level[1] < 5)) && (h.progres_level[0] >= 0)).length/N*100;
     const vocab_lessons = _count_active_lessons(i, HieroglyphType.VOCAB)/N*100;
     const vocab_locked = vocab.length/N*100 - (vocab_passed + vocab_apprentice + vocab_lessons);
 
