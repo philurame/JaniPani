@@ -795,9 +795,9 @@ function fillHieroglyphDetail(h) {
     const next_review_sec = Math.min(t_next_review_meaning, t_next_review_reading);
     if (next_review_sec < 0) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">NOW!</span>`;}
     else {
-      const next_review_days = Math.round(next_review_sec / 86400);
-      const hrs_residual = Math.round((next_review_sec % 86400) / 3600);
-      const mins_residual = Math.round((next_review_sec % 3600) / 60);
+      const next_review_days = Math.floor(next_review_sec / 86400);
+      const hrs_residual = Math.floor((next_review_sec % 86400) / 3600);
+      const mins_residual = Math.floor((next_review_sec % 3600) / 60);
 
     document.getElementById("info-next-review-in").innerHTML = `Next Review in: 
     <span class="info-level-time-style">${next_review_days}</span> days 
