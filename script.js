@@ -154,8 +154,8 @@ function getRadKanjiLessonLevel() {
   return RadKanjiLessonLevel;
 }
 function getKanjiVocabLessonLevel() {
-  if (ProgressLevel < LowProgressEnd) return KanjiVocabLessonLevel;
-  return KanjiVocabLessonLowLevel;
+  if (ProgressLevel < LowProgressEnd) return KanjiVocabLessonLowLevel;
+  return KanjiVocabLessonLevel;
 }
 
 //-----------------------------------------------------------
