@@ -134,12 +134,29 @@ var prevTimestamps = [];
 var is_wanakana_bind = false;
 var chartViewMode = "week";
 
-const NextLevelRadical = 5;      // radical level required for ProgressLevel+=1
-const NextLevelKanji = 5;        // kanji level required for ProgressLevel+=1
-const NextLevelKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
-const RadicalKanjiLessonLevel = 5; // radical-compound level required for kanji lesson
+const NextLevelRadical = 5;        // radical level required for ProgressLevel+=1
+const ProgressKanjiLevel = 5;      // kanji level required for ProgressLevel+=1
+const NextProgressKanjiShare = 0.9;   // kanji share leveled required for ProgressLevel+=1
+const RadKanjiLessonLevel = 5;     // radical-compound level required for kanji lesson
 const KanjiVocabLessonLevel   = 5; // kanji-compound level required for vocab lesson
 
+const ProgressKanjiLowLevel = 3;   // same for ProgressLevel < LowProgressEnd
+const RadKanjiLessonLowLevel = 0;
+const KanjiVocabLessonLowLevel = 0;
+const LowProgressEnd = 4;
+
+function getNextProgressKanji() {
+  if (ProgressLevel < LowProgressEnd) return ProgressKanjiLowLevel;
+  return ProgressKanjiLevel;
+}
+function getRadKanjiLessonLevel() {
+  if (ProgressLevel < LowProgressEnd) return RadKanjiLessonLowLevel;
+  return RadKanjiLessonLevel;
+}
+function getKanjiVocabLessonLevel() {
+  if (ProgressLevel < LowProgressEnd) return KanjiVocabLessonLevel;
+  return KanjiVocabLessonLowLevel;
+}
 
 //-----------------------------------------------------------
 // AUTO ROMAJI-TO-JAPANESE INPUT CONVERSION
@@ -462,7 +479,7 @@ function is_rads_compounds_learned(kanji) {
   for (let i = 0; i < kanji.resource_paths.radical_links.length; i++) {
     const radical_link = kanji.resource_paths.radical_links[i];
     const progres = DB.hieroglyphs[LinkIdx[radical_link]].progres_level;
-    if (progres[0] < RadicalKanjiLessonLevel || progres[1] < RadicalKanjiLessonLevel) {return false;}
+    if (progres[0] < getRadKanjiLessonLevel() || progres[1] < getRadKanjiLessonLevel()) {return false;}
   }
   return true;
 }
@@ -472,7 +489,7 @@ function is_kanji_compounds_learned(vocab) {
   for (let i = 0; i < vocab.resource_paths.kanji_links.length; i++) {
     const kanji_link = vocab.resource_paths.kanji_links[i];
     const progres = DB.hieroglyphs[LinkIdx[kanji_link]].progres_level;
-    if (progres[0] < KanjiVocabLessonLevel || progres[1] < KanjiVocabLessonLevel) {return false;}
+    if (progres[0] < getKanjiVocabLessonLevel() || progres[1] < getKanjiVocabLessonLevel()) {return false;}
   }
   return true;
 }
@@ -595,20 +612,20 @@ function _update_progress_level() {
 
   // check if progress level can be updated
   // all of radical should be >= NextLevelRadical
-  // NextLevelKanjiShare of kanji should be >= NextLevelKanji
+  // NextProgressKanjiShare of kanji should be >= NextProgressKanjiLevel
   const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
   let n_kanji_learned = 0;
   for (const hieroglyph of ProgressHieroglyphs) {
     switch (hieroglyph.hieroglyph_type) {
       case HieroglyphType.RADICAL: 
-        if (hieroglyph.progres_level[0] < NextLevelRadical) {return;}
+        if ( (ProgressLevel >= LowProgressEnd) && (hieroglyph.progres_level[0] < NextLevelRadical) ) {return;}
         break;
       case HieroglyphType.KANJI:
-        if ( (hieroglyph.progres_level[0] >= NextLevelKanji) && (hieroglyph.progres_level[1] >= NextLevelKanji) ) {n_kanji_learned += 1;}
+        if ( (hieroglyph.progres_level[0] >= getNextProgressKanji()) && (hieroglyph.progres_level[1] >= getNextProgressKanji()) ) {n_kanji_learned += 1;}
         break;
     }
   }
-  if (n_kanji_learned < NextLevelKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
+  if (n_kanji_learned < NextProgressKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
   ProgressLevel += 1;
 }
 
@@ -1057,10 +1074,10 @@ function _fill_lesson_review_stats() {
 
   const nkanji_learned = progress_hieroglyphs.filter(
     h => (h.hieroglyph_type === HieroglyphType.KANJI)  &&
-    (h.progres_level[0] >= NextLevelKanji) && (h.progres_level[1] >= NextLevelKanji)
+    (h.progres_level[0] >= getNextProgressKanji()) && (h.progres_level[1] >= getNextProgressKanji())
   ).length;
   
-  const totalKanji = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextLevelKanjiShare);
+  const totalKanji = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextProgressKanjiShare);
   const kanjiLevelBar = document.getElementById("kanji-level-bar");
   kanjiLevelBar.value = nkanji_learned;
   kanjiLevelBar.max = totalKanji;
