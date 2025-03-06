@@ -803,7 +803,7 @@ function fillHieroglyphDetail(h) {
   };
   
 
-  const is_inf = Math.min(h.progres_level[0], h.progres_level[1]) === -1 || Math.max(h.progres_level[0], h.progres_level[1]) === 9;
+  const is_inf = Math.min(h.progres_level[0], h.progres_level[1]) === -1 || Math.min(h.progres_level[0], h.progres_level[1]) === 9;
   if (is_inf) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">Infinity</span>`;}
   else {
     current_timestamp = Math.floor(Date.now() / 1000);
