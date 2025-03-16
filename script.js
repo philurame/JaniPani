@@ -133,6 +133,7 @@ var prevTimestamps = [];
 
 var is_wanakana_bind = false;
 var chartViewMode = "week";
+var reviewOrder = "random";
 
 const NextLevelRadical = 5;        // radical level required for ProgressLevel+=1
 const ProgressKanjiLevel = 5;      // kanji level required for ProgressLevel+=1
@@ -192,6 +193,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // REVIEW & LESSON BUTTONS
   document.getElementById("submit-answer").addEventListener("click", submitClick);
   document.getElementById("show-info-page").addEventListener("click", showInfoForCurrent);
+  document.getElementById("reorder").addEventListener("click", switch_review_order);
   document.getElementById("SwitchLessonButton").addEventListener("click", () => {LessonReviewButtonClick(1-isLesson);});
   document.getElementById("stats-lessons-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(1);});
   document.getElementById("stats-reviews-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(0);});
@@ -264,7 +266,7 @@ function handleUserInteractionKeyDown(event) {
   if (event.key === 'Enter') {
     event.preventDefault();
     if (event.target.id === "detail-mnemonic-meaning" || event.target.id === "detail-mnemonic-reading") {customMnemonicSave(event.target.id);}
-    if (is_question) {submitClick();}
+    if (is_question && !document.getElementById("feedback").textContent.startsWith("Incorrect")) {submitClick();}
     else if (is_info) {searchHieroglyphs();}
   } 
   else if (event.key === 'Escape') {
@@ -327,6 +329,18 @@ function NoLessonsReviews() {
   }
 }
 
+function switch_review_order() {
+  if (reviewOrder === 'random') {
+    reviewOrder = 'asc';
+    document.getElementById("reorder").textContent = "↻";
+  }
+  else if (reviewOrder === 'asc') {
+    reviewOrder = 'random';
+    document.getElementById("reorder").textContent = "↺";
+  }
+  showNewQuestion();
+}
+
 
 //-----------------------------------------------------------
 // SHOWS A NEW HIEROGLYPH
@@ -335,6 +349,7 @@ function showNewQuestion() {
   if (!document.getElementById("try-again").classList.contains("hidden")) {
     document.getElementById("try-again").classList.add("hidden");
   }
+  document.getElementById("reorder").classList.remove("hidden");
 
   // filter hieroglyphs based on ProgressLevel etc
   _filterHieroglyphs();
@@ -356,7 +371,7 @@ function showNewQuestion() {
   document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'none');
 
   // Display question text
-  document.getElementById("question-text").textContent = isLesson ? "INFO" : questionType.toUpperCase();
+  document.getElementById("question-text").textContent = isLesson ? "???" : questionType.toUpperCase();
 
   if (isLesson) {
     document.getElementById("answer-input").classList.add("hidden");
@@ -462,7 +477,8 @@ function _sampleQuestion() {
   // Review mode: sample random hieroglyph:
   const sample_hieroglyphs = filteredHieroglyphs.filter(h => h.progres_level[0] > -1);
   if (sample_hieroglyphs.length === 0) {return false;}
-  currentQuestion = sample_hieroglyphs[Math.floor(Math.random() * sample_hieroglyphs.length)];
+  const idx = (reviewOrder === 'random') ? Math.floor(Math.random() * sample_hieroglyphs.length) : 0;
+  currentQuestion = sample_hieroglyphs[idx];
   if (currentQuestion.hieroglyph_type === HieroglyphType.RADICAL || 
     current_timestamp - currentQuestion.progres_timestamp[1] < SecToReview[currentQuestion.progres_level[1]]) {
     questionType = 'meaning';
@@ -557,10 +573,16 @@ function submitClick() {
   softPossibleAnswers = softPossibleAnswers.map(ans => ans.toLowerCase());
   
   let userAnswerLower = userAnswer.toLowerCase();
+  if (questionType === 'reading' && userAnswerLower[-1]  === 'n') {userAnswerLower[-1] = 'ん';}
+
   possibleAnswers = possibleAnswers.map(ans => ans.toLowerCase());
-  if (possibleAnswers.includes(userAnswerLower)) {
-    correct = true;
-  } else if (softPossibleAnswers.includes(userAnswerLower) || softPossibleAnswers.includes(wanakana.toHiragana(userAnswerLower))) {
+  for (let i = 0; i < possibleAnswers.length; i++) {
+    const possible_answer = possibleAnswers[i];
+    const levenstain_maxd = (possible_answer.length <= 3 || questionType === 'reading') ? 0 : 1;
+    if (levenshteinDistance(possible_answer, userAnswerLower) <= levenstain_maxd) {correct = true;}
+  }
+  if (userAnswerLower === '§') {correct = true;}
+  if (!correct && (softPossibleAnswers.includes(userAnswerLower) || softPossibleAnswers.includes(wanakana.toHiragana(userAnswerLower)))) {
     half_correct = true;
   }
 
@@ -572,6 +594,7 @@ function submitClick() {
 
   if (!correct && !half_correct) {
     document.getElementById("try-again").classList.remove("hidden");
+    document.getElementById("reorder").classList.add("hidden");
   }
   
   if (correct || !half_correct) {
@@ -593,16 +616,20 @@ function _update_progress(is_correct, is_half_correct) {
   currentQuestion.progres_level[progres_level_idx] += is_correct ? 1 : (currentQuestion.progres_level[progres_level_idx]<5 ? -1: -2);
   currentQuestion.progres_level[progres_level_idx] = Math.max(0, currentQuestion.progres_level[progres_level_idx]);
   currentQuestion.progres_level[progres_level_idx] = Math.min(9, currentQuestion.progres_level[progres_level_idx]);
-  currentQuestion.progres_timestamp[progres_level_idx] = Math.floor(Date.now()/1000);
+
+  let sec_to_review = SecToReview[currentQuestion.progres_level[progres_level_idx]];
+  sec_to_review = (sec_to_review === Infinity) ? 0 : sec_to_review;
+  const random_sec_shift = Math.floor(Math.random() * sec_to_review * 0.2);
+
+  currentQuestion.progres_timestamp[progres_level_idx] = Math.floor(Date.now()/1000) + random_sec_shift;
 
   if (currentQuestion.hieroglyph_type === HieroglyphType.RADICAL || isLesson) {
     currentQuestion.progres_level[1-progres_level_idx] = currentQuestion.progres_level[progres_level_idx];
     currentQuestion.progres_timestamp[1-progres_level_idx] = currentQuestion.progres_timestamp[progres_level_idx];
-    if (isLesson) {currentQuestion.progres_level = [0, 0];}
+    if (isLesson) {currentQuestion.progres_level = [0, 0];} 
   }
 
   saveProgressToLocalStorage();
-
   _update_progress_level();
 }
 
@@ -645,6 +672,7 @@ function tryAgain() {
   document.getElementById("answer-input").focus();
   document.getElementById("submit-answer").textContent = "Submit";
   document.getElementById("try-again").classList.add("hidden");
+  document.getElementById("reorder").classList.remove("hidden");
 }
 
 function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
@@ -672,7 +700,7 @@ function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
   if (is_correct) {
     feeDBackEl.textContent = "Correct! New progress level: " + HieroglyphProgress[currentQuestion.progres_level[(questionType === "meaning") ? 0 : 1]];
   } else {
-    feeDBackEl.textContent = "Incorrect! Possible answers: " + possibleAnswers.join(", ");
+    feeDBackEl.textContent = "Incorrect! Gambarimasu!";
   }
   feeDBackEl.style.color = is_correct ? "var(--color-correct)" : "var(--color-incorrect)";
 
@@ -746,7 +774,6 @@ function searchHieroglyphs() {
     if (h.mnemonics.meaning.toLowerCase().includes(query)) {h._priority = 9; return true;}
     if (h.mnemonics.reading.toLowerCase().includes(query)) {h._priority = 9; return true;}
     
-
     return false;
   }).sort((a, b) => a._priority - b._priority);
   
@@ -1409,4 +1436,27 @@ function _fill_hieroglyph_stats() {
   document.getElementById('stats-box-radical').innerHTML = "Radical" + "<br>" + radical;
   document.getElementById('stats-box-kanji').innerHTML = "Kanji" + "<br>" + kanji;
   document.getElementById('stats-box-vocab').innerHTML = "Vocabulary" + "<br>" + vocab;
+}
+
+
+function levenshteinDistance(a, b) {
+  const dp = [];
+  for (let i = 0; i <= a.length; i++) {
+    dp[i] = [];
+    dp[i][0] = i;
+  }
+  for (let j = 0; j <= b.length; j++) {
+    dp[0][j] = j;
+  }
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,       // deletion
+        dp[i][j - 1] + 1,       // insertion
+        dp[i - 1][j - 1] + cost // substitution
+      );
+    }
+  }
+  return dp[a.length][b.length];
 }
