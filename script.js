@@ -338,6 +338,7 @@ function switch_review_order() {
     reviewOrder = 'random';
     document.getElementById("reorder").textContent = "↺";
   }
+  if (document.getElementById("feedback").textContent) {submitClick();}
   showNewQuestion();
 }
 
