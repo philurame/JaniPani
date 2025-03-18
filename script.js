@@ -378,10 +378,14 @@ function showNewQuestion() {
     if (!document.getElementById("reorder").classList.contains("hidden")) {
       document.getElementById("reorder").classList.add("hidden");
     }
-  } else if (document.getElementById("answer-input").classList.contains("hidden")) {
-    document.getElementById("answer-input").classList.remove("hidden"); 
-    document.getElementById("answer-input").focus();
-    document.getElementById("reorder").classList.remove("hidden");
+  } else {
+    if (document.getElementById("reorder").classList.contains("hidden")) {
+      document.getElementById("reorder").classList.remove("hidden");
+    }
+    if (document.getElementById("answer-input").classList.contains("hidden")) {
+      document.getElementById("answer-input").classList.remove("hidden"); 
+      document.getElementById("answer-input").focus();
+    }
   }
 
   return true;
