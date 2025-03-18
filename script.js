@@ -350,7 +350,6 @@ function showNewQuestion() {
   if (!document.getElementById("try-again").classList.contains("hidden")) {
     document.getElementById("try-again").classList.add("hidden");
   }
-  document.getElementById("reorder").classList.remove("hidden");
 
   // filter hieroglyphs based on ProgressLevel etc
   _filterHieroglyphs();
@@ -376,9 +375,13 @@ function showNewQuestion() {
 
   if (isLesson) {
     document.getElementById("answer-input").classList.add("hidden");
+    if (!document.getElementById("reorder").classList.contains("hidden")) {
+      document.getElementById("reorder").classList.add("hidden");
+    }
   } else if (document.getElementById("answer-input").classList.contains("hidden")) {
     document.getElementById("answer-input").classList.remove("hidden"); 
     document.getElementById("answer-input").focus();
+    document.getElementById("reorder").classList.remove("hidden");
   }
 
   return true;
