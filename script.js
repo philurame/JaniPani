@@ -483,7 +483,8 @@ function _sampleQuestion() {
   }
 
   // Review mode: sample random hieroglyph:
-  const sample_hieroglyphs = filteredHieroglyphs.filter(h => h.progres_level[0] > -1);
+  const order = [HieroglyphType.RADICAL, HieroglyphType.KANJI, HieroglyphType.VOCAB];
+  const sample_hieroglyphs = filteredHieroglyphs.filter(h => h.progres_level[0] > -1).sort((a, b) => order.indexOf(a.hieroglyph_type) - order.indexOf(b.hieroglyph_type));
   if (sample_hieroglyphs.length === 0) {return false;}
   const idx = (reviewOrder === 'random') ? Math.floor(Math.random() * sample_hieroglyphs.length) : 0;
   currentQuestion = sample_hieroglyphs[idx];
@@ -581,7 +582,18 @@ function submitClick() {
   softPossibleAnswers = softPossibleAnswers.map(ans => ans.toLowerCase());
   
   let userAnswerLower = userAnswer.toLowerCase();
-  if (questionType === 'reading' && userAnswerLower[-1]  === 'n') {userAnswerLower[-1] = 'ん';}
+  if (questionType === 'reading') {
+    const last_letter = userAnswerLower[userAnswerLower.length-1];
+    switch (last_letter) {
+      case 'a': userAnswerLower = userAnswerLower.slice(0, -1) + 'ぁ'; break;
+      case 'i': userAnswerLower = userAnswerLower.slice(0, -1) + 'ぃ'; break;
+      case 'u': userAnswerLower = userAnswerLower.slice(0, -1) + 'ぅ'; break;
+      case 'e': userAnswerLower = userAnswerLower.slice(0, -1) + 'ぇ'; break;
+      case 'o': userAnswerLower = userAnswerLower.slice(0, -1) + 'ぉ'; break;
+      case 'n': userAnswerLower = userAnswerLower.slice(0, -1) + 'ん'; break;
+    }
+    document.getElementById("answer-input").value = userAnswerLower;
+  }
 
   possibleAnswers = possibleAnswers.map(ans => ans.toLowerCase());
   for (let i = 0; i < possibleAnswers.length; i++) {
