@@ -1,0 +1,57 @@
+<!-- ============================================================= -->
+<!-- Info/Search Section -->
+<!-- ============================================================= -->
+<section>
+  <div id="info-section" class="section hidden">
+    <button id="search-button">Search</button>
+    <button id="back-to-game">Back to Game</button>
+    <input type="text" id="search-query" placeholder="" autofocus autocomplete="off">
+    <ul id="search-results"></ul>
+    <div id="hieroglyph-detail" class="hidden">
+      <div id="info-container">
+        <div id="details">
+          <div id="meaning">
+            <span id="detail-meaning"></span>  
+            <span id="extra-meanings" class="faded"></span> 
+          </div>
+          <ul id="symbol-composition"></ul>
+          <button id="vocab-sound-button"></button>
+          <div id="onkun">
+            <div id="onon">
+              <span id="detail-onyomi-title">On'yomi</span>
+              <span id="detail-onyomi"></span>
+            </div>
+            <div id="kunkun">
+              <span id="detail-kunyomi-title">Kun'yomi</span>
+              <span id="detail-kunyomi"></span>
+            </div>
+          </div>
+          <div id="detail-level">
+            <span id="info-level"></span>
+            <span id="info-progress"></span>
+            <span id="info-next-review-in"></span>
+          </div>
+        </div>
+        <div id="mnemonic-container">
+          <div class="mnemonic-item">
+            <button class="show-mnemonic">Mnemonics Meaning</button>
+            <div class="mnemonic-content">
+              <textarea id="detail-mnemonic-meaning"></textarea>
+            </div>
+          </div>
+          <div class="mnemonic-item">
+            <button class="show-mnemonic">Mnemonics Reading</button>
+            <div class="mnemonic-content">
+              <textarea id="detail-mnemonic-reading"></textarea>
+            </div>
+          </div>
+        </div>
+        <ul id="detail-sentences"></ul>
+      </div>
+      <div id="symbol-ref">
+        <button id="detail-symbol" class="hidden"></button>
+        <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
+      </div>
+    </div>
+  </div>
+</section>

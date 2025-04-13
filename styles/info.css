@@ -1,0 +1,275 @@
+/* ============================
+  NEXT REVIEW IN... SECTION 
+============================ */
+#no-lesson-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-purple);
+  font-size: 24px;
+  width: 30%;
+  height: 40%;
+  margin-left: 30%;
+  margin-top: 20%;
+  border: 1px solid var(--color-purple);
+  border-radius: 10px;
+  padding: 50px;
+  gap: 20px;
+}
+#no-lesson-section.hidden {display: none;}
+
+
+
+/* ============================
+  INFO-INPUT/RESULTS SECTION
+============================ */
+
+/* info-search */
+#search-query {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-primary);
+  caret-color: var(--color-primary);
+  text-align: center;
+  font-size: 50px;
+  border-bottom: 2px solid var(--color-purple);
+}
+
+#search-results {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 20px;
+  justify-content: center;
+  padding: 0;
+  margin: 0 auto;
+  list-style: none;
+  max-width: 100%;
+}
+#search-results li {
+  padding: 14px 0px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+.radical-search {background-color: var(--color-radical); color: var(--color-primary);}
+.kanji-search {background-color: var(--color-kanji); color: var(--color-primary);}
+.vocab-search {background-color: var(--color-vocab); color: var(--color-primary);}
+
+.radical-search:hover{ color: var(--color-grey); background-color: var(--color-radical-hover);}
+.kanji-search:hover{color: var(--color-grey); background-color: var(--color-kanji-hover);}
+.vocab-search:hover{ color: var(--color-grey); background-color: var(--color-vocab-hover);}
+
+#symbol-composition {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  justify-content: center;
+  margin-right: 42px;
+}
+#symbol-composition li {
+  font-size: 30px;
+  padding: 10px 10px;
+  border-radius: 15%;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* hieroglyph-details container */
+#hieroglyph-detail {
+  max-width: 1000px;
+  margin: 0px auto 0px auto;
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  justify-content: center;
+  margin-top: 40px;   
+  gap: 20px;
+}
+#hieroglyph-detail.hidden {display: none;}
+
+.radical-info, .kanji-info, .vocab-info {
+  width: 250px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);;
+  border-radius: 15%;
+  border: none;
+  outline: none;
+}
+.radical-info {background-color: var(--color-radical);}
+.kanji-info {background-color: var(--color-kanji);}
+.vocab-info {background-color: var(--color-vocab);}
+
+.radical-info:hover{ color: var(--color-grey); background-color: var(--color-radical-hover);}
+.kanji-info:hover{color: var(--color-grey); background-color: var(--color-kanji-hover);}
+.vocab-info:hover{ color: var(--color-grey); background-color: var(--color-vocab-hover);}
+
+/* meanings/readings */
+#details {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 20px;
+}
+#detail-meaning {
+  font-size: 30px;
+  color: var(--color-primary);
+}
+#extra-meanings {font-size: 25px;}
+
+#detail-onyomi-title {color: var(--color-blue)}
+#detail-kunyomi-title {color: var(--color-blue)}
+
+#onkun {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+}
+#onon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#kunkun {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#line-radical {margin-top: 15px;}
+#detail-level {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  font-size: 15px;
+  color: var(--color-primary);
+  gap: 10px;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+  padding: 10px;
+}
+.info-level-time-style {
+  color: var(--color-purple);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#vocab-sound-button{
+  font-size: 30px;
+  margin-bottom: 0px;
+}
+.faded {
+  opacity: 0.5;
+  color: var(--color-primary);
+}
+
+/* wanikani link */
+#symbol-ref {
+  margin-left: 50px;
+  margin-top: 50px;
+}
+#detail-wanikani-link {
+  display: inline-block;
+  margin-top: 13px;
+  color: var(--color-blue);
+  font-size: 20px;
+  position: relative;
+  border-radius: 10px;
+  padding: 10px 20px; 
+  }
+
+/* mnemonics */
+#mnemonic-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  position: relative;
+  margin-left: 50px;
+}
+.mnemonic-item {
+  position: relative;
+  margin: 0 10px;
+}
+.mnemonic-item button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: none;
+  background-color: var(--color-purple);
+  color: var(--color-white);
+  border-radius: 5px;
+}
+.mnemonic-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 80vh;
+  background-color: var(--color-purple);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  padding: 12px;
+  z-index: 1;
+  flex-direction: column;
+  text-align: left;
+  border-radius: 5px;
+}
+.show-mnemonic:hover {
+  background-color: var(--color-purple-hover);
+  color: var(--color-grey);
+}
+#detail-mnemonic-meaning, #detail-mnemonic-reading {
+  width: 100%;
+  resize: none;
+  overflow-wrap: break-word;
+  background-color: var(--color-purple);
+  color: var(--color-white);
+  border: none;
+  outline: none;
+  font-size: 18px;
+}
+
+.mnemonic-content.show {display: block;}
+.flash-effect {animation: flash-color 0.6s ease-in-out forwards;}
+@keyframes flash-color {
+  0% {color: var(--color-white);}
+  50% {color: var(--color-correct);}
+  100% {color: var(--color-white);}
+}
+
+/* sample vocab sentences */
+#detail-sentences {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+.sentence-item {
+  margin-top: 10px;
+  display: flex;
+  width: 100%;
+}
+.japanese {
+  flex: 1;
+  text-align: right;
+  padding-right: 20px;
+} 
+.translation {
+  flex: 1;
+  text-align: left;
+}

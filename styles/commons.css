@@ -1,0 +1,66 @@
+/* ============================
+ Commons
+============================ */
+@font-face {
+  font-family: 'meiryo';
+  src: url('../extras/meiryo.ttf');
+}
+
+:root {
+  --color-correct: #74bc0c;
+  --color-incorrect: #f8043c;
+  --color-primary: #d8d8d8;
+  --color-grey: #797777;
+  --color-purple: #9c6fd4;
+  --color-purple-hover: #614683;
+  --color-blue: #606cc4;
+  --color-radical: #00a3f5;
+  --color-radical-hover: #04608e;
+  --color-radical-light: #65cbfd;
+  --color-kanji: #fc5494;
+  --color-kanji-hover: #9d365e;
+  --color-kanji-light: #faa0c3;
+  --color-kanji-grey: #714756;
+  --color-vocab: #600090;
+  --color-vocab-light: #be7edf;
+  --color-vocab-lighter: #a22edc;
+  --color-vocab-hover: #3d025a;
+  --color-vocab-grey:#5c4667;
+  --color-black: #121212;
+  --color-white: #fff;
+}
+
+body {
+  font-family: 'meiryo', Arial;
+  margin: 20px;
+  padding: 0;
+  background-color: var(--color-black);
+  color: var(--color-primary);
+  text-align: center;
+  position: relative;
+}
+
+.hidden {display: none;}
+
+button {
+  background-color: var(--color-purple);
+  color: var(--color-primary);
+  padding: 8px 20px;
+  margin: 10px;
+  font-size: 24px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: var(--color-purple-hover);
+  color: var(--color-grey);
+}
+
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+
+
+

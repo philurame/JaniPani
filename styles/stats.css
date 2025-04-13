@@ -1,0 +1,237 @@
+/* ============================
+  STATS SECTION
+============================ */
+#stats-section {
+  margin-top: 20px;
+  height: 90vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  gap: 20px;
+}
+#stats-section.hidden { display: none; }
+
+/* stats left-right containers */
+#stats-left-container {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  gap: 2.5%;
+  flex-direction: column;
+} 
+#stats-right-container {
+  width: 40%;
+  display: flex;
+  justify-content: center;
+  gap: 2.5%;
+  flex-direction: column;
+}
+
+/* stats corner containers */
+#stats-left-up-container {
+  height: 45%;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+#stats-left-down-container { 
+  height: 50%; 
+  border: 1px solid var(--color-blue); 
+  border-radius: 10px; 
+}
+#stats-right-up-container {
+  height: 45%;
+  border: 1px solid var(--color-blue);
+  border-radius: 10px;
+}
+#stats-right-down-container {
+  height: 50%;
+  display: grid;
+  grid-column-gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+/* stats-left-up-container contents*/
+#level-info-data-container {
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+#data-buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+}
+#downloadBtn, #uploadBtn {padding: 4px 10px;}
+
+#refresh-level-info-container {
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  gap: 10px;
+}
+
+#level-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-left: 5px;
+  margin-top: 18px;  
+  margin-bottom: 18px;  
+}
+.progress-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progress-bar label {
+  width: 80px;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+.progress-bar progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 200px;
+  height: 20px;
+}
+.progress-bar progress::-webkit-progress-bar   {border-radius: 10px; background-color: var(--color-blue);}
+.progress-bar progress::-webkit-progress-value {border-radius: 10px; background-color: var(--color-correct);}
+.progress-bar span {min-width: 90px; color: var(--color-primary);}
+
+#statsRefresh {
+  font-size: 50px;
+  justify-content: center;
+  padding-top: 0px;
+  margin-right: 15px;
+}
+
+#stats-lessons-review-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  width: 90%;
+  margin-top: 20px;
+}
+#stats-lessons-container, #stats-reviews-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40%;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+
+/* stats-right-up-container contents*/
+#stats-bars-legend {
+  display: flex;
+  justify-content: space-between;
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.stats-legend-box {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border-radius: 3px;
+}
+.stats-scrollable-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  max-height: 75%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.stats-level-row {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+.stats-label {
+  width: 50px;
+  text-align: center;
+  color: var(--color-primary);
+}
+.stats-progress-bar-wrapper {
+  flex: 1;
+  height: 25px;
+  background-color: var(--color-black);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  margin-left: 5px;
+}
+.stats-progress-bar {height: 100%; display: flex;}
+.stats-progress-bar-section {height: 100%;}
+
+.stats-passed {background: repeating-linear-gradient(45deg,var(--color-radical-hover), var(--color-radical-hover) 33%,var(--color-kanji-hover) 33%, var(--color-kanji-hover) 66%,var(--color-vocab-hover) 66%, var(--color-vocab-hover) 100%);}
+.stats-apprentice {background: repeating-linear-gradient(45deg,var(--color-radical), var(--color-radical) 33%,var(--color-kanji) 33%, var(--color-kanji) 66%,var(--color-vocab) 66%, var(--color-vocab) 100%);}
+.stats-lessons {background: repeating-linear-gradient(45deg,var(--color-radical-light), var(--color-radical-light) 33%,var(--color-kanji-light) 33%, var(--color-kanji-light) 66%,var(--color-vocab-light) 66%, var(--color-vocab-light) 100%);}
+.stats-locked {background: repeating-linear-gradient(45deg,#616161, #616161 33%,var(--color-kanji-grey) 33%, var(--color-kanji-grey) 66%, var(--color-vocab-grey) 66%, var(--color-vocab-grey) 100%);}
+
+.stats-rad-passed {background-color: var(--color-radical-hover);}
+.stats-rad-apprentice {background-color: var(--color-radical);}
+.stats-rad-lessons {background-color: var(--color-radical-light);}
+.stats-kanji-passed {background-color: var(--color-kanji-hover);}
+.stats-kanji-apprentice {background-color: var(--color-kanji);}
+.stats-kanji-lessons {background-color: var(--color-kanji-light);}
+.stats-vocab-passed {background-color: var(--color-vocab-hover);}
+.stats-vocab-apprentice {background-color: var(--color-vocab);}
+.stats-vocab-lessons {background-color: var(--color-vocab-light);}
+.stats-kanji-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,var(--color-kanji-grey) 10px,var(--color-kanji-grey) 20px);}
+.stats-vocab-locked {background: repeating-linear-gradient(45deg,#616161,#616161 10px,var(--color-vocab-grey) 10px,var(--color-vocab-grey) 20px);}
+.progress-text {
+  font-size: 0.7rem;
+  color: var(--color-grey);
+  /* text-shadow: 1px 1px 2px var(--color-grey); */
+  pointer-events: none;
+}
+
+/* stats-right-down-container contents*/
+.stats-box {
+  padding-top: 25px;
+  padding-bottom: 25px;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  color: var(--color-black);
+}
+#stats-box-apprentice {background-color:  #E2F5C9; border: 1px solid #74BC0C;}
+#stats-box-guru {background-color:        #C6E79A; border: 1px solid #74BC0C;}
+#stats-box-master {background-color:      #AAD96B; border: 1px solid #74BC0C;}
+#stats-box-enlightened {background-color: #8ECB3C; border: 1px solid #74BC0C;}
+#stats-box-burned {background-color:      #74BC0C; border: 1px solid #74BC0C;}
+#stats-box-empty {background-color: var(--color-black); color: #74BC0C; border: 1px solid #74BC0C; }
+#stats-box-radical {background-color: var(--color-black); color: var(--color-radical); border: 1px solid var(--color-radical);}
+#stats-box-kanji {background-color: var(--color-black); color: var(--color-kanji); border: 1px solid var(--color-kanji); } 
+#stats-box-vocab {background-color: var(--color-black); color: var(--color-vocab-lighter); border: 1px solid var(--color-vocab-lighter); }

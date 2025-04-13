@@ -1,0 +1,75 @@
+<!-- ============================================================= -->
+<!-- Main Section: whole statistics --> 
+<!-- ============================================================= -->
+<section>
+  <div id="stats-section" class="section hidden">
+    <div id="stats-left-container">
+      <!-- lessons & reviews stats and buttons -->
+      <div id="stats-left-up-container">
+        <div id="level-info-data-container">
+          <div id="data-buttons">
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+            <button id="downloadBtn">Save</button>
+            <button id="uploadBtn">Load</button>
+          </div>
+          <div id="refresh-level-info-container">
+            <div id="level-info-container">
+              <div class="progress-bar">
+                <label for="progress-level-bar" style="color: var(--color-radical);">Level</label>
+                <progress id="progress-level-bar" value="0" max="59" min="1"></progress>
+                <span id="progress-level-text">0 / 60</span>
+              </div>
+              <div class="progress-bar">
+                <label for="kanji-level-bar" style="color: var(--color-kanji);">Kanji</label>
+                <progress id="kanji-level-bar" value="0" max="0"></progress>
+                <span id="kanji-level-text">0 / 0</span>
+              </div>
+            </div>
+            <button id="statsRefresh">↺</button>
+          </div>
+        </div>
+        <div id="stats-lessons-review-container">
+          <div id="stats-lessons-container">
+            <div id="stats-lessons-text">None</div>
+            <button id="stats-lessons-button">Go to Lessons</button>
+          </div>
+          <div id="stats-reviews-container">
+            <div id="stats-review-text">None</div>
+            <button id="stats-reviews-button">Go to Reviews</button>
+          </div>
+        </div>            
+      </div>
+
+      <!-- Stats Chart -->
+      <div id="stats-left-down-container">
+        <canvas id="stats-reviewChart"></canvas>
+      </div>
+    </div>
+
+    <div id="stats-right-container">
+      <!-- level bars stats  -->
+      <div id="stats-right-up-container">
+        <div id="stats-bars-legend">
+          <div><span class="stats-legend-box stats-passed"></span>Passed</div>
+          <div><span class="stats-legend-box stats-apprentice"></span>Apprentice</div>
+          <div><span class="stats-legend-box stats-lessons"></span>Lessons</div>
+          <div><span class="stats-legend-box stats-locked"></span>Locked</div>
+        </div>
+        <div class="stats-scrollable-container" id="stats-progress-container"><!-- Progress bars will be inserted here --></div>
+      </div>
+
+        <!-- "squares" stats  -->
+      <div id="stats-right-down-container">
+        <div class="stats-box" id="stats-box-radical">Radical<br>289</div>
+        <div class="stats-box" id="stats-box-kanji">Kanji<br>562</div>
+        <div class="stats-box" id="stats-box-vocab">Vocabulary<br>1,513</div>
+        <div class="stats-box" id="stats-box-apprentice">Apprentice<br>206</div>
+        <div class="stats-box" id="stats-box-empty">良い一日を!<br>ツ</div>
+        <div class="stats-box" id="stats-box-burned">Burned<br>1,529</div>
+        <div class="stats-box" id="stats-box-guru">Guru<br>239</div>
+        <div class="stats-box" id="stats-box-master">Master<br>181</div>
+        <div class="stats-box" id="stats-box-enlightened">Enlightened<br>209</div>
+      </div>
+    </div>
+  </div>
+</section>
