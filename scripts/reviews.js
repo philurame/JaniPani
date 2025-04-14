@@ -82,7 +82,7 @@ function showNewQuestion() {
     }
     if (document.getElementById("answer-input").classList.contains("hidden")) {
       document.getElementById("answer-input").classList.remove("hidden"); 
-      document.getElementById("answer-input").focus();
+      if (window.innerWidth >= 768) document.getElementById("answer-input").focus();
     }
   }
 
@@ -243,7 +243,7 @@ function tryAgain() {
   document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'none');
   document.getElementById("question-text").textContent = (questionType.toLowerCase() === 'meaning') ? '意味 (meaning)' : '読み方 (reading)';
   document.getElementById("answer-input").value = "";
-  document.getElementById("answer-input").focus();
+  if (window.innerWidth >= 768) document.getElementById("answer-input").focus();
   document.getElementById("submit-answer").textContent = "Submit";
   document.getElementById("try-again").classList.add("hidden");
   document.getElementById("reorder").classList.remove("hidden");

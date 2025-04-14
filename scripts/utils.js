@@ -6,7 +6,8 @@ function showSection(sectionId) {
   allSections.forEach(s => {document.getElementById(s).classList.add("hidden");});
   document.getElementById(sectionId).classList.remove("hidden");
 
-  if (sectionId === "game-section") {document.getElementById("answer-input").focus();
+  if (sectionId === "game-section") {
+    if (window.innerWidth >= 768) {document.getElementById("answer-input").focus();}
     // clear info's display
     document.getElementById("search-query").value = "";
     document.getElementById("search-results").innerHTML = "";
@@ -15,7 +16,7 @@ function showSection(sectionId) {
     document.getElementById("submit-answer").textContent = isInQuestion ? "Submit" : "Next";
     document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
   }
-  if (sectionId === "info-section") {document.getElementById("search-query").focus();}
+  if (sectionId === "info-section") {if (window.innerWidth >= 768) document.getElementById("search-query").focus();}
   if (sectionId === "stats-section") {currentQuestion = null;}
 }
 

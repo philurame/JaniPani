@@ -21,6 +21,9 @@
   #question-text {
     font-size: 20px !important;
   }
+  #answer-input {
+    margin-top: 0px !important;
+  }
 }
 
 /* ============================
