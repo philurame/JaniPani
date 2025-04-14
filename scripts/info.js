@@ -161,6 +161,20 @@ function fillHieroglyphDetail(h) {
     li.onclick = () => {composition.innerHTML = ""; fillHieroglyphDetail(link_hieroglyph);}
     composition.appendChild(li);
   }
+
+  if (window.innerWidth < 768) {
+    if (composition_links.length > 0) {
+      const equal = document.createElement("span");
+      equal.textContent = "=";
+      equal.style = 'margin: 0 10px; margin-top: 15px; color: var(--color-primary); font-size: 30px;';
+      composition.appendChild(equal);
+    }
+    const li = document.createElement("li");
+    li.textContent = h.symbol.toUpperCase();
+    li.classList.add((h.hieroglyph_type === HieroglyphType.RADICAL) ? "radical-search" : (h.hieroglyph_type === HieroglyphType.KANJI) ? "kanji-search" : "vocab-search");
+    li.onclick = () => {searchDetail();}
+    composition.appendChild(li);
+  }
   
 
   if (h.hieroglyph_type === HieroglyphType.KANJI) {

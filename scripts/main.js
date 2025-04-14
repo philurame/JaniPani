@@ -63,7 +63,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("StatsButton").addEventListener("click", () => {showSection("stats-section");});
   document.getElementById("statsRefresh").addEventListener("click", update_stats_section);
 
-  document.getElementById("back-to-stats").addEventListener("click", () => {showSection("stats-section");});
   document.getElementById('back-to-game').addEventListener('click', () => {
     showSection("game-section"); 
     if (!currentQuestion) {LessonReviewButtonClick(isLesson);}
@@ -98,5 +97,30 @@ window.addEventListener("DOMContentLoaded", async () => {
   
   loadProgressFromLocalStorage();
   update_stats_section();
-  showSection("stats-section");
+
+  document.getElementById("back-to-stats").addEventListener("click", () => {
+    if (window.innerWidth < 768) {showSection("game-section"); LessonReviewButtonClick(1-isLesson);}
+    else {showSection("stats-section");}
+  });
+
+  document.querySelectorAll('.mobileDownloadBtn').forEach(e => {e.addEventListener('click', handleFileDownload);});
+  document.querySelectorAll('.mobileUploadBtn').forEach(e => {e.addEventListener('click', () => {document.getElementById('fileInput').click();});});
+
+  if (window.innerWidth < 768) {
+    showSection("game-section");
+    LessonReviewButtonClick(1)
+  } else {
+    showSection("stats-section");
+  }
+
+  check_using_mobile();
 });
+
+
+function check_using_mobile() {
+  if (window.innerWidth < 768) {
+    document.querySelectorAll('.mobile-load').forEach(e => {e.classList.remove('hidden');});
+  } else {
+    document.querySelectorAll('.mobile-load').forEach(e => {e.classList.add('hidden');});
+  }
+}

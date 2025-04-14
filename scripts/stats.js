@@ -13,7 +13,9 @@ async function handleFileUpload(event) {
   reader.onload = function(e) {
     jsonData = JSON.parse(e.target.result);
     _overwriteDB(jsonData);
-    showSection("stats-section");
+
+    if (window.innerWidth < 768) {showSection("game-section"); LessonReviewButtonClick(0);}
+    else {showSection("stats-section");}
   };
   reader.readAsText(file);
 }

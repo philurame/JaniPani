@@ -1,4 +1,12 @@
 /* ============================
+ Mobile Styles
+============================ */
+@media (max-width: 767px) {
+  #StatsButton {display: none;}
+  #symbol-ref {display: none;}
+}
+
+/* ============================
  Commons
 ============================ */
 @font-face {

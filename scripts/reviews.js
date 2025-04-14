@@ -12,6 +12,8 @@ function LessonReviewButtonClick(is_lesson) {
 
   document.getElementById("submit-answer").textContent = isInQuestion ? "Submit" : "Next";
   document.getElementById("SwitchLessonButton").textContent = isLesson ? "Switch to Reviews" : "Switch to Lessons";
+
+  check_using_mobile();
 };
 
 function NoLessonsReviews() {
@@ -67,7 +69,7 @@ function showNewQuestion() {
   document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'none');
 
   // Display question text
-  document.getElementById("question-text").textContent = isLesson ? "???" : questionType.toUpperCase();
+  document.getElementById("question-text").textContent = isLesson ? "📚 check Info!" : (questionType.toLowerCase() === 'meaning') ? '意味 (meaning)' : '読み方 (reading)';
 
   if (isLesson) {
     document.getElementById("answer-input").classList.add("hidden");
@@ -215,7 +217,7 @@ function submitClick() {
   _update_progress(correct, half_correct);
 
   // FEEDBACK
-  _displayFeedback(correct, half_correct, possibleAnswers);
+  _displayFeedback(correct, half_correct);
 
   if (!correct && !half_correct) {
     document.getElementById("try-again").classList.remove("hidden");
@@ -239,7 +241,7 @@ function tryAgain() {
   document.getElementById("feedback").textContent = "";
   document.getElementById("answer-input").style.borderBottom = "2px solid var(--color-primary)";
   document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'none');
-  document.getElementById("question-text").textContent = questionType.toUpperCase();
+  document.getElementById("question-text").textContent = (questionType.toLowerCase() === 'meaning') ? '意味 (meaning)' : '読み方 (reading)';
   document.getElementById("answer-input").value = "";
   document.getElementById("answer-input").focus();
   document.getElementById("submit-answer").textContent = "Submit";
@@ -389,7 +391,7 @@ function _update_progress_level() {
   ProgressLevel += 1;
 }
 
-function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
+function _displayFeedback(is_correct, is_half_correct) {
   // play sound if vocab reading + correct
   if (currentQuestion.hieroglyph_type === HieroglyphType.VOCAB && questionType === 'reading' && is_correct) {
     currentSoundPath = 'sounds/'+encodeURIComponent(currentQuestion.resource_paths.sound);
@@ -419,7 +421,10 @@ function _displayFeedback(is_correct, is_half_correct, possibleAnswers) {
   feeDBackEl.style.color = is_correct ? "var(--color-correct)" : "var(--color-incorrect)";
 
   document.getElementById("answer-input").style.borderBottom = is_correct ? "2px solid var(--color-correct)" : "2px solid var(--color-incorrect)";
-  document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'flex');
-  document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.backgroundColor = 'var(--color-'+(is_correct ? 'correct)' : 'incorrect)'));
-  document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.textContent = is_correct ? '⛩️正しい⛩️' : '🌋正しくない🌋');
+
+  if (window.innerWidth >= 768) {
+    document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'flex');
+    document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.backgroundColor = 'var(--color-'+(is_correct ? 'correct)' : 'incorrect)'));
+    document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.textContent = is_correct ? '⛩️正しい⛩️' : '🌋正しくない🌋');
+  }
 }
