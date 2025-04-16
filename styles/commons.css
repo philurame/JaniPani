@@ -2,18 +2,16 @@
  Mobile Styles
 ============================ */
 @media (max-width: 767px) {
-  #StatsButton {display: none;}
-  #symbol-ref {display: none;}
-  .radical, .kanji, .vocab {
-    width: 35vh !important;
-    height: 30vh !important;
-    font-size: 5em !important;
-  }
   button {
     padding: 6px 10px !important;
     margin: 5px !important;
     font-size: 22px !important;
     border-radius: 10px !important;
+  }
+  .radical, .kanji, .vocab {
+    width: 35vh !important;
+    height: 30vh !important;
+    font-size: 5em !important;
   }
   #question-area {
     margin-top: 20px !important;
@@ -24,6 +22,14 @@
   #answer-input {
     margin-top: 0px !important;
   }
+
+  #StatsButton {display: none;}
+  #symbol-ref {display: none;}
+  #search-results {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 5px !important;
+  }
+  #search-results li {padding: 5px 0px !important;}
 }
 
 /* ============================

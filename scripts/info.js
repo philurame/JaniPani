@@ -107,34 +107,25 @@ function fillHieroglyphDetail(h) {
   document.getElementById("vocab-sound-button").classList.add("hidden");
   document.getElementById("onkun").style.display='none';
 
-  document.getElementById("info-level").innerHTML = `Level: <span class="info-level-time-style">${h.level}</span>`;
+  document.getElementById("info-level_value").textContent = h.level;
 
-  if (h.progres_level[0] === -1) {
-    document.getElementById("info-progress").innerHTML = `Progress: <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[0]]}</span>`;
-  }
-  else {
-    document.getElementById("info-progress").innerHTML = `Progress: <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[0]]}</span>, 
-                                                                    <span class="info-level-time-style">${HieroglyphProgress[h.progres_level[1]]}</span>`;
-  };
+  document.getElementById("info-progress_meaning_value").textContent = HieroglyphProgress[h.progres_level[0]];
+  document.getElementById("info-progress_reading_value").textContent = HieroglyphProgress[h.progres_level[1]];
   
-
   const is_inf = Math.min(h.progres_level[0], h.progres_level[1]) === -1 || Math.min(h.progres_level[0], h.progres_level[1]) === 9;
-  if (is_inf) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">Infinity</span>`;}
+  if (is_inf) {document.getElementById("info-next-review-in_value").textContent = 'Infinity';}
   else {
     current_timestamp = Math.floor(Date.now() / 1000);
     const t_next_review_meaning = h.progres_timestamp[0]+SecToReview[h.progres_level[0]] - current_timestamp;
     const t_next_review_reading = h.progres_timestamp[1]+SecToReview[h.progres_level[1]] - current_timestamp;
     const next_review_sec = Math.min(t_next_review_meaning, t_next_review_reading);
-    if (next_review_sec < 0) {document.getElementById("info-next-review-in").innerHTML = `Next Review in: <span class="info-level-time-style">NOW!</span>`;}
+    if (next_review_sec < 0) {document.getElementById("info-next-review-in_value").textContent = 'NOW!';}
     else {
       const next_review_days = Math.floor(next_review_sec / 86400);
       const hrs_residual = Math.floor((next_review_sec % 86400) / 3600);
       const mins_residual = Math.floor((next_review_sec % 3600) / 60);
 
-    document.getElementById("info-next-review-in").innerHTML = `Next Review in: 
-    <span class="info-level-time-style">${next_review_days}</span> days 
-    <span class="info-level-time-style">${hrs_residual}</span> hours 
-    <span class="info-level-time-style">${mins_residual}</span> minutes`;
+    document.getElementById("info-next-review-in_value").textContent = `${next_review_days}d ${hrs_residual}h ${mins_residual}m`;
     }
   }
 
@@ -200,6 +191,7 @@ function fillHieroglyphDetail(h) {
   detailSentences.innerHTML = "";
 
   if (h.sentences.length > 0) {
+    detailSentences.style.border = '1px solid var(--color-grey)';
     h.sentences.forEach(s => {
       const li = document.createElement("li");
       li.classList.add("sentence-item");
@@ -217,6 +209,7 @@ function fillHieroglyphDetail(h) {
       detailSentences.appendChild(li);
     });
   }
+  else {detailSentences.style.border = 'none';}
 
   _showHieroglyph("detail-symbol", h);
   

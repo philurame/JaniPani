@@ -3,10 +3,7 @@
 <!-- ============================================================= -->
 <section>
   <div id="info-section" class="section hidden">
-    <button id="search-button">Search</button>
     <button id="back-to-game">Back to Game</button>
-    <input type="text" id="search-query" placeholder="" autofocus autocomplete="off">
-    <ul id="search-results"></ul>
     <div id="hieroglyph-detail" class="hidden">
       <div id="info-container">
         <div id="details">
@@ -27,9 +24,18 @@
             </div>
           </div>
           <div id="detail-level">
-            <span id="info-level"></span>
-            <span id="info-progress"></span>
-            <span id="info-next-review-in"></span>
+            <div class="info-name">
+              <span>Level:</span>
+              <span>Progress Meaning:</span>
+              <span>Progress Reading:</span>
+              <span>Next Review in:</span>
+            </div>
+            <div class="info-value">
+              <span id="info-level_value"></span>
+              <span id="info-progress_meaning_value"></span>
+              <span id="info-progress_reading_value"></span>
+              <span id="info-next-review-in_value"></span>
+            </div>
           </div>
         </div>
         <div id="mnemonic-container">
@@ -53,5 +59,8 @@
         <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
       </div>
     </div>
+    <input type="text" id="search-query" placeholder="" autofocus autocomplete="off">
+    <button id="search-button">Search</button>
+    <ul id="search-results"></ul>
   </div>
 </section>

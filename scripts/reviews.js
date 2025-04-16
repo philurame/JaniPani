@@ -270,7 +270,7 @@ function _update_progress(is_correct, is_half_correct) {
 
   let sec_to_review = SecToReview[currentQuestion.progres_level[progres_level_idx]];
   sec_to_review = (sec_to_review === Infinity) ? 0 : sec_to_review;
-  const random_sec_shift = Math.floor(Math.random() * sec_to_review * 0.2);
+  const random_sec_shift = Math.floor(Math.random() * sec_to_review * 0.4);
 
   currentQuestion.progres_timestamp[progres_level_idx] = Math.floor(Date.now()/1000) + random_sec_shift;
 
