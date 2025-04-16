@@ -25,6 +25,14 @@
 
   #StatsButton {display: none;}
   #symbol-ref {display: none;}
+  .mnemonic-content {
+    width: 100% !important;
+    max-width: 350px !important;
+  }
+  .mnemonic-item .mnemonic-content {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
   #search-results {
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 5px !important;

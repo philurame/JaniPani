@@ -1,14 +1,6 @@
 /* ============================
  Game Section
 ============================ */
-#lesson-stats-buttons {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  margin-top: 10px;
-}
 
 /* Rectangles Correct/Incorrect  */
 .feedback-rectangles {

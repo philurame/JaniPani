@@ -99,25 +99,24 @@
   margin-bottom: 18px;  
 }
 .progress-bar {
-  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
+  max-height: 40px;
 }
 .progress-bar label {
-  width: 80px;
   font-weight: bold;
   color: var(--color-primary);
 }
 .progress-bar progress {
   -webkit-appearance: none;
   appearance: none;
-  width: 200px;
-  height: 20px;
+  max-width: 200px;
+  max-height: 20px;
 }
 .progress-bar progress::-webkit-progress-bar   {border-radius: 10px; background-color: var(--color-blue);}
 .progress-bar progress::-webkit-progress-value {border-radius: 10px; background-color: var(--color-correct);}
-.progress-bar span {min-width: 90px; color: var(--color-primary);}
+.progress-bar span {min-width: 10px; color: var(--color-primary);}
 
 #statsRefresh {
   font-size: 50px;

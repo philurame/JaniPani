@@ -225,6 +225,11 @@
   100% {color: var(--color-white);}
 }
 
+/* .mnemonic-item .mnemonic-content {
+  left: 50%;
+  transform: translateX(-50%);
+} */
+
 /* sample vocab sentences */
 #detail-sentences {
   display: flex;
