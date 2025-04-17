@@ -78,7 +78,7 @@ function _fill_lesson_review_stats() {
     (h.progres_level[0] >= getNextProgressKanji()) && (h.progres_level[1] >= getNextProgressKanji())
   ).length;
   
-  const totalKanji = Math.round(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextProgressKanjiShare);
+  const totalKanji = Math.ceil(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextProgressKanjiShare);
   const kanjiLevelBar = document.getElementById("kanji-level-bar");
   kanjiLevelBar.value = nkanji_learned;
   kanjiLevelBar.max = totalKanji;
