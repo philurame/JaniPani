@@ -50,8 +50,9 @@ function update_stats_section() {
   _fill_hieroglyph_stats();
 }
 
-function _count_active_lessons(lvl, type=null) {
-  const lvl_hieroglyphs = DB.hieroglyphs.filter(h => (h.level===lvl));
+function _count_active_lessons(lvl=null, type=null) {
+  const lvl_hieroglyphs = DB.hieroglyphs.filter(h => ((lvl === null) ? h.level<=ProgressLevel : h.level===lvl));
+  
   const h_not_learned = lvl_hieroglyphs.filter(h => (h.progres_level[0] === -1 || h.progres_level[1] === -1))
   if (type === null) {
     const n_radicals = h_not_learned.filter(h => (h.hieroglyph_type===HieroglyphType.RADICAL)).length;
@@ -87,7 +88,7 @@ function _fill_lesson_review_stats() {
   document.getElementById("progress-level-text").innerHTML = `<span style='color:var(--color-correct); font-size: 24px;'>${ProgressLevel}</span><span style='color:var(--color-primary); font-size: 24px;'> / 60</span>`;
   document.getElementById("kanji-level-text").innerHTML    = `<span style='color:var(--color-correct); font-size: 24px;'>${nkanji_learned}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${totalKanji}</span>`;
 
-  const n_acive_lessons = _count_active_lessons(ProgressLevel);
+  const n_acive_lessons = _count_active_lessons();
 
   _filterHieroglyphs();
   const n_reviews = filteredHieroglyphs.filter(h => h.progres_level[0] > -1 && h.progres_level[1] > -1);

@@ -41,12 +41,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 50px;
+  margin-top: 20px;
 }
 
 #question-text {
   font-size: 25px;
-  margin-top: 40px;
+  margin-top: 30px;
 }
 #answer-input {
   margin-top: 20px;
