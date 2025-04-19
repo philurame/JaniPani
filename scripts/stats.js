@@ -200,8 +200,8 @@ function _fill_chart_js() {
 
     DB.hieroglyphs.forEach(h => {
       if (
-        (tsEnd - h.progres_timestamp[0] > SecToReview[h.progres_level[0]]) &&
-        (tsStart - h.progres_timestamp[0] < SecToReview[h.progres_level[0]])
+        (tsStart < h.progres_timestamp[0] + SecToReview[h.progres_level[0]]) &&
+        (tsEnd   > h.progres_timestamp[0] + SecToReview[h.progres_level[0]])
       ) {
         const lvl = h.progres_level[0];
         if (lvl < 5) apprentice++;
@@ -210,8 +210,8 @@ function _fill_chart_js() {
         else if (lvl === 8) enlighted++;
       }
       if (
-        (tsEnd - h.progres_timestamp[1] < SecToReview[h.progres_level[1]]) &&
-        (tsStart - h.progres_timestamp[1] > SecToReview[h.progres_level[1]])
+        (tsStart < h.progres_timestamp[1] + SecToReview[h.progres_level[1]]) &&
+        (tsEnd   > h.progres_timestamp[1] + SecToReview[h.progres_level[1]])
       ) {
         const lvl = h.progres_level[1];
         if (lvl < 5) apprentice++;
