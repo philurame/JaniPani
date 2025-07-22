@@ -135,13 +135,16 @@ var is_wanakana_bind = false;
 var chartViewMode = "week";
 var reviewOrder = "random";
 
-const NextLevelRadical = 5;         // radical level required for ProgressLevel+=1
+const ProgressRadLevel = 5;         // radical level required for ProgressLevel+=1
 const ProgressKanjiLevel = 5;       // kanji level required for ProgressLevel+=1
-const NextProgressKanjiShare = 0.9; // kanji share leveled required for ProgressLevel+=1
+const ProgressVocabLevel = 2;       // vocab level required for ProgressLevel+=1
+const ProgressKanjiShare = 0.9;     // kanji share leveled required for ProgressLevel+=1
+const ProgressVocabShare = 0.7;     // vocab share leveled required for ProgressLevel+=1
 const RadKanjiLessonLevel = 5;      // radical-compound level required for kanji lesson
-const KanjiVocabLessonLevel   = 5;  // kanji-compound level required for vocab lesson
+const KanjiVocabLessonLevel = 5;    // kanji-compound level required for vocab lesson
 
-const ProgressKanjiLowLevel = 3;    // same for ProgressLevel < LowProgressEnd
-const RadKanjiLessonLowLevel = 0;
-const KanjiVocabLessonLowLevel = 0;
+const ProgressKanjiLevelLow = 3;    // same for ProgressLevel < LowProgressEnd
+const ProgressVocabLevelLow = 3;    // same for ProgressLevel < LowProgressEnd
+const RadKanjiLessonLevelLow = 0;
+const KanjiVocabLessonLevelLow = 0;
 const LowProgressEnd = 4;

@@ -373,21 +373,27 @@ function _update_progress_level() {
   if (ProgressLevel === 60) {return;}
 
   // check if progress level can be updated
-  // all of radical should be >= NextLevelRadical
-  // NextProgressKanjiShare of kanji should be >= NextProgressKanjiLevel
+  // all of radical should be >= ProgressRadLevel
+  // ProgressKanjiShare of kanji should be >= NextProgressKanjiLevel
+  // ProgressVocabShare of vocab should be >= NextProgressVocabLevel
   const ProgressHieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
   let n_kanji_learned = 0;
+  let n_vocab_learned = 0;
   for (const hieroglyph of ProgressHieroglyphs) {
     switch (hieroglyph.hieroglyph_type) {
       case HieroglyphType.RADICAL: 
-        if ( (ProgressLevel >= LowProgressEnd) && (hieroglyph.progres_level[0] < NextLevelRadical) ) {return;}
+        if ( (ProgressLevel >= LowProgressEnd) && (hieroglyph.progres_level[0] < ProgressRadLevel) ) {return;}
         break;
       case HieroglyphType.KANJI:
         if ( (hieroglyph.progres_level[0] >= getNextProgressKanji()) && (hieroglyph.progres_level[1] >= getNextProgressKanji()) ) {n_kanji_learned += 1;}
         break;
+      case HieroglyphType.VOCAB:
+        if ( (hieroglyph.progres_level[0] >= getNextProgressVocab()) && (hieroglyph.progres_level[1] >= getNextProgressVocab()) ) {n_vocab_learned += 1;}
+        break;
     }
   }
-  if (n_kanji_learned < NextProgressKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
+  if (n_kanji_learned < ProgressKanjiShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length) {return;}
+  if (n_vocab_learned < ProgressVocabShare * ProgressHieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length) {return;}
   ProgressLevel += 1;
 }
 

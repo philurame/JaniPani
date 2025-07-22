@@ -7,15 +7,20 @@
       <!-- lessons & reviews stats and buttons -->
       <div id="stats-left-up-container">
         <div id="level-info-data-container">
-          <div id="data-buttons">
-            <input type="file" id="fileInput" accept=".json" style="display: none;">
-            <button id="downloadBtn">Save</button>
-            <button id="uploadBtn">Load</button>
+          <div id="stats-data-container">
+            <div id="data-buttons">
+              <input type="file" id="fileInput" accept=".json" style="display: none;">
+              <button id="downloadBtn">Save</button>
+              <button id="uploadBtn">Load</button>
+            </div>
+            <div id="stats-refresh"> 
+              <button id="statsRefresh">↺</button>
+            </div>
           </div>
           <div id="refresh-level-info-container">
             <div id="level-info-container">
               <div class="progress-bar">
-                <label for="progress-level-bar" style="color: var(--color-radical);">Level</label>
+                <label for="progress-level-bar" style="color: var(--color-primary);">Level</label>
                 <progress id="progress-level-bar" value="0" max="59" min="1"></progress>
                 <span id="progress-level-text">0 / 60</span>
               </div>
@@ -24,9 +29,14 @@
                 <progress id="kanji-level-bar" value="0" max="0"></progress>
                 <span id="kanji-level-text">0 / 0</span>
               </div>
+              <div class="progress-bar">
+                <label for="vocab-level-bar" style="color: var(--color-vocab-lighter);">Vocab</label>
+                <progress id="vocab-level-bar" value="0" max="0"></progress>
+                <span id="vocab-level-text">0 / 0</span>
+              </div>
             </div>
-            <button id="statsRefresh">↺</button>
           </div>
+          
         </div>
         <div id="stats-lessons-review-container">
           <div id="stats-lessons-container">
@@ -50,9 +60,9 @@
       <!-- level bars stats  -->
       <div id="stats-right-up-container">
         <div id="stats-bars-legend">
-          <div><span class="stats-legend-box stats-passed"></span>Passed</div>
-          <div><span class="stats-legend-box stats-apprentice"></span>Apprentice</div>
           <div><span class="stats-legend-box stats-lessons"></span>Lessons</div>
+          <div><span class="stats-legend-box stats-apprentice"></span>Apprentice</div>
+          <div><span class="stats-legend-box stats-guru"></span>Guru</div>
           <div><span class="stats-legend-box stats-locked"></span>Locked</div>
         </div>
         <div class="stats-scrollable-container" id="stats-progress-container"><!-- Progress bars will be inserted here --></div>

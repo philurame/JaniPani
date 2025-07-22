@@ -78,15 +78,25 @@ function _fill_lesson_review_stats() {
     h => (h.hieroglyph_type === HieroglyphType.KANJI)  &&
     (h.progres_level[0] >= getNextProgressKanji()) && (h.progres_level[1] >= getNextProgressKanji())
   ).length;
+  const nvocab_learned = progress_hieroglyphs.filter(
+    h => (h.hieroglyph_type === HieroglyphType.VOCAB)  &&
+    (h.progres_level[0] >= getNextProgressVocab()) && (h.progres_level[1] >= getNextProgressVocab())
+  ).length;
   
-  const totalKanji = Math.ceil(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * NextProgressKanjiShare);
+  const totalKanji = Math.ceil(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.KANJI).length * ProgressKanjiShare);
+  const totalVocab = Math.ceil(progress_hieroglyphs.filter(h => h.hieroglyph_type === HieroglyphType.VOCAB).length * ProgressVocabShare);
+
   const kanjiLevelBar = document.getElementById("kanji-level-bar");
+  const vocabLevelBar = document.getElementById("vocab-level-bar");
   kanjiLevelBar.value = nkanji_learned;
+  vocabLevelBar.value = nvocab_learned;
   kanjiLevelBar.max = totalKanji;
+  vocabLevelBar.max = totalVocab;
 
   document.getElementById("progress-level-bar").value = ProgressLevel-1;
   document.getElementById("progress-level-text").innerHTML = `<span style='color:var(--color-correct); font-size: 24px;'>${ProgressLevel}</span><span style='color:var(--color-primary); font-size: 24px;'> / 60</span>`;
   document.getElementById("kanji-level-text").innerHTML    = `<span style='color:var(--color-correct); font-size: 24px;'>${nkanji_learned}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${totalKanji}</span>`;
+  document.getElementById("vocab-level-text").innerHTML    = `<span style='color:var(--color-correct); font-size: 24px;'>${nvocab_learned}</span><span style='color:var(--color-primary); font-size: 24px;'> / ${totalVocab}</span>`;
 
   const n_acive_lessons = _count_active_lessons();
 

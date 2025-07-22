@@ -60,15 +60,19 @@ function handleUserInteractionKeyDown(event) {
 // handling of progress level < LowProgressEnd
 // ---------------------------------------
 function getNextProgressKanji() {
-  if (ProgressLevel < LowProgressEnd) return ProgressKanjiLowLevel;
+  if (ProgressLevel < LowProgressEnd) return ProgressKanjiLevelLow;
   return ProgressKanjiLevel;
 }
+function getNextProgressVocab() {
+  if (ProgressLevel < LowProgressEnd) return ProgressVocabLevelLow;
+  return ProgressVocabLevel;
+}
 function getRadKanjiLessonLevel() {
-  if (ProgressLevel < LowProgressEnd) return RadKanjiLessonLowLevel;
+  if (ProgressLevel < LowProgressEnd) return RadKanjiLessonLevelLow;
   return RadKanjiLessonLevel;
 }
 function getKanjiVocabLessonLevel() {
-  if (ProgressLevel < LowProgressEnd) return KanjiVocabLessonLowLevel;
+  if (ProgressLevel < LowProgressEnd) return KanjiVocabLessonLevelLow;
   return KanjiVocabLessonLevel;
 }
 

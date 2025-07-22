@@ -69,12 +69,19 @@
   gap: 20px;
 }
 
+#stats-data-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  border: 1px solid var(--color-grey);
+  border-radius: 10px;
+}
+
 #data-buttons {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  border: 1px solid var(--color-grey);
-  border-radius: 10px;
 }
 #downloadBtn, #uploadBtn {padding: 4px 10px;}
 
@@ -84,16 +91,20 @@
   font-size: 24px;
   display: flex;
   flex-direction: row;
-  border: 1px solid var(--color-grey);
-  border-radius: 10px;
   gap: 10px;
+}
+#statsRefresh {
+  font-size: 60px;
+  justify-content: center;
+  padding-top: 0px;
+  margin-right: 15px;
 }
 
 #level-info-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   margin-left: 5px;
   margin-top: 18px;  
   margin-bottom: 18px;  
@@ -101,29 +112,24 @@
 .progress-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  max-height: 40px;
+  gap: 20px;
 }
 .progress-bar label {
   font-weight: bold;
   color: var(--color-primary);
+  margin-right: 10px;
+  width: 50px;
+  text-align: right;
 }
 .progress-bar progress {
   -webkit-appearance: none;
   appearance: none;
   max-width: 200px;
-  max-height: 20px;
+  max-height: 15px;
 }
 .progress-bar progress::-webkit-progress-bar   {border-radius: 10px; background-color: var(--color-blue);}
 .progress-bar progress::-webkit-progress-value {border-radius: 10px; background-color: var(--color-correct);}
 .progress-bar span {min-width: 10px; color: var(--color-primary);}
-
-#statsRefresh {
-  font-size: 50px;
-  justify-content: center;
-  padding-top: 0px;
-  margin-right: 15px;
-}
 
 #stats-lessons-review-container {
   display: flex;
@@ -193,9 +199,9 @@
 .stats-progress-bar {height: 100%; display: flex;}
 .stats-progress-bar-section {height: 100%;}
 
-.stats-passed {background: repeating-linear-gradient(45deg,var(--color-radical-hover), var(--color-radical-hover) 33%,var(--color-kanji-hover) 33%, var(--color-kanji-hover) 66%,var(--color-vocab-hover) 66%, var(--color-vocab-hover) 100%);}
-.stats-apprentice {background: repeating-linear-gradient(45deg,var(--color-radical), var(--color-radical) 33%,var(--color-kanji) 33%, var(--color-kanji) 66%,var(--color-vocab) 66%, var(--color-vocab) 100%);}
 .stats-lessons {background: repeating-linear-gradient(45deg,var(--color-radical-light), var(--color-radical-light) 33%,var(--color-kanji-light) 33%, var(--color-kanji-light) 66%,var(--color-vocab-light) 66%, var(--color-vocab-light) 100%);}
+.stats-apprentice {background: repeating-linear-gradient(45deg,var(--color-radical), var(--color-radical) 33%,var(--color-kanji) 33%, var(--color-kanji) 66%,var(--color-vocab) 66%, var(--color-vocab) 100%);}
+.stats-guru {background: repeating-linear-gradient(45deg,var(--color-radical-hover), var(--color-radical-hover) 33%,var(--color-kanji-hover) 33%, var(--color-kanji-hover) 66%,var(--color-vocab-hover) 66%, var(--color-vocab-hover) 100%);}
 .stats-locked {background: repeating-linear-gradient(45deg,#616161, #616161 33%,var(--color-kanji-grey) 33%, var(--color-kanji-grey) 66%, var(--color-vocab-grey) 66%, var(--color-vocab-grey) 100%);}
 
 .stats-rad-passed {background-color: var(--color-radical-hover);}
