@@ -125,11 +125,17 @@ var currentInfo     = null;   // The current Hieroglyph in Info section
 var questionType = null;      // either 'meaning', 'reading'
 var currentSoundPath = null;  // The sound path to the current vocabulary
 var ProgressLevel = 1;        // The current user's progress level
-var isLesson = 1;             // either 1 or 0
-var isInQuestion = false;     // is review active now or feedback given
+var isInLesson = 1;            // either 1 or 0
+var isInReview = 0;           // is review active now or feedback given
 var current_timestamp = null; // current timestamp in seconds (UTC)
 var prevLvls = [];
 var prevTimestamps = [];
+var is_correct_review = false;
+var is_half_correct_review = false;
+
+var currentLesson = null;
+var lessonIndex = 0;
+var eligibleLessons = [];
 
 var is_wanakana_bind = false;
 var chartViewMode = "week";

@@ -2,27 +2,41 @@
 <!-- Game Section: lessons/reviews pages -->
 <!-- ============================================================= -->
 <section>
-  <div id="game-section" class="section hidden">
+  <div id="review-section" class="section hidden">
     <div id="left-rect" class="feedback-rectangles"></div>
     <div id="right-rect" class="feedback-rectangles"></div>
-    <button id="SwitchLessonButton">Switch to Review</button>
+
+    <button onclick="statsClick()">Go to Stats</button>
+    <button onclick="lessonClick()">Go to Lessons</button>
     
     <!-- hieroglyph review question -->
     <div id="question-area" class="hidden">
-      <span id="symbol-display" class="hidden"></span>
+      <span id="review-symbol-display" class="hidden"></span>
       <p id="question-text"></p>
       <input type="text" id="answer-input" placeholder="" autofocus autocomplete="off">
       <div id="submit-info-review-container">
-        <button id="show-info-page">Info</button>
-        <button id="submit-answer">Next</button>
-        <button id="reorder">↺</button>
-        <button id="try-again" class="hidden">Try Again</button>
+        <div id="judge-answer" class="hidden">
+          <button id="judge-wrong" onclick="judgeClick(-1)">Wrong</button>
+          <button id="judge-hard"  onclick="judgeClick(0)">Hard</button>
+          <button id="judge-good"  onclick="judgeClick(1)">Good</button>
+          <button id="judge-easy"  onclick="judgeClick(2)">Easy</button>
+        </div>
+        <div>
+          <button id="reorder" onclick="reorderClick()">reorder 
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" stroke="currentColor" stroke-width="1" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5"/>
+              <path stroke="currentColor" stroke-width="1" d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192"/>
+            </svg>
+          </button>
+          <button id="show-info-page" onclick="infoClick()">Info📚</button>
+          <button id="submit-answer" onclick="submitClick()">Submit</button>
+        </div>
       </div>
       <div class="mobile-load"> 
-        <button class="mobileDownloadBtn">Save</button>
-        <button class="mobileUploadBtn">Load</button>
+        <button onclick="downloadClick()">Save</button>
+        <button onclick="uploadClick();">Load</button>
       </div>
-      <button id="StatsButton">Go to Stats</button>
+      <p id="review-progress"></p>
       <p id="feedback"></p>
     </div>
   </div>
@@ -30,12 +44,12 @@
   <!-- ============================================================= -->
   <!-- next_review_in section -->
   <!-- ============================================================= -->
-  <div id="no-lesson-section" class="section hidden">
+  <div id="no-review-section" class="section hidden">
     <span id="next-in"></span>  
-    <button id="back-to-stats">Go Back</button>
+    <button id="back-to-stats" onclick="statsClick()">Go Back</button>
     <div class="mobile-load"> 
-      <button class="mobileDownloadBtn">Save</button>
-      <button class="mobileUploadBtn">Load</button>
+      <button onclick="downloadClick()">Save</button>
+      <button nclick="uploadClick();">Load</button>
     </div>
   </div>
 </section>

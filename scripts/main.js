@@ -1,4 +1,42 @@
-async function loadHTMLFragment(id, url) {
+
+//-----------------------------------------------------------
+// LOAD HTML FRAGMENTS
+//-----------------------------------------------------------
+window.addEventListener('DOMContentLoaded', () => {
+  _loadHTMLFragment('htmls/stats', 'htmls/stats.html');
+  _loadHTMLFragment('htmls/lessons', 'htmls/lessons.html');
+  _loadHTMLFragment('htmls/reviews', 'htmls/reviews.html');
+  _loadHTMLFragment('htmls/info', 'htmls/info.html');
+});
+
+//-----------------------------------------------------------
+// ALL DATA & HANDLERS INITIALIZATION
+//-----------------------------------------------------------
+window.addEventListener("DOMContentLoaded", async () => {
+  // LOAD ALL HIEROGLYPHS
+  const loading = document.createElement("loading")
+  loading.textContent = "Loading database (11.5 Mb)...";
+  loading.style = "position: absolute; margin-top: 30%; left: 25%; font-size: 50px; color: var(--color-purple);";
+  document.body.appendChild(loading);
+  await _loadHieroglyphDB();
+  document.body.removeChild(loading);
+  
+  // KEYBOARD HANDLER
+  document.addEventListener('keydown', handleUserInteractionKeyDown);
+  
+  loadProgressFromLocalStorage();
+  refreshClick();
+
+  if (window.innerWidth < 768) {reviewClick();} 
+  else {statsClick();}
+  check_using_mobile();
+});
+
+
+//-----------------------------------------------------------
+// MAIN UTILS
+//-----------------------------------------------------------
+async function _loadHTMLFragment(id, url) {
   try {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Failed to load ${url}: ${response.status}`);
@@ -6,12 +44,13 @@ async function loadHTMLFragment(id, url) {
     document.getElementById(id).innerHTML = content;
     
     // Now that the fragment is loaded, call a function to attach event listeners
-    attachEventListeners();
+    _attachEventListeners();
   } catch (error) {
     console.error(error);
   }
 }
-function attachEventListeners() {
+
+function _attachEventListeners() {
   const inputField = document.getElementById('answer-input');
   if (!inputField) {
     // console.warn("Element #answer-input not found");
@@ -30,97 +69,4 @@ function attachEventListeners() {
       window.is_wanakana_bind = false;
     }
   });
-}
-
-// Load your dynamic content (adjust the element id and URL as needed)
-window.addEventListener('DOMContentLoaded', () => {
-  loadHTMLFragment('htmls/stats', 'htmls/stats.html');
-  loadHTMLFragment('htmls/reviews', 'htmls/reviews.html');
-  loadHTMLFragment('htmls/info', 'htmls/info.html');
-});
-
-
-//-----------------------------------------------------------
-// ALL DATA & HANDLERS INITIALIZATION
-//-----------------------------------------------------------
-window.addEventListener("DOMContentLoaded", async () => {
-
-  // LOAD ALL HIEROGLYPHS
-  const loading = document.createElement("loading")
-  loading.textContent = "Loading database (11.5 Mb)...";
-  loading.style = "position: absolute; margin-top: 30%; left: 25%; font-size: 50px; color: var(--color-purple);";
-  document.body.appendChild(loading);
-  await _loadHieroglyphDB();
-  document.body.removeChild(loading);
-  
-  // REVIEW & LESSON BUTTONS
-  document.getElementById("submit-answer").addEventListener("click", submitClick);
-  document.getElementById("show-info-page").addEventListener("click", showInfoForCurrent);
-  document.getElementById("reorder").addEventListener("click", switch_review_order);
-  document.getElementById("SwitchLessonButton").addEventListener("click", () => {LessonReviewButtonClick(1-isLesson);});
-  document.getElementById("stats-lessons-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(1);});
-  document.getElementById("stats-reviews-button").addEventListener("click", () => {showSection("game-section"); LessonReviewButtonClick(0);});
-  document.getElementById("StatsButton").addEventListener("click", () => {showSection("stats-section");});
-  document.getElementById("statsRefresh").addEventListener("click", update_stats_section);
-
-  document.getElementById('back-to-game').addEventListener('click', () => {
-    showSection("game-section"); 
-    if (!currentQuestion) {LessonReviewButtonClick(isLesson);}
-  });
-  document.getElementById("try-again").addEventListener("click", tryAgain);
-
-  // fileSync buttons
-  document.getElementById('downloadBtn').addEventListener('click', handleFileDownload);
-  document.getElementById('uploadBtn').addEventListener('click', () => {document.getElementById('fileInput').click();});
-  document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-  
-  // INFO SECTION BUTTONS
-  document.getElementById("search-button").addEventListener("click", searchHieroglyphs);
-  document.getElementById("detail-symbol").addEventListener("click", searchDetail);
-  document.getElementById("vocab-sound-button").addEventListener("click", () => _playSound(currentSoundPath)); 
-  document.querySelectorAll(".show-mnemonic").forEach(button => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll(".mnemonic-content").forEach(content => {
-        if (content !== button.nextElementSibling) {content.classList.remove("show");}
-      });
-    button.nextElementSibling.classList.toggle("show");
-    resizeMnemonics(document.getElementById('detail-mnemonic-meaning'));
-    resizeMnemonics(document.getElementById('detail-mnemonic-reading'));
-    });
-  });
-
-  document.getElementById('detail-mnemonic-meaning').addEventListener('input', () => {resizeMnemonics(this);});
-  document.getElementById('detail-mnemonic-reading').addEventListener('input', () => {resizeMnemonics(this);});
-
-  // KEYBOARD HANDLER
-  document.addEventListener('keydown', handleUserInteractionKeyDown);
-  
-  loadProgressFromLocalStorage();
-  update_stats_section();
-
-  document.getElementById("back-to-stats").addEventListener("click", () => {
-    if (window.innerWidth < 768) {showSection("game-section"); LessonReviewButtonClick(1-isLesson);}
-    else {showSection("stats-section");}
-  });
-
-  document.querySelectorAll('.mobileDownloadBtn').forEach(e => {e.addEventListener('click', handleFileDownload);});
-  document.querySelectorAll('.mobileUploadBtn').forEach(e => {e.addEventListener('click', () => {document.getElementById('fileInput').click();});});
-
-  if (window.innerWidth < 768) {
-    showSection("game-section");
-    LessonReviewButtonClick(1)
-  } else {
-    showSection("stats-section");
-  }
-
-  check_using_mobile();
-});
-
-
-function check_using_mobile() {
-  if (window.innerWidth < 768) {
-    document.querySelectorAll('.mobile-load').forEach(e => {e.classList.remove('hidden');});
-  } else {
-    document.querySelectorAll('.mobile-load').forEach(e => {e.classList.add('hidden');});
-  }
 }

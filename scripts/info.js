@@ -1,144 +1,203 @@
 //-----------------------------------------------------------
 // INFO SECTION
 //-----------------------------------------------------------
-function showInfoForCurrent() {
+function infoClick() {
   showSection("info-section");
-  if (currentQuestion) {fillHieroglyphDetail(currentQuestion);}
+  if (isInLesson  && currentLesson) {_fillHieroglyphDetail(currentLesson);}
+  if (isInReview && currentQuestion) {_fillHieroglyphDetail(currentQuestion);}
 }
-  
-function searchHieroglyphs() {
+
+//-----------------------------------------------------------
+// BACK TO LESSION OR REVIEW
+//-----------------------------------------------------------
+function backToGameClick() {
+  if (isInLesson) showSection("lesson-section");
+  else if (isInReview) showSection("review-section");
+  else showSection("stats-section");
+}
+
+//-----------------------------------------------------------
+// SHOW THE MEANING OR THE READINGS
+//-----------------------------------------------------------
+function mnemonicClick(is_meaning){
+  if (is_meaning) {
+    document.getElementById('mnemonic-meaning-content').classList.toggle("show");
+    document.getElementById('mnemonic-reading-content').classList.remove("show");
+  }
+  else {
+    document.getElementById('mnemonic-reading-content').classList.toggle("show");
+    document.getElementById('mnemonic-meaning-content').classList.remove("show");
+  }
+  _resizeMnemonics(document.getElementById('mnemonic-meaning-detail'));
+  _resizeMnemonics(document.getElementById('mnemonic-reading-detail'));
+}
+
+//-----------------------------------------------------------
+// SEARCH THE SYMBOL OR RADICAL ON CLICK
+//-----------------------------------------------------------
+function searchDetailClick() {
+  const search_text = (currentInfo.symbol) ? currentInfo.symbol.toUpperCase() : currentInfo.meanings[0];
+  document.getElementById("search-query").value = search_text;
+  searchHieroglyphsClick();
+}
+
+//-----------------------------------------------------------
+// GENERAL SEARCH CLICK
+//-----------------------------------------------------------
+function searchHieroglyphsClick() {
   const query = document.getElementById("search-query").value.trim().toLowerCase();
   const resultsEl = document.getElementById("search-results");
   resultsEl.innerHTML = "";
 
-  if (!query) {return;};
-  
-  // Search ANY parameter and sort by priority
-  // For example: symbol matches, or included in meaning, or level is the query, etc.
-  let results = DB.hieroglyphs.filter(h => {
-    h._priority = 0;
-    
-    // specials
-    if ((h.level + h.hieroglyph_type[0]) === query) {h._priority = 1; return true;}
-    if ((h.level + h.hieroglyph_type[0] + h.symbol) === query.split(' ')[0]) {
-      h._priority = 1; 
-      if (query.split(' ').length >= 2 && !isNaN(query.split(' ')[1])) {
-        const [, second, third] = query.split(' ');
-        const p2 = parseInt(second);
-        const p3 = !isNaN(third) ? parseInt(third) : p2;
-        if (p2 >= -1 && p2 <= 9 && p3 >= -1 && p3 <= 9) {h.progres_level = [p2, p3];}
+  if (!query) return;
+
+  const hira = wanakana.toHiragana(query);
+
+  function checkReadings(readings, q, mainReq = null) {
+    if (mainReq && h.readings.main_reading !== mainReq) return false;
+    return readings.some(r => r.toLowerCase().includes(q));
+  }
+
+  function checkLinks(links) {
+    return links.some(r => {
+      const linked = DB.hieroglyphs[LinkIdx[r]];
+      return linked.symbol.toLowerCase().includes(query) ||
+             linked.meanings.some(m => m.toLowerCase().includes(query));
+    });
+  }
+
+  function getPriority(h, q) {
+    // Priority 1: Specials with modifiers, level + type or level + type + symbol
+    if ((h.level + h.hieroglyph_type[0]) === q) return 1;
+    const parts = q.split(' ');
+    if ((h.level + h.hieroglyph_type[0] + h.symbol) === parts[0]) {
+      if (parts.length >= 2 && !isNaN(parts[1])) {
+        const p2 = parseInt(parts[1]);
+        const p3 = parts.length >= 3 && !isNaN(parts[2]) ? parseInt(parts[2]) : p2;
+        if (p2 >= -1 && p2 <= 9 && p3 >= -1 && p3 <= 9) h.progres_level = [p2, p3];
       }
-      return true;
+      return 1;
     }
 
-    // try symbol / meanings:
-    if (h.symbol.toLowerCase().includes(query)) {h._priority = 2; return true;}
-    if (h.meanings.some(m => m.toLowerCase().includes(query))) {h._priority = 2; return true;}
+    // Priority 2: Symbol / Meanings
+    if (h.symbol.toLowerCase().includes(q)) return 2;
+    if (h.meanings.some(m => m.toLowerCase().includes(q))) return 2;
 
-    // try kana readings:
-    if (h.readings.vocab.some(r => r.toLowerCase().includes(query))) {h._priority = 3; return true;}
-    if (h.readings.onyomi.some( r => (r.toLowerCase().includes(query) && h.readings.main_reading === "onyomi" ))) {h._priority = 3; return true;}
-    if (h.readings.kunyomi.some(r => (r.toLowerCase().includes(query) && h.readings.main_reading === "kunyomi"))) {h._priority = 3; return true;}
+    // Priority 3: Readings (direct, with main check where needed)
+    if (h.readings.vocab.some(r => r.toLowerCase().includes(q)) ||
+        checkReadings(h.readings.onyomi, q, "onyomi") ||
+        checkReadings(h.readings.kunyomi, q, "kunyomi")) return 3;
 
-    // try romaji readings:
-    if (h.readings.vocab.some(r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 4; return true;}
-    if (h.readings.onyomi.some( r => (r.toLowerCase().includes(wanakana.toHiragana(query)) && h.readings.main_reading === "onyomi")))  {h._priority = 4; return true;}
-    if (h.readings.kunyomi.some(r => (r.toLowerCase().includes(wanakana.toHiragana(query)) && h.readings.main_reading === "kunyomi"))) {h._priority = 4; return true;}
+    // Priority 4: Readings (hiragana, with main check)
+    if (h.readings.vocab.some(r => r.toLowerCase().includes(hira)) ||
+        checkReadings(h.readings.onyomi, hira, "onyomi") ||
+        checkReadings(h.readings.kunyomi, hira, "kunyomi")) return 4;
 
-    if (h.readings.onyomi.some( r => r.toLowerCase().includes(query))) {h._priority = 5; return true;}
-    if (h.readings.kunyomi.some(r => r.toLowerCase().includes(query))) {h._priority = 5; return true;}
-    if (h.readings.onyomi.some( r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 6; return true;}
-    if (h.readings.kunyomi.some(r => r.toLowerCase().includes(wanakana.toHiragana(query)))) {h._priority = 6; return true;}
+    // Priority 5: On/Kun readings (direct, no main check)
+    if (checkReadings(h.readings.onyomi, q) || checkReadings(h.readings.kunyomi, q)) return 5;
 
-    // try compounds:
-    if (h.resource_paths.radical_links.some(r => DB.hieroglyphs[LinkIdx[r]].symbol.toLowerCase().includes(query))) {h._priority = 7; return true;}
-    if (h.resource_paths.kanji_links.some(  r => DB.hieroglyphs[LinkIdx[r]].symbol.toLowerCase().includes(query))) {h._priority = 7; return true;}
-    if (h.resource_paths.radical_links.some(r => DB.hieroglyphs[LinkIdx[r]].meanings.some(m => m.toLowerCase().includes(query)))) {h._priority = 7; return true;}
-    if (h.resource_paths.kanji_links.some(  r => DB.hieroglyphs[LinkIdx[r]].meanings.some(m => m.toLowerCase().includes(query)))) {h._priority = 7; return true;}
+    // Priority 6: On/Kun readings (hiragana, no main check)
+    if (checkReadings(h.readings.onyomi, hira) || checkReadings(h.readings.kunyomi, hira)) return 6;
 
-    // try mnemonics:
-    if (h.mnemonics.custom_meaning.toLowerCase().includes(query)) {h._priority = 8; return true;}
-    if (h.mnemonics.custom_reading.toLowerCase().includes(query)) {h._priority = 8; return true;}
-    if (h.mnemonics.meaning.toLowerCase().includes(query)) {h._priority = 9; return true;}
-    if (h.mnemonics.reading.toLowerCase().includes(query)) {h._priority = 9; return true;}
-    
-    return false;
-  }).sort((a, b) => a._priority - b._priority);
-  
-  let searchLength = Math.min(results.length, 64);
-  if (results.some(h => h._priority == 1)) {
-    results = results.filter(h => h._priority == 1);
-    searchLength = results.length;
+    // Priority 7: Compounds
+    if (checkLinks(h.resource_paths.radical_links) || checkLinks(h.resource_paths.kanji_links)) return 7;
+
+    // Priority 8: Custom mnemonics
+    if (h.mnemonics.custom_meaning.toLowerCase().includes(q) ||
+        h.mnemonics.custom_reading.toLowerCase().includes(q)) return 8;
+
+    // Priority 9: Standard mnemonics
+    if (h.mnemonics.meaning.toLowerCase().includes(q) ||
+        h.mnemonics.reading.toLowerCase().includes(q)) return 9;
+
+    return 0;
   }
-  
+
+  let sortedResults = DB.hieroglyphs.reduce((acc, h) => {
+    const priority = getPriority(h, query);
+    if (priority > 0) acc.push({ h, priority });
+    return acc;
+  }, []).sort((a, b) => a.priority - b.priority);
+
+  if (sortedResults.length > 0 && sortedResults[0].priority === 1) {
+    sortedResults = sortedResults.filter(x => x.priority === 1);
+  }
+
+  const searchLength = Math.min(sortedResults.length, 64);
+
   if (searchLength === 0) {
     const li = document.createElement("li");
     li.textContent = "No results found.";
-    li.style = "border: 2px solid var(--color-incorrect); color: var(--color-incorrect); padding: 10px;"; 
+    li.style = "border: 2px solid var(--color-incorrect); color: var(--color-incorrect); padding: 10px;";
     resultsEl.style.display = "flex";
     resultsEl.appendChild(li);
     return;
   }
+
   resultsEl.style.display = "grid";
 
   for (let i = 0; i < searchLength; i++) {
+    const { h } = sortedResults[i];
     const li = document.createElement("li");
-    li.textContent = results[i].symbol.toUpperCase() + " (" + results[i].meanings[0] + ")";
-    switch (results[i].hieroglyph_type) {
-      case HieroglyphType.RADICAL:
-        li.classList.add("radical-search");
-        break;  
-      case HieroglyphType.KANJI:
-        li.classList.add("kanji-search");
-        break;
-      case HieroglyphType.VOCAB:
-        li.classList.add("vocab-search");
-        break;
+    li.textContent = h.symbol.toUpperCase() + " (" + h.meanings[0] + ")";
+    switch (h.hieroglyph_type) {
+      case HieroglyphType.RADICAL: li.classList.add("radical-search"); break;
+      case HieroglyphType.KANJI: li.classList.add("kanji-search"); break;
+      case HieroglyphType.VOCAB: li.classList.add("vocab-search"); break;
     }
-    li.onclick = () => fillHieroglyphDetail(results[i]);
+    li.onclick = () => _fillHieroglyphDetail(h);
     resultsEl.appendChild(li);
   }
 }
 
+
+//-----------------------------------------------------------
+// INFO UTILS
+//-----------------------------------------------------------
 // fill all info for a hieroglyph
-function fillHieroglyphDetail(h) {
+function _fillHieroglyphDetail(h) {
+  // Set current info and toggle visibility of UI elements
   currentInfo = h;
   document.getElementById("hieroglyph-detail").classList.remove("hidden");
   document.getElementById("vocab-sound-button").classList.add("hidden");
-  document.getElementById("onkun").style.display='none';
+  document.getElementById("onkun").style.display = 'none';
 
+  // Update level and progress indicators
   document.getElementById("info-level_value").textContent = h.level;
-
   document.getElementById("info-progress_meaning_value").textContent = HieroglyphProgress[h.progres_level[0]];
   document.getElementById("info-progress_reading_value").textContent = HieroglyphProgress[h.progres_level[1]];
-  
-  const is_inf = Math.min(h.progres_level[0], h.progres_level[1]) === -1 || Math.min(h.progres_level[0], h.progres_level[1]) === 9;
-  if (is_inf) {document.getElementById("info-next-review-in_value").textContent = 'Infinity';}
-  else {
-    current_timestamp = Math.floor(Date.now() / 1000);
-    const t_next_review_meaning = h.progres_timestamp[0]+SecToReview[h.progres_level[0]] - current_timestamp;
-    const t_next_review_reading = h.progres_timestamp[1]+SecToReview[h.progres_level[1]] - current_timestamp;
-    const next_review_sec = Math.min(t_next_review_meaning, t_next_review_reading);
-    if (next_review_sec < 0) {document.getElementById("info-next-review-in_value").textContent = 'NOW!';}
-    else {
-      const next_review_days = Math.floor(next_review_sec / 86400);
-      const hrs_residual = Math.floor((next_review_sec % 86400) / 3600);
-      const mins_residual = Math.floor((next_review_sec % 3600) / 60);
 
-    document.getElementById("info-next-review-in_value").textContent = `${next_review_days}d ${hrs_residual}h ${mins_residual}m`;
+  // Calculate and display next review time
+  const minProg = Math.min(h.progres_level[0], h.progres_level[1]);
+  const isInf = minProg === -1 || minProg === 9;
+  if (isInf) {
+    document.getElementById("info-next-review-in_value").textContent = 'Infinity';
+  } else {
+    const now = Math.floor(Date.now() / 1000);
+    const tMeaning = h.progres_timestamp[0] + SecToReview[h.progres_level[0]] - now;
+    const tReading = h.progres_timestamp[1] + SecToReview[h.progres_level[1]] - now;
+    let nextSec = Math.min(tMeaning, tReading);
+    if (nextSec < 0) {
+      document.getElementById("info-next-review-in_value").textContent = 'NOW!';
+    } else {
+      const days = Math.floor(nextSec / 86400);
+      const hrs = Math.floor((nextSec % 86400) / 3600);
+      const mins = Math.floor((nextSec % 3600) / 60);
+      document.getElementById("info-next-review-in_value").textContent = `${days}d ${hrs}h ${mins}m`;
     }
   }
 
+  // Format and display meanings
   const meaning = h.meanings[0].charAt(0).toUpperCase() + h.meanings[0].slice(1) + (h.meanings.length > 1 ? ', ' : '');
-  const meanings = h.meanings.length > 1 ? h.meanings.slice(1).join(", ") : '';
   document.getElementById("detail-meaning").textContent = meaning;
-  document.getElementById("extra-meanings").textContent = meanings;
+  document.getElementById("extra-meanings").textContent = h.meanings.length > 1 ? h.meanings.slice(1).join(", ") : '';
 
+  // Build composition links (radicals or kanji)
   const composition = document.getElementById("symbol-composition");
   composition.innerHTML = "";
 
-  const composition_links = h.hieroglyph_type === HieroglyphType.RADICAL ? [] : (h.hieroglyph_type === HieroglyphType.KANJI ? h.resource_paths.radical_links : h.resource_paths.kanji_links);
-  for (let i = 0; i < composition_links.length; i++) {
+  const links = h.hieroglyph_type === HieroglyphType.RADICAL ? [] : (h.hieroglyph_type === HieroglyphType.KANJI ? h.resource_paths.radical_links : h.resource_paths.kanji_links);
+  links.forEach((link, i) => {
     if (i > 0) {
       const plus = document.createElement("span");
       plus.textContent = "+";
@@ -146,101 +205,71 @@ function fillHieroglyphDetail(h) {
       composition.appendChild(plus);
     }
     const li = document.createElement("li");
-    const link_hieroglyph = DB.hieroglyphs[LinkIdx[composition_links[i]]];
-    li.textContent = link_hieroglyph.symbol.toUpperCase();
-    li.classList.add((link_hieroglyph.hieroglyph_type === HieroglyphType.RADICAL) ? "radical-search" : "kanji-search");
-    li.onclick = () => {composition.innerHTML = ""; fillHieroglyphDetail(link_hieroglyph);}
+    const linkedH = DB.hieroglyphs[LinkIdx[link]];
+    li.textContent = linkedH.symbol.toUpperCase();
+    li.classList.add(linkedH.hieroglyph_type === HieroglyphType.RADICAL ? "radical-search" : "kanji-search");
+    li.onclick = () => { composition.innerHTML = ""; _fillHieroglyphDetail(linkedH); };
     composition.appendChild(li);
-  }
+  });
 
+  // Add mobile-specific composition elements
+  if (window.innerWidth < 768 && links.length > 0) {
+    const equal = document.createElement("span");
+    equal.textContent = "=";
+    equal.style = 'margin: 0 10px; margin-top: 15px; color: var(--color-primary); font-size: 30px;';
+    composition.appendChild(equal);
+  }
   if (window.innerWidth < 768) {
-    if (composition_links.length > 0) {
-      const equal = document.createElement("span");
-      equal.textContent = "=";
-      equal.style = 'margin: 0 10px; margin-top: 15px; color: var(--color-primary); font-size: 30px;';
-      composition.appendChild(equal);
-    }
     const li = document.createElement("li");
     li.textContent = h.symbol.toUpperCase();
-    li.classList.add((h.hieroglyph_type === HieroglyphType.RADICAL) ? "radical-search" : (h.hieroglyph_type === HieroglyphType.KANJI) ? "kanji-search" : "vocab-search");
-    li.onclick = () => {searchDetail();}
+    li.classList.add(h.hieroglyph_type === HieroglyphType.RADICAL ? "radical-search" : h.hieroglyph_type === HieroglyphType.KANJI ? "kanji-search" : "vocab-search");
+    li.onclick = () => { searchDetail(); };
     composition.appendChild(li);
   }
-  
 
+  // Handle type-specific readings (Kanji or Vocab)
   if (h.hieroglyph_type === HieroglyphType.KANJI) {
     document.getElementById("onkun").style.display = 'flex';
-
-    const onyomi_style  = (h.readings.main_reading === 'onyomi') ? h.readings.onyomi.join(", ") : '<span class="faded">' + h.readings.onyomi.join(", ")  + '</span>';
-    const kunyomi_style = (h.readings.main_reading === 'kunyomi') ? h.readings.kunyomi.join(", ") : '<span class="faded">' + h.readings.kunyomi.join(", ")  + '</span>';
-
-    document.getElementById("detail-onyomi").innerHTML  = onyomi_style;
-    document.getElementById("detail-kunyomi").innerHTML = kunyomi_style;
-  }
-  else if (h.hieroglyph_type === HieroglyphType.VOCAB) {
+    const onStyle = h.readings.main_reading === 'onyomi' ? h.readings.onyomi.join(", ") : `<span class="faded">${h.readings.onyomi.join(", ")}</span>`;
+    const kunStyle = h.readings.main_reading === 'kunyomi' ? h.readings.kunyomi.join(", ") : `<span class="faded">${h.readings.kunyomi.join(", ")}</span>`;
+    document.getElementById("detail-onyomi").innerHTML = onStyle;
+    document.getElementById("detail-kunyomi").innerHTML = kunStyle;
+  } else if (h.hieroglyph_type === HieroglyphType.VOCAB) {
     document.getElementById("vocab-sound-button").classList.remove('hidden');
-    currentSoundPath = 'sounds/'+encodeURIComponent(h.resource_paths.sound);
+    currentSoundPath = 'sounds/' + encodeURIComponent(h.resource_paths.sound);
     document.getElementById("vocab-sound-button").textContent = h.readings.vocab.join(", ");
   }
+
+  // Reset and set mnemonics
   document.querySelectorAll(".mnemonic-content").forEach(content => content.classList.remove("show"));
-  document.getElementById("detail-mnemonic-meaning").value = h.mnemonics.custom_meaning || h.mnemonics.meaning;
-  document.getElementById("detail-mnemonic-reading").value = h.mnemonics.custom_reading || h.mnemonics.reading;
-  
-  // Sentences
+  document.getElementById("mnemonic-meaning-detail").value = h.mnemonics.custom_meaning || h.mnemonics.meaning;
+  document.getElementById("mnemonic-reading-detail").value = h.mnemonics.custom_reading || h.mnemonics.reading;
+
+  // Populate sentences if available
   const detailSentences = document.getElementById("detail-sentences");
   detailSentences.innerHTML = "";
+  detailSentences.style.border = h.sentences.length > 0 ? '1px solid var(--color-grey)' : 'none';
+  h.sentences.forEach(s => {
+    const li = document.createElement("li");
+    li.classList.add("sentence-item");
+    const jpSpan = document.createElement("span");
+    jpSpan.classList.add("japanese");
+    jpSpan.textContent = s[0];
+    const transSpan = document.createElement("span");
+    transSpan.classList.add("translation");
+    transSpan.textContent = s[1];
+    li.appendChild(jpSpan);
+    li.appendChild(transSpan);
+    detailSentences.appendChild(li);
+  });
 
-  if (h.sentences.length > 0) {
-    detailSentences.style.border = '1px solid var(--color-grey)';
-    h.sentences.forEach(s => {
-      const li = document.createElement("li");
-      li.classList.add("sentence-item");
-
-      const jpSpan = document.createElement("span");
-      jpSpan.classList.add("japanese");
-      jpSpan.textContent = s[0]; // Assuming first part is Japanese
-
-      const transSpan = document.createElement("span");
-      transSpan.classList.add("translation");
-      transSpan.textContent = s[1]; // Assuming second part is translation
-
-      li.appendChild(jpSpan);
-      li.appendChild(transSpan);
-      detailSentences.appendChild(li);
-    });
-  }
-  else {detailSentences.style.border = 'none';}
-
-  _showHieroglyph("detail-symbol", h);
-  
+  // Display hieroglyph symbol and set external link
+  showHieroglyph("detail-symbol", h);
   document.getElementById("detail-wanikani-link").href = h.resource_paths.wanikani_link || "#";
 }
 
-function resizeMnemonics(textarea) {
+// Resize mnemonics (I dont remember why this is needed)
+function _resizeMnemonics(textarea) {
   textarea.style.height = 'auto';
   textarea.style.height = textarea.scrollHeight + 'px';
-}
-
-function customMnemonicSave(targetId) {
-  const customMnemonic = document.getElementById(targetId).value;
-  if (targetId === "detail-mnemonic-meaning") {
-    currentInfo.mnemonics.custom_meaning = customMnemonic;
-  } else if (targetId === "detail-mnemonic-reading") {
-    currentInfo.mnemonics.custom_reading = customMnemonic;
-  }
-
-  // flash effect
-  const textarea = document.getElementById(event.target.id);
-  textarea.classList.add('flash-effect');
-  setTimeout(() => {
-    textarea.classList.remove('flash-effect');
-  }, 500);
-
-  saveProgressToLocalStorage();
-}
-
-function searchDetail() {
-  const search_text = (currentInfo.symbol) ? currentInfo.symbol.toUpperCase() : currentInfo.meanings[0];
-  document.getElementById("search-query").value = search_text;
-  searchHieroglyphs();
 }

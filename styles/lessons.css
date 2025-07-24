@@ -1,0 +1,58 @@
+/* ============================
+ Lesson Section
+============================ */
+#lesson-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+#lesson-display {
+  margin-bottom: 20px;
+}
+
+#lesson-progress {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+#learn-info-container,
+#navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 320px;
+  margin-bottom: 10px;
+}
+
+/* Apply consistent min-width to ALL buttons for better alignment */
+#lesson-show-info-page,
+#learn-button,
+#lesson-prev-button,
+#lesson-next-button {
+  min-width: 140px; 
+  text-align: center;
+}
+
+/* ============================
+  NEXT REVIEW IN... SECTION 
+============================ */
+#no-lesson-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-purple);
+  font-size: 24px;
+  width: 30%;
+  height: 40%;
+  margin-left: 30%;
+  margin-top: 20%;
+  border: 1px solid var(--color-purple);
+  border-radius: 10px;
+  padding: 50px;
+  gap: 20px;
+}
+#no-lesson-section.hidden {display: none;}

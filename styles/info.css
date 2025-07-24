@@ -206,7 +206,7 @@
   background-color: var(--color-purple-hover);
   color: var(--color-grey);
 }
-#detail-mnemonic-meaning, #detail-mnemonic-reading {
+#mnemonic-meaning-detail, #mnemonic-reading-detail {
   width: 100%;
   resize: none;
   overflow-wrap: break-word;
@@ -217,7 +217,7 @@
   font-size: 18px;
 }
 
-.mnemonic-content.show {display: block;}
+#mnemonic-meaning-content.show {display: block;}
 .flash-effect {animation: flash-color 0.6s ease-in-out forwards;}
 @keyframes flash-color {
   0% {color: var(--color-white);}
@@ -225,10 +225,13 @@
   100% {color: var(--color-white);}
 }
 
-/* .mnemonic-item .mnemonic-content {
-  left: 50%;
-  transform: translateX(-50%);
-} */
+#mnemonic-reading-content.show {display: block;}
+.flash-effect {animation: flash-color 0.6s ease-in-out forwards;}
+@keyframes flash-color {
+  0% {color: var(--color-white);}
+  50% {color: var(--color-correct);}
+  100% {color: var(--color-white);}
+}
 
 /* sample vocab sentences */
 #detail-sentences {

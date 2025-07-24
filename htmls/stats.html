@@ -9,12 +9,24 @@
         <div id="level-info-data-container">
           <div id="stats-data-container">
             <div id="data-buttons">
-              <input type="file" id="fileInput" accept=".json" style="display: none;">
-              <button id="downloadBtn">Save</button>
-              <button id="uploadBtn">Load</button>
+              <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="handleFileUpload(event)">
+              <button onclick="uploadClick()"> Load
+                <svg style="position: relative; top: 2px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+              </button>
+              <button onclick="downloadClick()"> Save
+                <svg style="position: relative; top: 2px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </button>
             </div>
             <div id="stats-refresh"> 
-              <button id="statsRefresh">↺</button>
+              <button id="statsRefresh" onclick="refreshClick()">↺</button>
             </div>
           </div>
           <div id="refresh-level-info-container">
@@ -41,11 +53,11 @@
         <div id="stats-lessons-review-container">
           <div id="stats-lessons-container">
             <div id="stats-lessons-text">None</div>
-            <button id="stats-lessons-button">Go to Lessons</button>
+            <button id="stats-lessons-button", onclick="lessonClick()">Go to Lessons</button>
           </div>
           <div id="stats-reviews-container">
             <div id="stats-review-text">None</div>
-            <button id="stats-reviews-button">Go to Reviews</button>
+            <button id="stats-reviews-button", onclick="reviewClick()">Go to Reviews</button>
           </div>
         </div>            
       </div>
@@ -68,7 +80,7 @@
         <div class="stats-scrollable-container" id="stats-progress-container"><!-- Progress bars will be inserted here --></div>
       </div>
 
-        <!-- "squares" stats  -->
+      <!-- "squares" stats  -->
       <div id="stats-right-down-container">
         <div class="stats-box" id="stats-box-radical">Radical<br>289</div>
         <div class="stats-box" id="stats-box-kanji">Kanji<br>562</div>

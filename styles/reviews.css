@@ -1,5 +1,5 @@
 /* ============================
- Game Section
+ Review Section
 ============================ */
 
 /* Rectangles Correct/Incorrect  */
@@ -67,10 +67,16 @@
   padding: 8px 28px; 
 }
 
+#review-progress {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #555;
+}
+
 /* ============================
   NEXT REVIEW IN... SECTION 
 ============================ */
-#no-lesson-section {
+#no-rewiew-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,4 +92,4 @@
   padding: 50px;
   gap: 20px;
 }
-#no-lesson-section.hidden {display: none;}
+#no-rewiew-section.hidden {display: none;}

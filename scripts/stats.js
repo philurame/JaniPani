@@ -1,55 +1,27 @@
-//-----------------------------------------------------------
-// "LOAD" and "SAVE" BUTTONS
-//-----------------------------------------------------------
-async function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) {
-    alert('No file selected!');
-    return;
-  }
-
-  const reader = new FileReader();
-  let jsonData = {};
-  reader.onload = function(e) {
-    jsonData = JSON.parse(e.target.result);
-    _overwriteDB(jsonData);
-
-    if (window.innerWidth < 768) {showSection("game-section"); LessonReviewButtonClick(0);}
-    else {showSection("stats-section");}
-  };
-  reader.readAsText(file);
+// ---------------------------------------
+// Stats Section
+// ---------------------------------------
+function statsClick() {
+  isInLesson = 0;
+  isInReview = 0;
+  showSection("stats-section")
+  refreshClick();
 }
-
-function handleFileDownload() {
-  const jsonData = _fetchProgress();
-  const dataStr = JSON.stringify(jsonData, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'JaniPaniProgress.json';
-  document.body.appendChild(a);
-  a.click();
-
-  // Clean up
-  setTimeout(() => {
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }, 0);
-}
-
 
 // ---------------------------------------
 // Update(Fill) Stats Section
 // ---------------------------------------
-function update_stats_section() {
+function refreshClick() {
   _fill_lesson_review_stats();
   _fill_progress_bars();
   _fill_chart_js();
   _fill_hieroglyph_stats();
 }
 
+// ---------------------------------------
+// Stats Utils
+// ---------------------------------------
+// count active lessons
 function _count_active_lessons(lvl=null, type=null) {
   const lvl_hieroglyphs = DB.hieroglyphs.filter(h => ((lvl === null) ? h.level<=ProgressLevel : h.level===lvl));
   
@@ -71,6 +43,7 @@ function _count_active_lessons(lvl=null, type=null) {
   }
 }
 
+// fill left up section
 function _fill_lesson_review_stats() {
   const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level === ProgressLevel));
 
@@ -100,14 +73,14 @@ function _fill_lesson_review_stats() {
 
   const n_acive_lessons = _count_active_lessons();
 
-  _filterHieroglyphs();
+  filterHieroglyphs();
   const n_reviews = filteredHieroglyphs.filter(h => h.progres_level[0] > -1 && h.progres_level[1] > -1);
 
   document.getElementById("stats-lessons-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Lessons: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_acive_lessons}</span>`;
   document.getElementById("stats-review-text").innerHTML = `<span style='color:var(--color-primary); font-size: 24px;'>Active Reviews: </span><span style='color:var(--color-correct); font-size: 24px;'>${n_reviews.length}</span>`;
 }
 
-
+// fill left down section with schedule
 function _fill_chart_js() {
   let intervals = [];
   const now = new Date();
@@ -267,7 +240,7 @@ function _fill_chart_js() {
       plugins: {
         title: {
           display: true,
-          text: chartViewMode === 'week' ? 'Upcoming Reviews (Weekly)' : 'Upcoming Reviews (Daily)'
+          text: chartViewMode === 'week' ? 'Upcoming Reviews (Week)' : 'Upcoming Reviews (Day)'
         },
         legend: {
           position: 'bottom',
@@ -320,8 +293,7 @@ function _fill_chart_js() {
   new Chart(ctx, config);
 }
 
-
-
+// fill right upper section
 function _fill_progress_bars() {
   const progressData = [];
   const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level<=ProgressLevel));
@@ -409,7 +381,7 @@ function _fill_progress_bars() {
 
 }
 
-
+// fill right down section
 function _fill_hieroglyph_stats() {
   const progress_hieroglyphs = DB.hieroglyphs.filter(h => (h.level<=ProgressLevel));
 

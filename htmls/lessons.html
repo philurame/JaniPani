@@ -1,0 +1,42 @@
+<!-- ============================================================= -->
+<!-- Lesson Section: lessons/reviews pages -->
+<!-- ============================================================= -->
+<section>
+  <div id="lesson-section" class="section hidden">
+    
+    <button onclick="statsClick()">Go to Stats</button>
+    <button onclick="reviewClick()">Go to Reviews</button>
+    
+    <!-- hieroglyph review question -->
+    <div id="lesson-area">
+      <span id="lesson-display"></span>
+      <div id="learn-info-container">
+        <button id="lesson-show-info-page", onclick="infoClick()">Info 📚</button>
+        <button id="learn-button", onclick="learnClick()">Learn 🔥</button>
+      </div>
+      <div id="navigation-buttons">
+        <button id="lesson-prev-button", onclick="shiftLessonClick(-1)">⬅ Prev</button>
+        <button id="lesson-next-button", onclick="shiftLessonClick(1)">Next ⮕</button>
+      </div>
+      <p id="lesson-progress"></p>
+    </div>
+
+    <div class="mobile-load"> 
+      <button onclick="downloadClick()">Save</button>
+      <button onclick="uploadClick();">Load</button>
+    </div>
+
+  </div>
+
+  
+  <!-- ============================================================= -->
+  <!-- no-lesson section -->
+  <!-- ============================================================= -->
+  <div id="no-lesson-section" class="section hidden">
+    <button id="back-to-stats", onclick="statsClick()">Go Back</button>
+    <div class="mobile-load"> 
+      <button onclick="downloadClick()">Save</button>
+      <button onclick="uploadClick();">Load</button>
+    </div>
+  </div>
+</section>

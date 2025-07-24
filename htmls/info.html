@@ -3,7 +3,8 @@
 <!-- ============================================================= -->
 <section>
   <div id="info-section" class="section hidden">
-    <button id="back-to-game">Back to Game</button>
+    <button onclick="statsClick()">Go to Stats</button>
+    <button onclick="backToGameClick()">Back to Game</button>
     <div id="hieroglyph-detail" class="hidden">
       <div id="info-container">
         <div id="details">
@@ -12,7 +13,7 @@
             <span id="extra-meanings" class="faded"></span> 
           </div>
           <ul id="symbol-composition"></ul>
-          <button id="vocab-sound-button"></button>
+          <button id="vocab-sound-button" onclick="soundClick()"></button>
           <div id="onkun">
             <div id="onon">
               <span id="detail-onyomi-title">On'yomi</span>
@@ -40,27 +41,27 @@
         </div>
         <div id="mnemonic-container">
           <div class="mnemonic-item">
-            <button class="show-mnemonic">Mnemonics Meaning</button>
-            <div class="mnemonic-content">
-              <textarea id="detail-mnemonic-meaning"></textarea>
+            <button id="mnemonic-meaning-button" class="show-mnemonic" onclick="mnemonicClick(1)">Mnemonics Meaning</button>
+            <div class="mnemonic-content" id="mnemonic-meaning-content">
+              <textarea id="mnemonic-meaning-detail"></textarea>
             </div>
           </div>
           <div class="mnemonic-item">
-            <button class="show-mnemonic">Mnemonics Reading</button>
-            <div class="mnemonic-content">
-              <textarea id="detail-mnemonic-reading"></textarea>
+            <button id="mnemonic-reading-button" class="show-mnemonic" onclick="mnemonicClick(0)">Mnemonics Reading</button>
+            <div class="mnemonic-content" id="mnemonic-reading-content">
+              <textarea id="mnemonic-reading-detail"></textarea>
             </div>
           </div>
         </div>
         <ul id="detail-sentences"></ul>
       </div>
       <div id="symbol-ref">
-        <button id="detail-symbol" class="hidden"></button>
+        <button id="detail-symbol" class="hidden" onclick="searchDetailClick()"></button>
         <a id="detail-wanikani-link" href="#" target="_blank">WaniKani Reference</a>
       </div>
     </div>
     <input type="text" id="search-query" placeholder="" autofocus autocomplete="off">
-    <button id="search-button">Search</button>
+    <button id="search-button" onclick="searchHieroglyphsClick()">Search</button>
     <ul id="search-results"></ul>
   </div>
 </section>

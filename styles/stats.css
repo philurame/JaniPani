@@ -160,11 +160,16 @@
   margin-bottom: 10px;
   align-items: center;
 }
+#stats-bars-legend div {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
 .stats-legend-box {
   display: inline-block;
   width: 20px;
   height: 20px;
-  margin-right: 5px;
+  margin-right: 8px;
   border-radius: 3px;
 }
 .stats-scrollable-container {
@@ -218,7 +223,6 @@
 .progress-text {
   font-size: 0.7rem;
   color: var(--color-grey);
-  /* text-shadow: 1px 1px 2px var(--color-grey); */
   pointer-events: none;
 }
 
@@ -240,3 +244,13 @@
 #stats-box-radical {background-color: var(--color-black); color: var(--color-radical); border: 1px solid var(--color-radical);}
 #stats-box-kanji {background-color: var(--color-black); color: var(--color-kanji); border: 1px solid var(--color-kanji); } 
 #stats-box-vocab {background-color: var(--color-black); color: var(--color-vocab-lighter); border: 1px solid var(--color-vocab-lighter); }
+
+#stats-box-apprentice:hover {background-color: var(--color-black); color: #74BC0C; transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-guru:hover       {background-color: var(--color-black); color: #74BC0C; transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-master:hover     {background-color: var(--color-black); color: #74BC0C; transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-enlightened:hover {background-color: var(--color-black); color: #74BC0C; transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-burned:hover  {background-color: var(--color-black); color: #74BC0C; transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-empty:hover   {background-color: #74BC0C; color: var(--color-white); transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-radical:hover {background-color: var(--color-radical); color: var(--color-white); transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-kanji:hover   {background-color: var(--color-kanji); color: var(--color-white); transform: scale(1.02); transition: all 0.1s ease-in-out;}
+#stats-box-vocab:hover   {background-color: var(--color-vocab-lighter); color: var(--color-white); transform: scale(1.02); transition: all 0.1s ease-in-out;}

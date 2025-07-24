@@ -70,6 +70,7 @@
   --color-vocab-grey:#5c4667;
   --color-black: #121212;
   --color-white: #fff;
+  --color-warning: #ffcc00;
 }
 
 body {
@@ -85,9 +86,10 @@ body {
 .hidden {display: none;}
 
 button {
+  min-width: 120px;
   background-color: var(--color-purple);
   color: var(--color-primary);
-  padding: 8px 20px;
+  padding: 10px 20px;
   margin: 10px;
   font-size: 24px;
   border-radius: 10px;
@@ -96,13 +98,15 @@ button {
 button:hover {
   background-color: var(--color-purple-hover);
   color: var(--color-grey);
+
+  transform: scale(1.01);
+  transition: all 0.1s ease-in-out;
 }
 
 textarea {
   font-family: inherit;
   font-size: inherit;
 }
-
 
 
 
