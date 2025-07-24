@@ -119,13 +119,23 @@ function submitClick() {
     is_half_correct_review = true;
   }
 
-  console.log(userAnswerLower, is_correct_review);
   _displayFeedback(minDistance, closestAnsw);
 
   document.getElementById("reorder").classList.add("hidden");
   document.getElementById("review-progress").classList.add("hidden");
   document.getElementById("show-info-page").classList.remove("hidden");
   document.getElementById("judge-answer").classList.remove("hidden");
+
+  if (currentQuestion.progres_level[(questionType === 'meaning') ? 0 : 1] == 8) {
+    document.getElementById("judge-easy").textContent = "Burn🔥";
+    document.getElementById("judge-easy").style.backgroundColor = "var(--color-black)";
+    document.getElementById("judge-easy").style.border = "2px solid var(--color-purple)";
+  }
+  else {
+    document.getElementById("judge-easy").textContent = "Easy";
+    document.getElementById("judge-easy").style.backgroundColor = "var(--color-purple)";
+    document.getElementById("judge-easy").style.border = "";
+  }
 }
 
 function NoReviews() {
@@ -141,8 +151,8 @@ function NoReviews() {
 function judgeClick(value) {
   const progres_level_idx = (questionType === 'meaning') ? 0 : 1;
 
-  // no mistakes for Enlighted!
-  if (currentQuestion.progres_level[progres_level_idx] == 8 && value != 1) {value -= 1;}
+  // no mistakes for Enlighted! even Good is not good enough to proceed!
+  if (currentQuestion.progres_level[progres_level_idx] == 8) {value -= 1;}
   if (currentQuestion.progres_level[progres_level_idx] == 7 && value == 2) {value = 1;}
 
   currentQuestion.progres_level[progres_level_idx] += value;
@@ -240,7 +250,6 @@ function _update_progress(is_correct, is_half_correct) {
 
 // displays green/yellow/red feedback for currentQuestion
 function _displayFeedback(minDistance, closestAnsw) {
-  console.log(is_correct_review);
   // play sound if vocab reading + correct
   if (currentQuestion.hieroglyph_type === HieroglyphType.VOCAB && questionType === 'reading' && is_correct_review) {
     currentSoundPath = 'sounds/'+encodeURIComponent(currentQuestion.resource_paths.sound);

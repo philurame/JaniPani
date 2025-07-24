@@ -53,8 +53,8 @@ function searchHieroglyphsClick() {
 
   const hira = wanakana.toHiragana(query);
 
-  function checkReadings(readings, q, mainReq = null) {
-    if (mainReq && h.readings.main_reading !== mainReq) return false;
+  function checkReadings(readings, q, same_main_reading = null) {
+    if (same_main_reading !== null && !same_main_reading) return false;
     return readings.some(r => r.toLowerCase().includes(q));
   }
 
@@ -85,8 +85,8 @@ function searchHieroglyphsClick() {
 
     // Priority 3: Readings (direct, with main check where needed)
     if (h.readings.vocab.some(r => r.toLowerCase().includes(q)) ||
-        checkReadings(h.readings.onyomi, q, "onyomi") ||
-        checkReadings(h.readings.kunyomi, q, "kunyomi")) return 3;
+        checkReadings(h.readings.onyomi, q, h.readings.main_reading === 'onyomi') ||
+        checkReadings(h.readings.kunyomi, q, h.readings.main_reading === 'kunyomi')) return 3;
 
     // Priority 4: Readings (hiragana, with main check)
     if (h.readings.vocab.some(r => r.toLowerCase().includes(hira)) ||
@@ -103,8 +103,8 @@ function searchHieroglyphsClick() {
     if (checkLinks(h.resource_paths.radical_links) || checkLinks(h.resource_paths.kanji_links)) return 7;
 
     // Priority 8: Custom mnemonics
-    if (h.mnemonics.custom_meaning.toLowerCase().includes(q) ||
-        h.mnemonics.custom_reading.toLowerCase().includes(q)) return 8;
+    if (h.mnemonics.custom_meaning && (h.mnemonics.custom_meaning.toLowerCase().includes(q) ||
+        h.mnemonics.custom_reading.toLowerCase().includes(q))) return 8;
 
     // Priority 9: Standard mnemonics
     if (h.mnemonics.meaning.toLowerCase().includes(q) ||

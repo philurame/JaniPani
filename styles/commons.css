@@ -71,6 +71,7 @@
   --color-black: #121212;
   --color-white: #fff;
   --color-warning: #ffcc00;
+  --color-burn: #ff5e00;
 }
 
 body {
@@ -96,11 +97,11 @@ button {
   cursor: pointer;
 }
 button:hover {
-  background-color: var(--color-purple-hover);
-  color: var(--color-grey);
+  background-color: var(--color-purple-hover)!important;
+  color: var(--color-grey)!important;
 
-  transform: scale(1.01);
-  transition: all 0.1s ease-in-out;
+  transform: scale(1.01)!important;
+  transition: all 0.1s ease-in-out!important; 
 }
 
 textarea {
