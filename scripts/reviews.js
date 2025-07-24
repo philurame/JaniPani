@@ -291,7 +291,7 @@ function _displayFeedback(minDistance, closestAnsw) {
   }
   else
   {
-    feeDBackEl.textContent = "Incorrect! Gambarimasu! You are " + minDistance + " symbols away from an answer.";
+    feeDBackEl.textContent = "Incorrect! You are " + minDistance + " symbols away from an answer.";
     feeDBackEl.style.color = "var(--color-incorrect)";
     document.getElementById("answer-input").style.borderBottom = "2px solid var(--color-incorrect)";
     if (window.innerWidth >= 768) {

@@ -15,12 +15,6 @@
       <p id="question-text"></p>
       <input type="text" id="answer-input" placeholder="" autofocus autocomplete="off">
       <div id="submit-info-review-container">
-        <div id="judge-answer" class="hidden">
-          <button id="judge-wrong" onclick="judgeClick(-1)">Wrong</button>
-          <button id="judge-hard"  onclick="judgeClick(0)">Hard</button>
-          <button id="judge-good"  onclick="judgeClick(1)">Good</button>
-          <button id="judge-easy"  onclick="judgeClick(2)">Easy</button>
-        </div>
         <div>
           <button id="reorder" onclick="reorderClick()">reorder 
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shuffle" viewBox="0 0 16 16">
@@ -31,13 +25,19 @@
           <button id="show-info-page" onclick="infoClick()">Info📚</button>
           <button id="submit-answer" onclick="submitClick()">Submit</button>
         </div>
+        <div id="judge-answer" class="hidden">
+          <button id="judge-wrong" onclick="judgeClick(-1)">Wrong</button>
+          <button id="judge-hard"  onclick="judgeClick(0)">Hard</button>
+          <button id="judge-good"  onclick="judgeClick(1)">Good</button>
+          <button id="judge-easy"  onclick="judgeClick(2)">Easy</button>
+        </div>
+        <p id="feedback" style="text-decoration: overline;"></p>
       </div>
       <div class="mobile-load"> 
         <button onclick="downloadClick()">Save</button>
         <button onclick="uploadClick();">Load</button>
       </div>
       <p id="review-progress"></p>
-      <p id="feedback"></p>
     </div>
   </div>
 
