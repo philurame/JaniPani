@@ -286,7 +286,7 @@ function _displayFeedback(minDistance, closestAnsw) {
     if (window.innerWidth >= 768) {
       document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.display  = 'flex');
       document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.style.backgroundColor = 'var(--color-warning)');
-      document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.textContent = '👺正しい?👺');
+      document.querySelectorAll(".feedback-rectangles").forEach(rect => rect.textContent = '👺正しいかも👺');
     }
   }
   else
