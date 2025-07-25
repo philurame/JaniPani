@@ -78,7 +78,6 @@ function shiftLessonClick(diff) {
 function NoLessons() {
   document.getElementById("lesson-section").classList.add("hidden");
   showSection("no-lesson-section");
-  document.getElementById("next-in").innerHTML = "No active lessons! Do more reviews!";
 }
 
 // ---------------------------------------

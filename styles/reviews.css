@@ -75,7 +75,7 @@
 /* ============================
   NEXT REVIEW IN... SECTION 
 ============================ */
-#no-rewiew-section {
+#no-review-section {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,4 +91,4 @@
   padding: 50px;
   gap: 20px;
 }
-#no-rewiew-section.hidden {display: none;}
+#no-review-section.hidden {display: none;}
